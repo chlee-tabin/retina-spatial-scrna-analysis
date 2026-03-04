@@ -12,7 +12,7 @@ If you use this code, please cite:
 
 ## Data Availability
 
-- **Raw and processed data**: [GEO accession GSE________](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE________)
+- **Raw and processed data**: [GEO accession GSE322831](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE322831)
 - **Public reference datasets**: GSE138002, GSE234963, GSE246169 (human); GSE139904, GSE118614 (mouse)
 
 ## Overview

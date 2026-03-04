@@ -22,7 +22,7 @@ These scripts generate Figures 5–8 and Supplementary Figures 12–23 of the ma
 
 ## Data Requirements
 
-Download from GEO (accession TBD) or provide your own data in the expected layout:
+Download from [GEO (accession GSE322831)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE322831) or provide your own data in the expected layout:
 
 ```
 data/
