@@ -1,0 +1,49 @@
+# Control Genes Configuration for Spatial Analysis
+# =================================================
+# 
+# This file defines spatial anchor genes for different species and retinal regions.
+# The system will automatically select the best-expressed gene from each list.
+#
+# TO CUSTOMIZE:
+# - Add/remove genes from any category
+# - Create new spatial categories  
+# - Add new species
+# - Modify gene lists based on your data
+#
+# SPATIAL CATEGORIES:
+# - DV.stripes: Dorsal-Ventral stripe patterns
+# - NT.stripe: Nasal-Temporal stripe patterns  
+# - Fovea: Central foveal region
+# - Dorsal: Dorsal retina
+# - Ventral: Ventral retina
+# - Temporal: Temporal retina
+# - Nasal: Nasal retina
+
+chick:
+  # Note: Chick genes use UPPERCASE naming convention
+#  DV.stripes: [BMP2]
+#  NT.stripe: [CYP1B1]
+#  HAA: [CYP26C1]  # Multiple options - system picks best expressed (FGF8 could be one possibility)
+  Dorsal: [ALDH1A1, TBX5, TBX3, TBX2, BAMBI, EPHA7, EPHA5]
+  Ventral: [ALDH1A3, VAX1, EPHB2, CYP26A1, EPHB1, EPHB3, EPHX2, EPHX1]
+  Temporal: [EPHA8, EPHX2, EPHA3, FOXD1]
+  Nasal: [FOXG1, HMX1]
+
+human:
+  # Note: Human genes use UPPERCASE naming convention
+#  DV.stripes: [BMP2] # This really does not show very clean stripe so removed
+#  NT.stripe: [CYP1B1] # This is really not a stripe, so removed
+#  Fovea: [CYP26A1,FGF8]
+  Dorsal: [ALDH1A1, BAMBI]
+  Ventral: [ALDH1A3, VAX1]
+  Temporal: [EPHA8, EPHX2, EPHA3, FOXD1]
+  Nasal: [FOXG1, HMX1]
+
+mouse:
+  # Note: Mouse genes use Sentence case naming convention (Fgf8, Tbx5, etc.)
+#  NT.stripe: [Cyp1b1]  # Unclear whether this is really an NT stripe but some interesting pattern
+#  Fovea: [Fgf8, Cyp26c1] # No fovea expression pattern
+  Dorsal: [Aldh1a1, Tbx5, Tbx3, Tbx2, Bambi, Epha7]
+  Ventral: [Aldh1a3, Vax1, Ephb2, Cyp26a1, Ephb1, Ephb3, Ephx2, Ephx1]
+  Temporal: [Epha8, Ephx2, Epha3, Foxd1]
+  Nasal: [Foxg1, Hmx1] 
