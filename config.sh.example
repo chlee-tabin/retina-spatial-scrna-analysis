@@ -1,0 +1,16 @@
+# config.sh -- User configuration for retina-spatial-scrna-analysis
+#
+# Copy this file to config.sh and edit the paths below to match your setup.
+# Then source it before running scripts:
+#   source config.sh
+#   sbatch scripts/preprocessing/run_preprocess.sh
+
+# Path to your local clone of this repository
+export REPO_DIR="/path/to/retina-spatial-scrna-analysis"
+
+# Path to raw data (Cell Ranger outputs / 10x .h5 files)
+# Download from GEO (accession GSE________)
+export DATA_DIR="/path/to/raw_data"
+
+# Path where preprocessed outputs (.rds, .h5ad) will be written
+export OUTPUT_DIR="/path/to/output"
