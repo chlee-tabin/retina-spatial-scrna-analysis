@@ -8,7 +8,7 @@ Spatial gene expression analysis for developing retina across chick, human, and 
 
 If you use this code, please cite:
 
-> [Author list]. Integration of in situ hybridization and scRNA-seq data provides a 2D topographical map of the developing retina across species. *Journal*, Year. DOI: TBD
+> Joisher HNV, Lee C, Prabhakara C, van der Weide I, Si Y, Lonfat N, Cepko C. Integration of in situ hybridization and scRNA-seq data provides a 2D topographical map of the developing retina across species. *bioRxiv* (2026). doi: [10.64898/2026.01.04.697548](https://doi.org/10.64898/2026.01.04.697548)
 
 ## Data Availability
 
