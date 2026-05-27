@@ -315,7 +315,7 @@ ggsave( file.path(FIGURES_BASE, "Figure6", "F6H_select_NTcentral.png"), width = 
 
 # %% tags=["cell-254"]
 # Function to run pseudobulk DEG analysis for all areas
-run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "donor_id", library_col = "library", min_cells = 10) {
+run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "donor_id", library_col = "library", min_cells = 50) {
     require(glmGamPoi)
     require(SingleCellExperiment)
     require(Seurat)
@@ -354,9 +354,24 @@ run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "donor_id", library_c
                     donor
                 )
             )
-            # Create design matrix
-            colData(pseudobulk_data)$area <- factor(colData(pseudobulk_data)$area)
-            colData(pseudobulk_data)$library <- factor(colData(pseudobulk_data)$library)
+            # Gate out pseudobulk samples below min_cells. (Previously min_cells was
+            # accepted but never applied; tiny library x area x donor groups -- down to
+            # single cells -- inflate dispersion for moderate-expression genes. min_cells
+            # = 50 is a standard pseudobulk floor; samples below it are dropped.)
+            .grp_n <- minimal_obj@meta.data %>%
+                dplyr::count(library, area, donor, name = "ncell") %>%
+                dplyr::mutate(dplyr::across(c(library, area, donor), as.character))
+            .cd <- as.data.frame(colData(pseudobulk_data))
+            .cd$.ord <- seq_len(nrow(.cd))
+            .nvec <- dplyr::left_join(
+                dplyr::mutate(.cd, dplyr::across(c(library, area, donor), as.character)),
+                .grp_n, by = c("library", "area", "donor")
+            )
+            .nvec <- .nvec$ncell[order(.nvec$.ord)]
+            pseudobulk_data <- pseudobulk_data[, .nvec >= min_cells]
+            # Create design matrix (drop levels emptied by the min_cells gate)
+            colData(pseudobulk_data)$area <- droplevels(factor(colData(pseudobulk_data)$area))
+            colData(pseudobulk_data)$library <- droplevels(factor(colData(pseudobulk_data)$library))
             # Fit model using formula notation
             fit <- glm_gp(
                 pseudobulk_data,
@@ -443,8 +458,31 @@ fabp7 <- add.area.columns(fabp7, areas)
 
 # %% tags=["cell-257"]
 # Run the analysis
-deg_results <- run_all_pseudobulk_deg(fabp7, donor_col = "genotype", library_col = "library", min_cells = 100)
+deg_results <- run_all_pseudobulk_deg(fabp7, donor_col = "genotype", library_col = "library", min_cells = 50)
 # deg_results
+
+# %% [markdown]
+# ### TableS0 (chick): area DEG supplemental table (min_cells = 50)
+#
+# Main tier: volcano-flagged DEGs (significant in any territory: |log2FC| > 1 and
+# adjusted p < 0.05) at the pre-specified min_cells = 50 pseudobulk floor, mirroring
+# the human TableS0 emitted below. Rows grouped by area then descending log2FC.
+# Secondary HAA tier: genes significantly enriched in the HAA (adj p < 0.05, up) but
+# below the 2-fold cut -- several independently validated (e.g. SPRY1, BMP2; NPY sits
+# right at the 2-fold boundary and enters the main tier at this floor).
+
+# %% tags=["cell-258"]
+deg_results %>%
+    dplyr::filter( abs(lfc) > 1, adj_pval < 0.05 ) %>%
+    dplyr::arrange( area, desc(lfc) ) %>%
+    dplyr::select( -name ) %>%
+    write_tsv( file.path(FIGURES_BASE, "Tables", "TableS0_chick_area.tsv") )
+
+deg_results %>%
+    dplyr::filter( area == "HAA", adj_pval < 0.05, lfc > 0, abs(lfc) <= 1 ) %>%
+    dplyr::arrange( desc(lfc) ) %>%
+    dplyr::select( gene, area, meanExp, pval, adj_pval, lfc ) %>%
+    write_tsv( file.path(FIGURES_BASE, "Tables", "TableS0_chick_HAA_secondary.tsv") )
 
 # %% [markdown]
 # ## F6H: Volcano plot (chick)
@@ -827,7 +865,7 @@ ggsave( file.path(FIGURES_BASE, "Figure_SF23", "SF23_select_NTcentral.pdf"), wid
 
 # %% tags=["cell-313"]
 # Function to run pseudobulk DEG analysis for all areas
-run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "sample", library_col = "library", min_cells = 10) {
+run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "sample", library_col = "library", min_cells = 50) {
     require(glmGamPoi)
     require(SingleCellExperiment)
     require(Seurat)
@@ -866,9 +904,24 @@ run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "sample", library_col
                     donor
                 )
             )
-            # Create design matrix
-            colData(pseudobulk_data)$area <- factor(colData(pseudobulk_data)$area)
-            colData(pseudobulk_data)$library <- factor(colData(pseudobulk_data)$library)
+            # Gate out pseudobulk samples below min_cells. (Previously min_cells was
+            # accepted but never applied; tiny library x area x donor groups -- down to
+            # single cells -- inflate dispersion for moderate-expression genes. min_cells
+            # = 50 is a standard pseudobulk floor; samples below it are dropped.)
+            .grp_n <- minimal_obj@meta.data %>%
+                dplyr::count(library, area, donor, name = "ncell") %>%
+                dplyr::mutate(dplyr::across(c(library, area, donor), as.character))
+            .cd <- as.data.frame(colData(pseudobulk_data))
+            .cd$.ord <- seq_len(nrow(.cd))
+            .nvec <- dplyr::left_join(
+                dplyr::mutate(.cd, dplyr::across(c(library, area, donor), as.character)),
+                .grp_n, by = c("library", "area", "donor")
+            )
+            .nvec <- .nvec$ncell[order(.nvec$.ord)]
+            pseudobulk_data <- pseudobulk_data[, .nvec >= min_cells]
+            # Create design matrix (drop levels emptied by the min_cells gate)
+            colData(pseudobulk_data)$area <- droplevels(factor(colData(pseudobulk_data)$area))
+            colData(pseudobulk_data)$library <- droplevels(factor(colData(pseudobulk_data)$library))
             # Fit model using formula notation
             fit <- glm_gp(
                 pseudobulk_data,
@@ -952,7 +1005,7 @@ human <- add.area.columns(human, areas)
 
 # %% tags=["cell-316"]
 # Run the analysis
-deg_results <- run_all_pseudobulk_deg(human, donor_col = "sample", library_col = "library", min_cells = 100)
+deg_results <- run_all_pseudobulk_deg(human, donor_col = "sample", library_col = "library", min_cells = 50)
 # deg_results
 
 # %% tags=["cell-317"]
