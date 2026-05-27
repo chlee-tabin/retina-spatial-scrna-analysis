@@ -12,6 +12,7 @@ If you use this code, please cite:
 
 ## Data Availability
 
+- **Interactive viewer**: explore the cross-species 2D topographic gene-expression maps in your browser — [Retina scRNA-seq Pattern Viewer (Hugging Face Spaces)](https://huggingface.co/spaces/chlee-tabin/retina-scrnaseq-viewer)
 - **Raw and processed data**: [GEO accession GSE322831](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE322831)
 - **Public reference datasets**: GSE138002, GSE234963, GSE246169 (human); GSE139904, GSE118614 (mouse)
 
