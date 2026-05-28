@@ -21,7 +21,12 @@ source("../preprocessing/00_utils.R")
 FIGURES_BASE <- file.path(dirname(sys.frame(1)$ofile %||% "."), "..", "..", "figures")
 dir.create(file.path(FIGURES_BASE, "Figure6"), recursive = TRUE, showWarnings = FALSE)
 dir.create(file.path(FIGURES_BASE, "Figure_SF23"), recursive = TRUE, showWarnings = FALSE)
-dir.create(file.path(FIGURES_BASE, "Tables"), recursive = TRUE, showWarnings = FALSE)
+# The manuscript Supplementary Table 1 (chick, Fig 6H) / Table 2 (human, Fig
+# S23) are emitted by the dedicated companion script
+# scripts/analysis/area_significant_deg.R (writes to
+# docs/supplementary_tables/SuppTable{1,2}_*.csv). This figure script no
+# longer writes its own tables; the volcanos below drive from `deg_results`
+# in memory.
 
 # %% [markdown]
 # ## Utility: plot.retina3() region selection function
@@ -163,8 +168,8 @@ plot.retina3 <- function(obj, gene, reverse.mapping.table = NULL, bin_size = 50,
 options( repr.plot.width = 10.5, repr.plot.height = 10.5 )
 fovea.area <-
 plot.retina3(
-    fabp7, 
-    "CYP26C1", 
+    fabp7,
+    "CYP26C1",
     highlight_quadrants = list(
         c(7,5),c(6,5),
         c(7,4),c(6,4)
@@ -174,6 +179,13 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 10
 )
+# Gate-drift forcing function: the chick HAA gate must produce exactly 5,971
+# cells (= the published Fig 6H HAA arm). The companion analysis script
+# scripts/analysis/area_significant_deg.R encodes the same gate in a
+# range-tuple parameterization with a matching stopifnot, so if anyone edits
+# the quadrant list above without updating the analysis-script counterpart,
+# this assertion trips before silently-wrong Fig 6H or Supp Table 1 outputs.
+if (!is.null(fovea.area)) stopifnot(length(fovea.area) == 5971L)
 ggsave( file.path(FIGURES_BASE, "Figure6", "F6H_select_HAA.png"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
@@ -462,27 +474,15 @@ deg_results <- run_all_pseudobulk_deg(fabp7, donor_col = "genotype", library_col
 # deg_results
 
 # %% [markdown]
-# ### TableS0 (chick): area DEG supplemental table (min_cells = 50)
+# ### Supplementary Table 1 (chick): area DEG -- emitted by area_significant_deg.R
 #
-# Main tier: volcano-flagged DEGs (significant in any territory: |log2FC| > 1 and
-# adjusted p < 0.05) at the pre-specified min_cells = 50 pseudobulk floor, mirroring
-# the human TableS0 emitted below. Rows grouped by area then descending log2FC.
-# Secondary HAA tier: genes significantly enriched in the HAA (adj p < 0.05, up) but
-# below the 2-fold cut -- several independently validated (e.g. SPRY1, BMP2; NPY sits
-# right at the 2-fold boundary and enters the main tier at this floor).
-
-# %% tags=["cell-258"]
-deg_results %>%
-    dplyr::filter( abs(lfc) > 1, adj_pval < 0.05 ) %>%
-    dplyr::arrange( area, desc(lfc) ) %>%
-    dplyr::select( -name ) %>%
-    write_tsv( file.path(FIGURES_BASE, "Tables", "TableS0_chick_area.tsv") )
-
-deg_results %>%
-    dplyr::filter( area == "HAA", adj_pval < 0.05, lfc > 0, abs(lfc) <= 1 ) %>%
-    dplyr::arrange( desc(lfc) ) %>%
-    dplyr::select( gene, area, meanExp, pval, adj_pval, lfc ) %>%
-    write_tsv( file.path(FIGURES_BASE, "Tables", "TableS0_chick_HAA_secondary.tsv") )
+# The full statistically-significant area-DEG table (adj-p < 0.05, no 2-fold
+# headline cut, all 7 territories, `min_cells = 50`) is emitted by the dedicated
+# script `scripts/analysis/area_significant_deg.R`, which produces
+# `docs/supplementary_tables/SuppTable1_chick_area_significant.csv` and the
+# matching human SuppTable2 from the same gates. That table is the corrected
+# manuscript Supp Table 1 (chick) / Table 2 (human). The volcano below uses
+# `deg_results` in-memory.
 
 # %% [markdown]
 # ## F6H: Volcano plot (chick)
@@ -713,8 +713,8 @@ plot.retina3 <- function(obj, gene, reverse.mapping.table = NULL, bin_size = 50,
 options( repr.plot.width = 10.5, repr.plot.height = 10.5 )
 fovea.area <-
 plot.retina3(
-    human, 
-    "CYP26C1", 
+    human,
+    "CYP26C1",
     highlight_quadrants = list(
         c(3,5),c(4,5),
         c(3,4),c(4,4)
@@ -724,6 +724,11 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 10
 )
+# Gate-drift forcing function: the human fovea gate must produce exactly 2,236
+# cells (= the marker-guided localization). Mirror of the chick HAA assertion
+# in cell-238 and the matching stopifnot in
+# scripts/analysis/area_significant_deg.R.
+if (!is.null(fovea.area)) stopifnot(length(fovea.area) == 2236L)
 ggsave( file.path(FIGURES_BASE, "Figure_SF23", "SF23_select_HAA.pdf"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
@@ -1009,21 +1014,9 @@ deg_results <- run_all_pseudobulk_deg(human, donor_col = "sample", library_col =
 # deg_results
 
 # %% tags=["cell-317"]
-deg_results %>%
-dplyr::filter( abs(lfc) > 1, adj_pval < 0.05 ) %>%
-dplyr::arrange( area, desc(lfc) )
-# deg_results %>%
-# dplyr::filter( abs(lfc) > 1, adj_pval < 0.05 ) %>%
-# dplyr::arrange( desc(lfc) ) %>%
-# dplyr::select( -name ) %>%
-# write_tsv( "figures/TableS0_human_area.tsv" )
-deg_results %>%
-dplyr::filter( abs(lfc) > 1, adj_pval < 0.05 ) %>%
-dplyr::arrange( desc(lfc) ) %>%
-dplyr::select( -name ) %>%
-write_tsv( file.path(FIGURES_BASE, "Tables", "TableS0_human_area.tsv") )
-
-# %% tags=["cell-318"]
+# Inspect the |log2FC|>1 & adj-p<0.05 human DEGs (volcano-flagged set). The
+# corrected manuscript Supplementary Table 2 (full adj-p<0.05, no fold cap)
+# is emitted separately by scripts/analysis/area_significant_deg.R.
 deg_results %>%
 dplyr::filter( abs(lfc) > 1, adj_pval < 0.05 ) %>%
 dplyr::arrange( area, desc(lfc) )
