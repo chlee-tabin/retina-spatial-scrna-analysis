@@ -21,19 +21,23 @@ source("../preprocessing/00_utils.R")
 FIGURES_BASE <- file.path(dirname(sys.frame(1)$ofile %||% "."), "..", "..", "figures")
 dir.create(file.path(FIGURES_BASE, "Figure6"), recursive = TRUE, showWarnings = FALSE)
 dir.create(file.path(FIGURES_BASE, "Figure_SF23"), recursive = TRUE, showWarnings = FALSE)
-dir.create(file.path(FIGURES_BASE, "Tables"), recursive = TRUE, showWarnings = FALSE)
+# The manuscript Supplementary Table 1 (chick, Fig 6H) / Table 2 (human, Fig
+# S23) are emitted by the dedicated companion script
+# scripts/analysis/area_significant_deg.R (writes to
+# docs/supplementary_tables/SuppTable{1,2}_*.csv). This figure script no
+# longer writes its own tables; the volcanos below drive from `deg_results`
+# in memory.
 
 # %% [markdown]
 # ## Utility: plot.retina3() region selection function
+#
+# This helper is shared between the chick (F6H) and human (SF23) blocks below
+# -- one definition, two consumers.
 
 # %% tags=["cell-236"]
-plot.retina3 <- function(obj, gene, reverse.mapping.table = NULL, bin_size = 50, 
-                         percentile = 1.00, highlight_quadrants = NULL, 
+plot.retina3 <- function(obj, gene, bin_size = 50,
+                         percentile = 1.00, highlight_quadrants = NULL,
                          n_grid = 10, highlight_color = "blue", highlight_alpha = 0.3) {
-  if (!is.null(reverse.mapping.table)) {
-      gene_name <- gene
-      gene <- reverse.mapping.table[gene] # map the genes to Ensembl genes
-  }
   # Extract cell metadata including barcodes
   cell_data <- FetchData(
     obj,
@@ -61,9 +65,9 @@ plot.retina3 <- function(obj, gene, reverse.mapping.table = NULL, bin_size = 50,
       dv_max <- dv_partitions[dv_idx + 2]
       # Find cells in this quadrant
       quadrant_cells <- cell_data$barcode[
-        cell_data$NT.Score >= nt_min & 
+        cell_data$NT.Score >= nt_min &
         cell_data$NT.Score < nt_max &
-        cell_data$DV.Score >= dv_min & 
+        cell_data$DV.Score >= dv_min &
         cell_data$DV.Score < dv_max
       ]
       selected_cells <- c(selected_cells, quadrant_cells)
@@ -75,7 +79,7 @@ plot.retina3 <- function(obj, gene, reverse.mapping.table = NULL, bin_size = 50,
     y = dv_partitions[-length(dv_partitions)] + diff(dv_partitions)/2
   )
   # Add grid indices to label positions
-  label_positions$label <- sprintf("(%d,%d)", 
+  label_positions$label <- sprintf("(%d,%d)",
                                  rep(0:(n_grid-1), times = n_grid), # NT index (x)
                                  rep(0:(n_grid-1), each = n_grid))  # DV index (y)
   # Create highlight rectangles
@@ -106,17 +110,17 @@ plot.retina3 <- function(obj, gene, reverse.mapping.table = NULL, bin_size = 50,
   p <- p +
     geom_vline(xintercept = 0, linetype = "dashed", colour = "salmon") +
     geom_hline(yintercept = 0, linetype = "dashed", colour = "salmon") +
-    geom_vline(xintercept = nt_partitions, linetype = "dotted", 
+    geom_vline(xintercept = nt_partitions, linetype = "dotted",
                colour = "navy", linewidth = 0.5, alpha = 0.3) +
-    geom_hline(yintercept = dv_partitions, linetype = "dotted", 
+    geom_hline(yintercept = dv_partitions, linetype = "dotted",
                colour = "navy", linewidth = 0.5, alpha = 0.3) +
-    geom_text(data = label_positions, 
+    geom_text(data = label_positions,
               aes(x = x, y = y, label = label),
               inherit.aes = FALSE,
               size = 3, alpha = 0.7) +
     theme_bw() +
     theme(text = element_text(size = 20)) +
-    labs(title = ifelse(!is.null(reverse.mapping.table), gene_name, gene))
+    labs(title = gene)
   # Extract and process values for color scale
   pb <- ggplot_build(p)
   values <- pb$data[[1]]$value
@@ -138,7 +142,7 @@ plot.retina3 <- function(obj, gene, reverse.mapping.table = NULL, bin_size = 50,
     adjusted <- ""
   }
   # Finalize and print the plot
-  final_plot <- p + 
+  final_plot <- p +
     scale_fill_viridis(
       option = "viridis",
       limits = c(min(values), pval),
@@ -154,17 +158,19 @@ plot.retina3 <- function(obj, gene, reverse.mapping.table = NULL, bin_size = 50,
 }
 
 # %% [markdown]
-# ## F6H: Chick area selection (HAA, temporal, nasal, dorsal, ventral)
+# ## F6H: Chick area selection (HAA, Temporal, Nasal, Dorsal, Ventral, DVcentral, NTcentral)
 
 # %% [markdown]
 # ### Select area: HAA
 
 # %% tags=["cell-238"]
 options( repr.plot.width = 10.5, repr.plot.height = 10.5 )
-fovea.area <-
+# `haa.area` (not `fovea.area`) -- chick uses the HAA (high-acuity area)
+# label; the variable name should match the manuscript / SuppTable1 naming.
+haa.area <-
 plot.retina3(
-    fabp7, 
-    "CYP26C1", 
+    fabp7,
+    "CYP26C1",
     highlight_quadrants = list(
         c(7,5),c(6,5),
         c(7,4),c(6,4)
@@ -174,6 +180,16 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 10
 )
+# Gate-drift forcing function: the chick HAA gate must produce exactly 5,971
+# cells (= the published Fig 6H HAA arm; 20.6% of 29,025 chick RPCs). The
+# companion analysis script scripts/analysis/area_significant_deg.R encodes
+# the same gate in a range-tuple parameterization with a matching stopifnot,
+# so if anyone edits the quadrant list above without updating the
+# analysis-script counterpart, this assertion trips before silently-wrong
+# Fig 6H or Supp Table 1 outputs. Note: no `is.null` guard -- if plot.retina3
+# ever returns NULL on a degenerate gate, `length(NULL) == 5971L` is FALSE
+# and stopifnot trips. That is exactly the failure mode we want to catch.
+stopifnot(length(haa.area) == 5971L)
 ggsave( file.path(FIGURES_BASE, "Figure6", "F6H_select_HAA.png"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
@@ -314,8 +330,11 @@ ggsave( file.path(FIGURES_BASE, "Figure6", "F6H_select_NTcentral.png"), width = 
 # ## Pseudobulk DEG
 
 # %% tags=["cell-254"]
-# Function to run pseudobulk DEG analysis for all areas
-run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "donor_id", library_col = "library", min_cells = 10) {
+# Pseudobulk DEG runner -- iterates over the area.* columns added by
+# add.area.columns() and fits a glmGamPoi `~ library + area` per region. Used
+# by both the chick (F6H) and human (SF23) blocks below; donor_col differs
+# (genotype vs. sample) and is passed explicitly at the call site.
+run_all_pseudobulk_deg <- function(seurat_obj, donor_col, library_col = "library", min_cells = 50) {
     require(glmGamPoi)
     require(SingleCellExperiment)
     require(Seurat)
@@ -323,6 +342,11 @@ run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "donor_id", library_c
     area_cols <- grep("^area\\.", colnames(seurat_obj@meta.data), value = TRUE)
     # Store results for each area
     all_results <- list()
+    # Track per-region failures so we can surface them loudly at the end --
+    # silently dropping a failed territory from a 7-panel volcano produces a
+    # 6-panel figure that reads as "no significant DEGs" rather than "the DEG
+    # pipeline crashed", which is the worst silent-failure mode here.
+    region_failures <- list()
     # Process each area
     for(area_col in area_cols) {
         message("\nProcessing ", area_col)
@@ -354,9 +378,24 @@ run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "donor_id", library_c
                     donor
                 )
             )
-            # Create design matrix
-            colData(pseudobulk_data)$area <- factor(colData(pseudobulk_data)$area)
-            colData(pseudobulk_data)$library <- factor(colData(pseudobulk_data)$library)
+            # Gate out pseudobulk samples below min_cells. (Previously min_cells was
+            # accepted but never applied; tiny library x area x donor groups -- down to
+            # single cells -- inflate dispersion for moderate-expression genes. min_cells
+            # = 50 is a standard pseudobulk floor; samples below it are dropped.)
+            .grp_n <- minimal_obj@meta.data %>%
+                dplyr::count(library, area, donor, name = "ncell") %>%
+                dplyr::mutate(dplyr::across(c(library, area, donor), as.character))
+            .cd <- as.data.frame(colData(pseudobulk_data))
+            .cd$.ord <- seq_len(nrow(.cd))
+            .nvec <- dplyr::left_join(
+                dplyr::mutate(.cd, dplyr::across(c(library, area, donor), as.character)),
+                .grp_n, by = c("library", "area", "donor")
+            )
+            .nvec <- .nvec$ncell[order(.nvec$.ord)]
+            pseudobulk_data <- pseudobulk_data[, .nvec >= min_cells]
+            # Create design matrix (drop levels emptied by the min_cells gate)
+            colData(pseudobulk_data)$area <- droplevels(factor(colData(pseudobulk_data)$area))
+            colData(pseudobulk_data)$library <- droplevels(factor(colData(pseudobulk_data)$library))
             # Fit model using formula notation
             fit <- glm_gp(
                 pseudobulk_data,
@@ -364,14 +403,18 @@ run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "donor_id", library_c
             )
             # Test for differential expression
             de_results <- test_de(fit, contrast = "area1")
-            # Fix gene names in DE results - they should match the original gene names
+            # Fix gene names in DE results - they should match the pseudobulk
+            # row names exactly. A mismatch would mean glmGamPoi dropped or
+            # reordered rows internally; we abort rather than silently relabel
+            # with rownames(fit), because the gene-name -> log2FC mapping is
+            # the entire point of the table.
             actual_gene_names <- rownames(pseudobulk_data)
-            if(nrow(de_results) == length(actual_gene_names)) {
-                rownames(de_results) <- actual_gene_names
-            } else {
-                # Fallback to fit gene names if counts don't match
-                rownames(de_results) <- rownames(fit)
+            if (nrow(de_results) != length(actual_gene_names)) {
+                stop("DE row count (", nrow(de_results),
+                     ") does not match pseudobulk gene count (",
+                     length(actual_gene_names), ") for ", area_col)
             }
+            rownames(de_results) <- actual_gene_names
             # Add area information, mean expression, and clean up results
             gene_names <- rownames(de_results)
             de_results <- de_results %>%
@@ -386,8 +429,20 @@ run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "donor_id", library_c
             all_results[[area_col]] <- de_results
         }, error = function(e) {
             message("Error processing ", area_col, ": ", e$message)
-            return(NULL)
+            region_failures[[area_col]] <<- e$message
         })
+    }
+    # If anything failed, surface it as a warning so it shows up in
+    # `warnings()` -- `message()` to stderr alone gets buried under the
+    # glmGamPoi progress chatter. The full per-region error messages are
+    # attached as an attribute on the returned data.frame for post-mortem
+    # inspection (`attr(deg_results, "region_failures")`).
+    if (length(region_failures) > 0L) {
+        warning(immediate. = TRUE,
+                sprintf("Pseudobulk DEG failed for %d of %d territories: %s. ",
+                        length(region_failures), length(area_cols),
+                        paste(names(region_failures), collapse = ", ")),
+                "The volcano below will be missing these panels.")
     }
     # Remove any NULL results from errors
     all_results <- all_results[!sapply(all_results, is.null)]
@@ -398,23 +453,23 @@ run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "donor_id", library_c
     } else {
         final_results <- NULL
     }
+    # Attach the per-region failure messages (if any) so they survive the
+    # function return and are inspectable from the REPL.
+    if (length(region_failures) > 0L && !is.null(final_results))
+        attr(final_results, "region_failures") <- region_failures
     return(final_results)
 }
 
 # %% tags=["cell-255"]
 areas <-
 list(
-    "HAA"       = fovea.area,
+    "HAA"       = haa.area,
     "Temporal"  = temporal.area,
     "Nasal"     = nasal.area,
     "Dorsal"    = dorsal.area,
     "Ventral"   = ventral.area,
     "DVcentral" = DVcentral.area,
     "NTcentral" = NTcentral.area
-    # "dorsal"   = dorsal.area,
-    # "ventral"  = ventral.area,
-    # "nt.stripe" = nt.stripe.area,
-    # "dv.stripe" = dv.stripe.area
 )
 
 # %% tags=["cell-256"]
@@ -443,8 +498,19 @@ fabp7 <- add.area.columns(fabp7, areas)
 
 # %% tags=["cell-257"]
 # Run the analysis
-deg_results <- run_all_pseudobulk_deg(fabp7, donor_col = "genotype", library_col = "library", min_cells = 100)
+deg_results <- run_all_pseudobulk_deg(fabp7, donor_col = "genotype", library_col = "library", min_cells = 50)
 # deg_results
+
+# %% [markdown]
+# ### Supplementary Table 1 (chick): area DEG -- emitted by area_significant_deg.R
+#
+# The full statistically-significant area-DEG table (adj-p < 0.05, no 2-fold
+# headline cut, all 7 territories, `min_cells = 50`) is emitted by the dedicated
+# script `scripts/analysis/area_significant_deg.R`, which produces
+# `docs/supplementary_tables/SuppTable1_chick_area_significant.csv` and the
+# matching human SuppTable2 from the same gates. That table is the corrected
+# manuscript Supp Table 1 (chick) / Table 2 (human). The volcano below uses
+# `deg_results` in-memory.
 
 # %% [markdown]
 # ## F6H: Volcano plot (chick)
@@ -482,6 +548,8 @@ mutate(
                 dplyr::filter(
                     adj_pval < 0.05,
                     abs(lfc) > 1,
+                    # Drop LOC* (uncharacterized) chick gene-symbol labels
+                    # from the volcano callout set.
                     !grepl( "^LOC", name )
                 ) %>%
                 dplyr::filter( 
@@ -535,148 +603,24 @@ ggsave( p, file=file.path(FIGURES_BASE, "Figure6", "F6H_volcano.png"), width = 4
 # ## SF23: Human area selection
 
 # %% [markdown]
-# ### Figure 100 - Topographic DEG
+# ### Human RPC sample composition
 
 # %% tags=["cell-293"]
-human@meta.data %>% 
+human@meta.data %>%
 dplyr::count( sample )
 
-# %% tags=["cell-295"]
-plot.retina3 <- function(obj, gene, reverse.mapping.table = NULL, bin_size = 50, 
-                         percentile = 1.00, highlight_quadrants = NULL, 
-                         n_grid = 10, highlight_color = "blue", highlight_alpha = 0.3) {
-  if (!is.null(reverse.mapping.table)) {
-      gene_name <- gene
-      gene <- reverse.mapping.table[gene] # map the genes to Ensembl genes
-  }
-  # Extract cell metadata including barcodes
-  cell_data <- FetchData(
-    obj,
-    vars = c("DV.Score", "NT.Score", gene)
-  )
-  # Add cell barcodes as a column
-  cell_data$barcode <- rownames(cell_data)
-  # Get data range for creating partition lines
-  dv_range <- range(cell_data$DV.Score)
-  nt_range <- range(cell_data$NT.Score)
-  # Calculate grid positions (0 to n_grid-1)
-  dv_partitions <- dv_range[1] + (dv_range[2] - dv_range[1]) * (0:n_grid)/n_grid
-  nt_partitions <- nt_range[1] + (nt_range[2] - nt_range[1]) * (0:n_grid)/n_grid
-  # Initialize vector to store selected cell barcodes
-  selected_cells <- c()
-  # Extract cells from highlighted quadrants if specified
-  if (!is.null(highlight_quadrants)) {
-    for (quad in highlight_quadrants) {
-      nt_idx <- quad[1]  # x coordinate
-      dv_idx <- quad[2]  # y coordinate
-      # Define quadrant boundaries
-      nt_min <- nt_partitions[nt_idx + 1]
-      nt_max <- nt_partitions[nt_idx + 2]
-      dv_min <- dv_partitions[dv_idx + 1]
-      dv_max <- dv_partitions[dv_idx + 2]
-      # Find cells in this quadrant
-      quadrant_cells <- cell_data$barcode[
-        cell_data$NT.Score >= nt_min & 
-        cell_data$NT.Score < nt_max &
-        cell_data$DV.Score >= dv_min & 
-        cell_data$DV.Score < dv_max
-      ]
-      selected_cells <- c(selected_cells, quadrant_cells)
-    }
-  }
-  # Create grid label positions (centers of grid cells)
-  label_positions <- expand.grid(
-    x = nt_partitions[-length(nt_partitions)] + diff(nt_partitions)/2,
-    y = dv_partitions[-length(dv_partitions)] + diff(dv_partitions)/2
-  )
-  # Add grid indices to label positions
-  label_positions$label <- sprintf("(%d,%d)", 
-                                 rep(0:(n_grid-1), times = n_grid), # NT index (x)
-                                 rep(0:(n_grid-1), each = n_grid))  # DV index (y)
-  # Create highlight rectangles
-  highlight_rects <- NULL
-  if (!is.null(highlight_quadrants)) {
-    highlight_rects <- do.call(rbind, lapply(highlight_quadrants, function(quad) {
-      nt_idx <- quad[1]  # x coordinate
-      dv_idx <- quad[2]  # y coordinate
-      data.frame(
-        xmin = nt_partitions[nt_idx + 1],
-        xmax = nt_partitions[nt_idx + 2],
-        ymin = dv_partitions[dv_idx + 1],
-        ymax = dv_partitions[dv_idx + 2]
-      )
-    }))
-  }
-  # Create the plot
-  p <- ggplot(cell_data, aes(x = NT.Score, y = DV.Score, z = !!sym(gene))) +
-    stat_summary_2d(fun = mean, bins = bin_size)
-  # Add highlight rectangles if specified
-  if (!is.null(highlight_rects)) {
-    p <- p + geom_rect(data = highlight_rects,
-                      aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
-                      fill = highlight_color, alpha = highlight_alpha,
-                      inherit.aes = FALSE)
-  }
-  # Add grid lines and labels
-  p <- p +
-    geom_vline(xintercept = 0, linetype = "dashed", colour = "salmon") +
-    geom_hline(yintercept = 0, linetype = "dashed", colour = "salmon") +
-    geom_vline(xintercept = nt_partitions, linetype = "dotted", 
-               colour = "navy", linewidth = 0.5, alpha = 0.3) +
-    geom_hline(yintercept = dv_partitions, linetype = "dotted", 
-               colour = "navy", linewidth = 0.5, alpha = 0.3) +
-    geom_text(data = label_positions, 
-              aes(x = x, y = y, label = label),
-              inherit.aes = FALSE,
-              size = 3, alpha = 0.7) +
-    theme_bw() +
-    theme(text = element_text(size = 20)) +
-    labs(title = ifelse(!is.null(reverse.mapping.table), gene_name, gene))
-  # Extract and process values for color scale
-  pb <- ggplot_build(p)
-  values <- pb$data[[1]]$value
-  pval <- quantile(values, probs = percentile)
-  # Adjust percentile if needed
-  if (pval == min(values)) {
-    while (pval == min(values) && percentile < 1.0) {
-      percentile <- percentile + 0.01
-      pval <- quantile(values, probs = percentile)
-    }
-    adjusted <- "*"
-  } else if (pval == max(values)) {
-    while (pval == max(values) && percentile > 0.0) {
-      percentile <- percentile - 0.01
-      pval <- quantile(values, probs = percentile)
-    }
-    adjusted <- "*"
-  } else {
-    adjusted <- ""
-  }
-  # Finalize and print the plot
-  final_plot <- p + 
-    scale_fill_viridis(
-      option = "viridis",
-      limits = c(min(values), pval),
-      oob = scales::squish
-    ) +
-    labs(
-      fill = "expression",
-      caption = glue::glue("Percentile cut-off: {percentile}{adjusted}")
-    )
-  print(final_plot)
-  # Return the selected cell barcodes
-  return(unique(selected_cells))
-}
+# (plot.retina3 defined once near the top of this script and reused here for
+# the human SF23 selections.)
 
 # %% [markdown]
-# #### Select area: HAA
+# #### Select area: Fovea
 
 # %% tags=["cell-297"]
 options( repr.plot.width = 10.5, repr.plot.height = 10.5 )
 fovea.area <-
 plot.retina3(
-    human, 
-    "CYP26C1", 
+    human,
+    "CYP26C1",
     highlight_quadrants = list(
         c(3,5),c(4,5),
         c(3,4),c(4,4)
@@ -686,7 +630,13 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 10
 )
-ggsave( file.path(FIGURES_BASE, "Figure_SF23", "SF23_select_HAA.pdf"), width = 10.5, height = 10.5 )
+# Gate-drift forcing function: the human fovea gate must produce exactly 2,236
+# cells (= the marker-guided localization). Mirror of the chick HAA assertion
+# in cell-238 and the matching stopifnot in
+# scripts/analysis/area_significant_deg.R. No `is.null` guard, by design --
+# `length(NULL) == 2236L` is FALSE and stopifnot trips, which is what we want.
+stopifnot(length(fovea.area) == 2236L)
+ggsave( file.path(FIGURES_BASE, "Figure_SF23", "SF23_select_Fovea.pdf"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
 # #### Select area: Temporal
@@ -825,152 +775,36 @@ ggsave( file.path(FIGURES_BASE, "Figure_SF23", "SF23_select_NTcentral.pdf"), wid
 # %% [markdown]
 # #### Pseudobulk DEG
 
-# %% tags=["cell-313"]
-# Function to run pseudobulk DEG analysis for all areas
-run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "sample", library_col = "library", min_cells = 10) {
-    require(glmGamPoi)
-    require(SingleCellExperiment)
-    require(Seurat)
-    # Get all area columns
-    area_cols <- grep("^area\\.", colnames(seurat_obj@meta.data), value = TRUE)
-    # Store results for each area
-    all_results <- list()
-    # Process each area
-    for(area_col in area_cols) {
-        message("\nProcessing ", area_col)
-        tryCatch({
-            # Create minimal Seurat object with required metadata
-            minimal_obj <- CreateSeuratObject(
-                counts = LayerData(seurat_obj, layer = "counts"),
-                meta.data = data.frame(
-                    library = seurat_obj@meta.data[[library_col]],
-                    area = seurat_obj@meta.data[[area_col]],
-                    donor = seurat_obj@meta.data[[donor_col]],
-                    row.names = colnames(seurat_obj)
-                )
-            )
-            # Normalize data
-            minimal_obj <- NormalizeData(minimal_obj, verbose = FALSE)
-            # Calculate mean expression from the normalized data used in analysis
-            normalized_data <- LayerData(minimal_obj, layer = "data")
-            gene_mean_exp <- rowMeans(normalized_data)
-            names(gene_mean_exp) <- rownames(normalized_data)  # Ensure proper names
-            # Convert to SingleCellExperiment
-            sce <- as.SingleCellExperiment(minimal_obj)
-            # Create pseudobulk data
-            pseudobulk_data <- glmGamPoi::pseudobulk(
-                sce,
-                group_by = vars(
-                    library,
-                    area,
-                    donor
-                )
-            )
-            # Create design matrix
-            colData(pseudobulk_data)$area <- factor(colData(pseudobulk_data)$area)
-            colData(pseudobulk_data)$library <- factor(colData(pseudobulk_data)$library)
-            # Fit model using formula notation
-            fit <- glm_gp(
-                pseudobulk_data,
-                design = ~ library + area
-            )
-            # Test for differential expression
-            de_results <- test_de(fit, contrast = "area1")
-            # Fix gene names in DE results - they should match the original gene names
-            actual_gene_names <- rownames(pseudobulk_data)
-            if(nrow(de_results) == length(actual_gene_names)) {
-                rownames(de_results) <- actual_gene_names
-            } else {
-                # Fallback to fit gene names if counts don't match
-                rownames(de_results) <- rownames(fit)
-            }
-            # Add area information, mean expression, and clean up results
-            gene_names <- rownames(de_results)
-            de_results <- de_results %>%
-                as.data.frame() %>%
-                dplyr::mutate(
-                    area = sub("^area\\.", "", area_col),
-                    gene = gene_names,
-                    meanExp = gene_mean_exp[gene_names]
-                ) %>%
-                dplyr::select(gene, area, meanExp, everything())
-            # Store results
-            all_results[[area_col]] <- de_results
-        }, error = function(e) {
-            message("Error processing ", area_col, ": ", e$message)
-            return(NULL)
-        })
-    }
-    # Remove any NULL results from errors
-    all_results <- all_results[!sapply(all_results, is.null)]
-    # Combine all results
-    if (length(all_results) > 0) {
-        final_results <- do.call(rbind, all_results)
-        rownames(final_results) <- NULL
-    } else {
-        final_results <- NULL
-    }
-    return(final_results)
-}
+# (run_all_pseudobulk_deg and add.area.columns defined once near the top of
+# the chick block and reused here for the human SF23 pipeline.)
 
 # %% tags=["cell-314"]
+# Human uses "Fovea" (matching SuppTable2 + the manuscript) rather than the
+# chick "HAA" label -- the volcano facet strip then matches the table region
+# name without cross-document inconsistency.
 areas <-
 list(
-    "HAA"       = fovea.area,
+    "Fovea"     = fovea.area,
     "Temporal"  = temporal.area,
     "Nasal"     = nasal.area,
     "Dorsal"    = dorsal.area,
     "Ventral"   = ventral.area,
     "DVcentral" = DVcentral.area,
     "NTcentral" = NTcentral.area
-    # "dorsal"   = dorsal.area,
-    # "ventral"  = ventral.area,
-    # "nt.stripe" = nt.stripe.area,
-    # "dv.stripe" = dv.stripe.area
 )
 
 # %% tags=["cell-315"]
-# Function to add area columns to Seurat object
-add.area.columns <- function(seurat_obj, areas) {
-    # Create a data frame with cell barcodes as rownames
-    area_matrix <- matrix(0, 
-                         nrow = ncol(seurat_obj), 
-                         ncol = length(areas),
-                         dimnames = list(colnames(seurat_obj), 
-                                       paste0("area.", names(areas))))
-    # Fill in 1s for cells in each area
-    for (area_name in names(areas)) {
-        area_matrix[areas[[area_name]], paste0("area.", area_name)] <- 1
-    }
-    # Convert to data frame
-    area_df <- as.data.frame(area_matrix)
-    # Add columns to Seurat object
-    seurat_obj <- AddMetaData(seurat_obj, area_df)
-    return(seurat_obj)
-}
 human <- add.area.columns(human, areas)
 
 # %% tags=["cell-316"]
 # Run the analysis
-deg_results <- run_all_pseudobulk_deg(human, donor_col = "sample", library_col = "library", min_cells = 100)
+deg_results <- run_all_pseudobulk_deg(human, donor_col = "sample", library_col = "library", min_cells = 50)
 # deg_results
 
 # %% tags=["cell-317"]
-deg_results %>%
-dplyr::filter( abs(lfc) > 1, adj_pval < 0.05 ) %>%
-dplyr::arrange( area, desc(lfc) )
-# deg_results %>%
-# dplyr::filter( abs(lfc) > 1, adj_pval < 0.05 ) %>%
-# dplyr::arrange( desc(lfc) ) %>%
-# dplyr::select( -name ) %>%
-# write_tsv( "figures/TableS0_human_area.tsv" )
-deg_results %>%
-dplyr::filter( abs(lfc) > 1, adj_pval < 0.05 ) %>%
-dplyr::arrange( desc(lfc) ) %>%
-dplyr::select( -name ) %>%
-write_tsv( file.path(FIGURES_BASE, "Tables", "TableS0_human_area.tsv") )
-
-# %% tags=["cell-318"]
+# Inspect the |log2FC|>1 & adj-p<0.05 human DEGs (volcano-flagged set). The
+# corrected manuscript Supplementary Table 2 (full adj-p<0.05, no fold cap)
+# is emitted separately by scripts/analysis/area_significant_deg.R.
 deg_results %>%
 dplyr::filter( abs(lfc) > 1, adj_pval < 0.05 ) %>%
 dplyr::arrange( area, desc(lfc) )
@@ -1009,6 +843,8 @@ mutate(
                     adj_pval < 0.05,
                     abs(lfc) > 1,
                     meanExp > 0.2,
+                    # Drop human AC* contigs and HBA/HBB hemoglobin-cluster
+                    # genes (RBC contamination) from the volcano callout set.
                     !grepl( "^(AC|HBA|HBB)", name )
                 ) %>%
                 dplyr::filter( 

@@ -78,6 +78,8 @@ ENV/
 *.csv
 *.xlsx
 !data/*.tsv
+# Committed manuscript Supp. Table 1 / 2 area-DEG CSVs (carve-out past *.csv)
+!docs/supplementary_tables/*.csv
 
 # Results and outputs
 results/

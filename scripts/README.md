@@ -12,7 +12,7 @@ These scripts generate Figures 5–8 and Supplementary Figures 12–23 of the ma
 - R >= 4.4.0
 - Seurat v5, tidyverse, patchwork, svglite, viridis, ggforce, ggh4x
 - harmony, scDblFinder, presto, glmGamPoi, SingleCellExperiment
-- glue, tictoc
+- glue, tictoc, here
 
 ### Python (Python figure scripts)
 - Python >= 3.10
@@ -45,10 +45,16 @@ data/
   chick_Z_genes.tsv               # Z chromosome gene list
 ```
 
-Set `RETINA_DATA_DIR` environment variable to override the default `../data` path:
+Set `RETINA_DATA_DIR` environment variable to override the default data path:
 ```bash
 export RETINA_DATA_DIR=/path/to/your/data
 ```
+
+Defaults vary by script: the preprocessing scripts use a cwd-relative
+`../../data` (expecting `scripts/preprocessing/` as the working directory);
+the analysis script `area_significant_deg.R` uses repo-root-anchored
+`here::here("data")` (so the script is cwd-independent). Setting
+`RETINA_DATA_DIR` makes both behave identically.
 
 ## Execution Order
 
@@ -81,10 +87,27 @@ Run in any order after preprocessing. Each script is independent:
 | `figures/fig7_cross_species.py` | F7A-G | Python |
 | `figures/fig8_human_haa.py` | F8B-C | Python |
 | `figures/sfig15_grid_sensitivity.py` | SF15 | Python |
-| `figures/sfig16_chick_spatial_clusters.py` | SF16 + Table S1 | Python |
+| `figures/sfig16_chick_spatial_clusters.py` | SF16 + chick cluster-membership table | Python |
 | `figures/sfig17_chick_signaling.py` | SF17A-D | Python |
-| `figures/sfig19_mouse_human_clusters.py` | SF19A-B + Tables S2/S3 | Python |
+| `figures/sfig19_mouse_human_clusters.py` | SF19A-B + human/mouse cluster-membership tables | Python |
 | `figures/sfig20_22_pathway_maps.py` | SF20-22 | Python |
+
+### 3. Supplementary tables (R)
+
+| Script | Output | Figure |
+|--------|--------|--------|
+| `analysis/area_significant_deg.R` | `docs/supplementary_tables/SuppTable{1,2}_*.csv` | Supp. Tables 1 (chick, Fig. 6H) / 2 (human, Fig. S23) |
+
+The area-DEG generator reads the same chick `.rds` checkpoint and human MEX
+export as the figure scripts and applies the same `min_cells = 50` pseudobulk
+gate. It uses the project-wide `RETINA_DATA_DIR` env var (anchored via
+`here::here("data")` if unset). See `docs/supplementary_tables/README.md` for
+schema, sensitivity sweep, and per-territory counts.
+
+```bash
+# From the repo root
+Rscript scripts/analysis/area_significant_deg.R
+```
 
 ### Running as Jupyter notebooks
 
@@ -123,12 +146,15 @@ Cell Ranger outputs (10X)
        │   ├── sfig19: mouse/human clusters
        │   └── sfig20-22: pathway maps
        │
-       └── R figure scripts (consume .rds checkpoints)
-           ├── fig5: DV/NT scores
-           ├── sfig12: QC panels
-           ├── sfig13-14: score details
-           ├── fig6h+sfig23: area DEG
-           └── sfig18: mouse/human scores
+       ├── R figure scripts (consume .rds checkpoints)
+       │   ├── fig5: DV/NT scores
+       │   ├── sfig12: QC panels
+       │   ├── sfig13-14: score details
+       │   ├── fig6h+sfig23: area DEG volcanos
+       │   └── sfig18: mouse/human scores
+       │
+       └── R analysis script (consume .rds + MEX export)
+           └── area_significant_deg.R: Supp. Tables 1 / 2 (committed CSVs)
 ```
 
 ## Figures NOT in scope

@@ -126,7 +126,7 @@ import numpy as np
 key_genes = human_markers[:20]
 # Get the anchors that actually formed clusters from the clustering results
 cluster_forming_anchors = set(human_kept_markers)
-# Create a dictionary mapping anchor names to cluster sizes from chick_summary
+# Create a dictionary mapping anchor names to cluster sizes from human_summary
 anchor_to_cluster_size = {}
 if 'human_summary' in globals():
   for _, row in human_summary.iterrows():
@@ -246,10 +246,11 @@ if anchor_to_cluster_size:
   print(f"  Range: {min(sizes)} - {max(sizes):,} genes")
 
 # %% [markdown]
-# ## Table S2: Human anchor gene pairs
-
-# %% [markdown]
-# ### Supplemental Table 2
+# ## Human cluster-member table (companion to SF19)
+#
+# The corrected manuscript Supplementary Table 2 is now the human area-DEG
+# table (see `docs/supplementary_tables/`). This script emits a separate,
+# non-Supp-numbered human cluster-member TSV used as a companion to Fig. S19.
 
 # %% tags=["cell-106"]
 import pandas as pd
@@ -285,7 +286,7 @@ detailed_table = pd.DataFrame(detailed_data)
 detailed_table = detailed_table.sort_values(['Anchor', 'Correlation_Rank'])
 # Save to TSV
 os.makedirs(os.path.join(FIGURES_BASE, "Tables"), exist_ok=True)
-detailed_table.to_csv(os.path.join(FIGURES_BASE, "Tables", "TableS2_human_cluster_members.tsv"), sep='\t', index=False)
+detailed_table.to_csv(os.path.join(FIGURES_BASE, "Tables", "human_cluster_members_sfig19.tsv"), sep='\t', index=False)
 print(f"Saved {len(detailed_table)} cluster member entries")
 print(f"This should match total of all cluster sizes: {human_summary[human_summary['anchor_name'] != 'NULL']['cluster_size'].sum()}")
 # Show summary
@@ -410,7 +411,7 @@ import numpy as np
 key_genes = mouse_markers[:20]
 # Get the anchors that actually formed clusters from the clustering results
 cluster_forming_anchors = set(mouse_kept_markers)
-# Create a dictionary mapping anchor names to cluster sizes from chick_summary
+# Create a dictionary mapping anchor names to cluster sizes from mouse_summary
 anchor_to_cluster_size = {}
 if 'mouse_summary' in globals():
   for _, row in mouse_summary.iterrows():
@@ -529,10 +530,9 @@ if anchor_to_cluster_size:
   print(f"  Range: {min(sizes)} - {max(sizes):,} genes")
 
 # %% [markdown]
-# ## Table S3: Mouse anchor gene pairs
-
-# %% [markdown]
-# ### Supplemental Table 3
+# ## Mouse cluster-member table (companion to SF19)
+#
+# Non-Supp-numbered mouse cluster-member TSV used as a companion to Fig. S19.
 
 # %% tags=["cell-144"]
 import pandas as pd
@@ -567,7 +567,7 @@ for _, row in mouse_summary.iterrows():
 detailed_table = pd.DataFrame(detailed_data)
 detailed_table = detailed_table.sort_values(['Anchor', 'Correlation_Rank'])
 # Save to TSV
-detailed_table.to_csv(os.path.join(FIGURES_BASE, "Tables", "TableS3_mouse_cluster_members.tsv"), sep='\t', index=False)
+detailed_table.to_csv(os.path.join(FIGURES_BASE, "Tables", "mouse_cluster_members_sfig19.tsv"), sep='\t', index=False)
 print(f"Saved {len(detailed_table)} cluster member entries")
 print(f"This should match total of all cluster sizes: {mouse_summary[mouse_summary['anchor_name'] != 'NULL']['cluster_size'].sum()}")
 # Show summary
