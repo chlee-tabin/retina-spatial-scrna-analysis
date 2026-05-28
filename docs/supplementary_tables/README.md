@@ -20,7 +20,7 @@ NT.Score grid) is contrasted against the rest of the retinal-progenitor pool.
 | File | Figure | Contents |
 |---|---|---|
 | `SuppTable1_chick_area_significant.csv` | **Fig. 6H** | chick — all genes with adj-p < 0.05 in any of the 7 territories (77 HAA-enriched / 75 HAA-de-enriched among the totals) |
-| `SuppTable2_human_area_significant.csv` | **Fig. S23** | human — all genes with adj-p < 0.05 in any of the 7 territories (35 fovea-enriched / 33 fovea-de-enriched among the totals) |
+| `SuppTable2_human_area_significant.csv` | **Fig. S23** | human — all genes with adj-p < 0.05 in any of the 7 territories (35 Fovea-enriched / 33 Fovea-de-enriched among the totals) |
 
 Both are emitted by `scripts/analysis/area_significant_deg.R` (one script, both
 species, same gates as the figure code in `scripts/figures/fig6h_sfig23_area_deg.R`).

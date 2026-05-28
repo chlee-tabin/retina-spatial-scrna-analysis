@@ -126,7 +126,7 @@ import numpy as np
 key_genes = human_markers[:20]
 # Get the anchors that actually formed clusters from the clustering results
 cluster_forming_anchors = set(human_kept_markers)
-# Create a dictionary mapping anchor names to cluster sizes from chick_summary
+# Create a dictionary mapping anchor names to cluster sizes from human_summary
 anchor_to_cluster_size = {}
 if 'human_summary' in globals():
   for _, row in human_summary.iterrows():
@@ -411,7 +411,7 @@ import numpy as np
 key_genes = mouse_markers[:20]
 # Get the anchors that actually formed clusters from the clustering results
 cluster_forming_anchors = set(mouse_kept_markers)
-# Create a dictionary mapping anchor names to cluster sizes from chick_summary
+# Create a dictionary mapping anchor names to cluster sizes from mouse_summary
 anchor_to_cluster_size = {}
 if 'mouse_summary' in globals():
   for _, row in mouse_summary.iterrows():
