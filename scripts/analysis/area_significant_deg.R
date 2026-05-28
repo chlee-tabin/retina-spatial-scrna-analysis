@@ -16,7 +16,7 @@
 # (5,971 / 2,236) with a `stopifnot` forcing function below.
 #
 # Run from the repo root: `Rscript scripts/analysis/area_significant_deg.R`.
-# Inputs (override via the DATA_DIR env var if your layout differs):
+# Inputs (override via the RETINA_DATA_DIR env var if your layout differs):
 #   data/20250604_02_fabp7.rds         (chick RPC, from preprocessing
 #                                       scripts/preprocessing/02_chick_dv_nt_scoring.R)
 #   data/20250604human.RPC/            (human MEX export; barcodes/features/
@@ -30,10 +30,14 @@
 suppressWarnings(suppressMessages({
   library(SingleCellExperiment); library(glmGamPoi)
   library(Seurat); library(Matrix); library(dplyr); library(readr)
+  library(here)
 }))
 
-DATA_DIR <- Sys.getenv("DATA_DIR", unset = "data")
-OUT_DIR  <- "docs/supplementary_tables"
+# RETINA_DATA_DIR matches the project-wide convention (scripts/README.md and
+# scripts/preprocessing/05_export_h5ad.R). here::here() anchors the default to
+# the repo root regardless of working directory.
+DATA_DIR <- Sys.getenv("RETINA_DATA_DIR", unset = here::here("data"))
+OUT_DIR  <- here::here("docs", "supplementary_tables")
 dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
 
 # Region -> (defining marker, NT index range lo:hi, DV index range lo:hi,
@@ -41,31 +45,37 @@ dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
 # (chick: HAA). Gates = rectangular quadrant ranges replicating the figure
 # script's `plot.retina3` `highlight_quadrants` selections at the same
 # `n_grid` for each region.
+#
+# `expected_n` is the published cell count for the gate (asserted as a forcing
+# function below). Only HAA / Fovea are pinned in the published artefacts —
+# the other 12 gates currently run with `expected_n = NA` (the per-region
+# cell-count summary printed at end-of-run can be used to populate these once
+# the figure-script counterpart gates are likewise pinned).
 specs <- list(
   chick = list(
-    HAA       = list(m="CYP26C1", ni=c(6,7), di=c(4,5), n=10),
-    Temporal  = list(m="FOXD1",   ni=c(0,2), di=c(0,6), n=7),
-    Nasal     = list(m="FOXG1",   ni=c(5,6), di=c(0,6), n=7),
-    Dorsal    = list(m="ALDH1A1", ni=c(0,6), di=c(4,6), n=7),
-    Ventral   = list(m="VAX1",    ni=c(0,6), di=c(0,2), n=7),
-    DVcentral = list(m="BMP2",    ni=c(0,6), di=c(3,3), n=7),
-    NTcentral = list(m="CYP1B1",  ni=c(5,6), di=c(0,8), n=9)),
+    HAA       = list(m="CYP26C1", ni=c(6,7), di=c(4,5), n=10, expected_n = 5971L),
+    Temporal  = list(m="FOXD1",   ni=c(0,2), di=c(0,6), n=7,  expected_n = NA_integer_),
+    Nasal     = list(m="FOXG1",   ni=c(5,6), di=c(0,6), n=7,  expected_n = NA_integer_),
+    Dorsal    = list(m="ALDH1A1", ni=c(0,6), di=c(4,6), n=7,  expected_n = NA_integer_),
+    Ventral   = list(m="VAX1",    ni=c(0,6), di=c(0,2), n=7,  expected_n = NA_integer_),
+    DVcentral = list(m="BMP2",    ni=c(0,6), di=c(3,3), n=7,  expected_n = NA_integer_),
+    NTcentral = list(m="CYP1B1",  ni=c(5,6), di=c(0,8), n=9,  expected_n = NA_integer_)),
   human = list(
-    Fovea     = list(m="CYP26C1", ni=c(3,4), di=c(4,5), n=10),
-    Temporal  = list(m="FOXD1",   ni=c(0,2), di=c(0,6), n=7),
-    Nasal     = list(m="FOXG1",   ni=c(4,6), di=c(0,6), n=7),
-    Dorsal    = list(m="ALDH1A1", ni=c(0,6), di=c(4,6), n=7),
-    Ventral   = list(m="VAX1",    ni=c(0,6), di=c(0,2), n=7),
-    DVcentral = list(m="BMP2",    ni=c(0,6), di=c(3,3), n=7),
-    NTcentral = list(m="CYP1B1",  ni=c(4,5), di=c(0,8), n=9)))
+    Fovea     = list(m="CYP26C1", ni=c(3,4), di=c(4,5), n=10, expected_n = 2236L),
+    Temporal  = list(m="FOXD1",   ni=c(0,2), di=c(0,6), n=7,  expected_n = NA_integer_),
+    Nasal     = list(m="FOXG1",   ni=c(4,6), di=c(0,6), n=7,  expected_n = NA_integer_),
+    Dorsal    = list(m="ALDH1A1", ni=c(0,6), di=c(4,6), n=7,  expected_n = NA_integer_),
+    Ventral   = list(m="VAX1",    ni=c(0,6), di=c(0,2), n=7,  expected_n = NA_integer_),
+    DVcentral = list(m="BMP2",    ni=c(0,6), di=c(3,3), n=7,  expected_n = NA_integer_),
+    NTcentral = list(m="CYP1B1",  ni=c(4,5), di=c(0,8), n=9,  expected_n = NA_integer_)))
 
-gate <- function(dv, nt, sp){
+gate <- function(dv, nt, spec){
   # Cells in the rectangular quadrant range (strict <, as validated for HAA / Fovea).
   dr <- range(dv); nr <- range(nt)
-  dvp <- dr[1] + (dr[2]-dr[1]) * (0:sp$n) / sp$n
-  ntp <- nr[1] + (nr[2]-nr[1]) * (0:sp$n) / sp$n
-  (nt >= ntp[sp$ni[1]+1] & nt < ntp[sp$ni[2]+2]) &
-  (dv >= dvp[sp$di[1]+1] & dv < dvp[sp$di[2]+2])
+  dvp <- dr[1] + (dr[2]-dr[1]) * (0:spec$n) / spec$n
+  ntp <- nr[1] + (nr[2]-nr[1]) * (0:spec$n) / spec$n
+  (nt >= ntp[spec$ni[1]+1] & nt < ntp[spec$ni[2]+2]) &
+  (dv >= dvp[spec$di[1]+1] & dv < dvp[spec$di[2]+2])
 }
 
 region_deg <- function(obj_counts, md, gene_mean, sel, donor_col, library_col, min_cells = 50){
@@ -93,19 +103,32 @@ region_deg <- function(obj_counts, md, gene_mean, sel, donor_col, library_col, m
   fit <- glm_gp(pb, design = ~ library + area)
   de  <- as.data.frame(test_de(fit, contrast = "area1"))
   de$gene    <- rownames(pb)
-  de$meanExp <- gene_mean[de$gene]
+  de$meanExp <- gene_mean[de$gene]  # species-wide mean log-normalized expression
+                                    # (matches figure-script volcano size aesthetic)
   de
 }
 
 do_species <- function(obj, sp_name, donor_col, library_col){
+  # Validate the upstream object carries everything `region_deg` will reach
+  # for. Failing here is far more informative than the downstream "subscript
+  # out of bounds" / all-NA propagation a missing column would cause.
+  required_meta <- c(library_col, donor_col, "DV.Score", "NT.Score")
+  missing_meta  <- setdiff(required_meta, colnames(obj@meta.data))
+  if (length(missing_meta) > 0L)
+    stop(sprintf("[%s] missing required metadata columns: %s",
+                 sp_name, paste(missing_meta, collapse = ", ")))
+
   obj <- NormalizeData(obj, verbose = FALSE)
   md  <- obj@meta.data; dv <- md$DV.Score; nt <- md$NT.Score
   L   <- LayerData(obj, layer = "data"); gene_mean <- rowMeans(L)
   ct  <- LayerData(obj, layer = "counts")
-  out <- list()
+  out         <- list()                          # successful per-region significant-DEG frames
+  gate_counts <- integer(0)                      # per-region gate sizes (for end-of-run summary)
+  skipped     <- character(0)                    # region names dropped by the min_cells gate
   for (rg in names(specs[[sp_name]])) {
-    sp  <- specs[[sp_name]][[rg]]
-    sel <- gate(dv, nt, sp)
+    spec <- specs[[sp_name]][[rg]]
+    sel  <- gate(dv, nt, spec)
+    gate_counts[rg] <- sum(sel)
     # Forcing function against gate drift: HAA / Fovea cell counts are
     # validated against the published Fig 6H / S23. The figure script
     # (scripts/figures/fig6h_sfig23_area_deg.R) encodes the same quadrants
@@ -113,14 +136,16 @@ do_species <- function(obj, sp_name, donor_col, library_col){
     # anyone edits one without the other, this stopifnot trips before a
     # silently wrong Supp Table gets written. Expected counts: chick HAA
     # = 5,971 (= the published Fig 6H HAA arm); human Fovea = 2,236.
-    if (sp_name == "chick" && rg == "HAA")   stopifnot(sum(sel) == 5971L)
-    if (sp_name == "human" && rg == "Fovea") stopifnot(sum(sel) == 2236L)
+    if (!is.na(spec$expected_n))
+      stopifnot(sum(sel) == spec$expected_n)
     de <- region_deg(ct, md, gene_mean, sel, donor_col, library_col)
     if (is.null(de)) {
+      skipped <- c(skipped, rg)
       cat(sprintf("[%s/%s] SKIPPED (a level emptied by min_cells)\n", sp_name, rg))
       next
     }
     sig <- de %>%
+      dplyr::filter(adj_pval < 0.05) %>%
       dplyr::transmute(
         gene,
         region = rg,
@@ -129,9 +154,8 @@ do_species <- function(obj, sp_name, donor_col, library_col){
         pval     = signif(pval, 3),
         adj_pval = signif(adj_pval, 3),
         direction = ifelse(lfc > 0, "enriched", "de-enriched")) %>%
-      dplyr::filter(de$adj_pval < 0.05) %>%
       dplyr::arrange(desc(log2FC))
-    mk <- sp$m
+    mk <- spec$m
     mk_lfc <- if (mk %in% de$gene) round(de$lfc[de$gene == mk], 2) else NA
     up <- sig %>% dplyr::filter(log2FC > 0)
     cat(sprintf(
@@ -140,19 +164,35 @@ do_species <- function(obj, sp_name, donor_col, library_col){
       ifelse(mk %in% up$gene, which(up$gene == mk), "NA")))
     out[[rg]] <- sig
   }
+  # Forcing function: every spec'd region must have either produced a sig frame
+  # (in `out`) or been recorded as a skip (in `skipped`). Anything else means
+  # an exception bypassed the loop and we'd be writing a partial CSV.
+  stopifnot(length(out) + length(skipped) == length(specs[[sp_name]]))
   res <- dplyr::bind_rows(out)
   tbl_num <- if (sp_name == "chick") "1" else "2"
   f <- file.path(OUT_DIR, sprintf("SuppTable%s_%s_area_significant.csv", tbl_num, sp_name))
   write_csv(res, f)
-  cat(sprintf("[%s] wrote %s : %d significant region-gene rows (%d unique genes)\n\n",
+  cat(sprintf("[%s] wrote %s : %d significant region-gene rows (%d unique genes)\n",
               sp_name, basename(f), nrow(res), dplyr::n_distinct(res$gene)))
+  cat(sprintf("[%s] per-region gate sizes: %s\n",
+              sp_name,
+              paste(names(gate_counts), gate_counts, sep="=", collapse=", ")))
+  if (length(skipped) > 0L)
+    cat(sprintf("[%s] regions skipped by min_cells gate: %s\n",
+                sp_name, paste(skipped, collapse=", ")))
+  cat("\n")
 }
 
 # ----- chick ----------------------------------------------------------------
 cat("loading chick...\n")
 chick <- readRDS(file.path(DATA_DIR, "20250604_02_fabp7.rds"))
 if ("RNA" %in% SeuratObject::Assays(chick)) SeuratObject::DefaultAssay(chick) <- "RNA"
-chick <- tryCatch(JoinLayers(chick), error = function(e) chick)
+# Seurat v5 splits counts/data into per-batch layers; `LayerData(..., layer =
+# "counts")` returns one of them, not a joined matrix. We need the joined
+# matrix downstream — let any JoinLayers failure surface rather than silently
+# fall back to the un-joined object (which silently misreports gene_mean and
+# the DEG fit).
+chick <- JoinLayers(chick)
 do_species(chick, "chick", donor_col = "genotype", library_col = "library")
 rm(chick); gc()
 
@@ -167,14 +207,29 @@ counts <- ReadMtx(
   feature.column = 1, cell.column = 1)
 meta <- read.delim(file.path(EXP, paste0(PFX, "metadata.tsv")),
                    check.names = FALSE, stringsAsFactors = FALSE)
+# Recover the barcode-keyed row names. read.delim auto-detects row.names only
+# when the header has one fewer column than the data rows; if the metadata
+# was written with explicit `row.names = TRUE` that's the common case, but
+# fall back to a column whose values match the count-matrix barcodes if not.
 rn <- if (!is.null(rownames(meta)) && all(colnames(counts) %in% rownames(meta))) {
   rownames(meta)
 } else {
-  bc <- names(which(sapply(meta, function(c) mean(colnames(counts) %in% as.character(c)) > 0.99)))[1]
-  as.character(meta[[bc]])
+  match_frac <- sapply(meta, function(c) mean(colnames(counts) %in% as.character(c)))
+  bc <- names(which(match_frac > 0.99))
+  if (length(bc) == 0L)
+    stop("Could not locate a barcode column in human metadata.tsv ",
+         "(no column matches >99% of count-matrix colnames; best column ",
+         "match was ", round(max(match_frac, na.rm = TRUE), 3), "). ",
+         "Check the human MEX export at ", EXP)
+  as.character(meta[[bc[1]]])
 }
 rownames(meta) <- rn
 meta <- meta[colnames(counts), , drop = FALSE]
+# Belt-and-suspenders: after the reorder, every cell barcode must resolve to a
+# non-NA metadata row. A silent all-NA frame would propagate through every
+# downstream group-by.
+stopifnot(all(colnames(counts) %in% rownames(meta)))
+stopifnot(!anyNA(rownames(meta)))
 human <- CreateSeuratObject(counts = counts, meta.data = meta)
 do_species(human, "human", donor_col = "sample", library_col = "library")
 cat("DONE\n")
