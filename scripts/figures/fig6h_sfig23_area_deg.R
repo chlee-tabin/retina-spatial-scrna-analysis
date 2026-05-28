@@ -165,7 +165,9 @@ plot.retina3 <- function(obj, gene, bin_size = 50,
 
 # %% tags=["cell-238"]
 options( repr.plot.width = 10.5, repr.plot.height = 10.5 )
-fovea.area <-
+# `haa.area` (not `fovea.area`) -- chick uses the HAA (high-acuity area)
+# label; the variable name should match the manuscript / SuppTable1 naming.
+haa.area <-
 plot.retina3(
     fabp7,
     "CYP26C1",
@@ -187,7 +189,7 @@ plot.retina3(
 # Fig 6H or Supp Table 1 outputs. Note: no `is.null` guard -- if plot.retina3
 # ever returns NULL on a degenerate gate, `length(NULL) == 5971L` is FALSE
 # and stopifnot trips. That is exactly the failure mode we want to catch.
-stopifnot(length(fovea.area) == 5971L)
+stopifnot(length(haa.area) == 5971L)
 ggsave( file.path(FIGURES_BASE, "Figure6", "F6H_select_HAA.png"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
@@ -432,14 +434,15 @@ run_all_pseudobulk_deg <- function(seurat_obj, donor_col, library_col = "library
     }
     # If anything failed, surface it as a warning so it shows up in
     # `warnings()` -- `message()` to stderr alone gets buried under the
-    # glmGamPoi progress chatter.
+    # glmGamPoi progress chatter. The full per-region error messages are
+    # attached as an attribute on the returned data.frame for post-mortem
+    # inspection (`attr(deg_results, "region_failures")`).
     if (length(region_failures) > 0L) {
         warning(immediate. = TRUE,
                 sprintf("Pseudobulk DEG failed for %d of %d territories: %s. ",
                         length(region_failures), length(area_cols),
                         paste(names(region_failures), collapse = ", ")),
-                "The volcano below will be missing these panels. ",
-                "Inspect `region_failures` if interactive.")
+                "The volcano below will be missing these panels.")
     }
     # Remove any NULL results from errors
     all_results <- all_results[!sapply(all_results, is.null)]
@@ -450,13 +453,17 @@ run_all_pseudobulk_deg <- function(seurat_obj, donor_col, library_col = "library
     } else {
         final_results <- NULL
     }
+    # Attach the per-region failure messages (if any) so they survive the
+    # function return and are inspectable from the REPL.
+    if (length(region_failures) > 0L && !is.null(final_results))
+        attr(final_results, "region_failures") <- region_failures
     return(final_results)
 }
 
 # %% tags=["cell-255"]
 areas <-
 list(
-    "HAA"       = fovea.area,
+    "HAA"       = haa.area,
     "Temporal"  = temporal.area,
     "Nasal"     = nasal.area,
     "Dorsal"    = dorsal.area,
@@ -596,7 +603,7 @@ ggsave( p, file=file.path(FIGURES_BASE, "Figure6", "F6H_volcano.png"), width = 4
 # ## SF23: Human area selection
 
 # %% [markdown]
-# ### Figure 100 - Topographic DEG
+# ### Human RPC sample composition
 
 # %% tags=["cell-293"]
 human@meta.data %>%
@@ -772,9 +779,12 @@ ggsave( file.path(FIGURES_BASE, "Figure_SF23", "SF23_select_NTcentral.pdf"), wid
 # the chick block and reused here for the human SF23 pipeline.)
 
 # %% tags=["cell-314"]
+# Human uses "Fovea" (matching SuppTable2 + the manuscript) rather than the
+# chick "HAA" label -- the volcano facet strip then matches the table region
+# name without cross-document inconsistency.
 areas <-
 list(
-    "HAA"       = fovea.area,
+    "Fovea"     = fovea.area,
     "Temporal"  = temporal.area,
     "Nasal"     = nasal.area,
     "Dorsal"    = dorsal.area,

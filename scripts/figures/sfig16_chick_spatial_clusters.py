@@ -226,10 +226,11 @@ if anchor_to_cluster_size:
   print(f"  Range: {min(sizes)} - {max(sizes):,} genes")
 
 # %% [markdown]
-# ## Table S1: Anchor gene pairs and cluster members
-
-# %% [markdown]
-# ### Supplemental Table 1
+# ## Cluster-member table (companion to SF16)
+#
+# The corrected manuscript Supplementary Table 1 is now the chick area-DEG
+# table (see `docs/supplementary_tables/`). This script emits a separate,
+# non-Supp-numbered cluster-member TSV used as a companion to Fig. S16.
 
 # %% tags=["cell-66"]
 import pandas as pd
@@ -265,6 +266,6 @@ detailed_table = pd.DataFrame(detailed_data)
 detailed_table = detailed_table.sort_values(['Anchor', 'Correlation_Rank'])
 # Save to TSV
 os.makedirs(os.path.join(FIGURES_BASE, "Tables"), exist_ok=True)
-detailed_table.to_csv(os.path.join(FIGURES_BASE, "Tables", "TableS1_chick_cluster_members.tsv"), sep='\t', index=False)
+detailed_table.to_csv(os.path.join(FIGURES_BASE, "Tables", "chick_cluster_members_sfig16.tsv"), sep='\t', index=False)
 print(f"Saved {len(detailed_table)} cluster member entries")
 print(f"This should match total of all cluster sizes: {chick_summary[chick_summary['anchor_name'] != 'NULL']['cluster_size'].sum()}")

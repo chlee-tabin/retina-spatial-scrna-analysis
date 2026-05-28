@@ -9,8 +9,9 @@ NT.Score grid) is contrasted against the rest of the retinal-progenitor pool.
 >   (central-nasal in chick; central-temporal in human, where it is called the
 >   "fovea" instead).
 > - **DV.Score / NT.Score** — per-cell dorso-ventral / naso-temporal
->   coordinates assigned in preprocessing
->   (`scripts/preprocessing/02_chick_dv_nt_scoring.R`).
+>   coordinates assigned in preprocessing (chick: `02_chick_dv_nt_scoring.R`;
+>   human: `03_human_preprocessing.R` — both shipped as the `DV.Score` /
+>   `NT.Score` columns).
 > - **Pseudobulk** — single cells aggregated into bulk-style replicates by
 >   `library × territory × donor` before fitting the differential-expression GLM.
 > - **min_cells** — minimum number of cells per pseudobulk replicate; samples
@@ -123,7 +124,7 @@ The corrected human fovea signature in this table is led by EPHA3 (+3.16) /
 FOXD1 (+2.94) / RLBP1 (+1.72) / POU3F2 / FABP7 / GRID2 / CYP26A1, plus 35
 enriched / 33 de-enriched total. **CYP26C1 is essentially absent in human**
 and is correctly omitted from the table (mean log-normalized expression
-≈ 0.001 in human RPCs *; below the adj-p < 0.05 threshold). **FGF8 is not
+≈ 0.001 in human RPCs; below the adj-p < 0.05 threshold). **FGF8 is not
 enriched in the human fovea gate** — it surfaces only for the human Nasal
 territory in this table (log2FC +0.74). The conserved feature is a
 **CYP26-high (RA-degrading) zone at the high-acuity area, via a different
