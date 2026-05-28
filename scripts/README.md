@@ -12,7 +12,7 @@ These scripts generate Figures 5–8 and Supplementary Figures 12–23 of the ma
 - R >= 4.4.0
 - Seurat v5, tidyverse, patchwork, svglite, viridis, ggforce, ggh4x
 - harmony, scDblFinder, presto, glmGamPoi, SingleCellExperiment
-- glue, tictoc
+- glue, tictoc, here
 
 ### Python (Python figure scripts)
 - Python >= 3.10
@@ -45,10 +45,16 @@ data/
   chick_Z_genes.tsv               # Z chromosome gene list
 ```
 
-Set `RETINA_DATA_DIR` environment variable to override the default `../data` path:
+Set `RETINA_DATA_DIR` environment variable to override the default data path:
 ```bash
 export RETINA_DATA_DIR=/path/to/your/data
 ```
+
+Defaults vary by script: the preprocessing scripts use a cwd-relative
+`../../data` (expecting `scripts/preprocessing/` as the working directory);
+the analysis script `area_significant_deg.R` uses repo-root-anchored
+`here::here("data")` (so the script is cwd-independent). Setting
+`RETINA_DATA_DIR` makes both behave identically.
 
 ## Execution Order
 

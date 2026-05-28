@@ -117,6 +117,17 @@ do_species <- function(obj, sp_name, donor_col, library_col){
   if (length(missing_meta) > 0L)
     stop(sprintf("[%s] missing required metadata columns: %s",
                  sp_name, paste(missing_meta, collapse = ", ")))
+  # Value-level non-NA check: an all-NA DV.Score / NT.Score column would pass
+  # the existence check above and then propagate NA selections through the
+  # gate, producing degenerate empty / all-cells groupings that the HAA /
+  # Fovea expected_n stopifnots would catch but the other 12 gates would not.
+  if (anyNA(obj@meta.data$DV.Score) || anyNA(obj@meta.data$NT.Score))
+    stop(sprintf(
+      "[%s] DV.Score / NT.Score contains NA values (%d / %d non-NA of %d cells)",
+      sp_name,
+      sum(!is.na(obj@meta.data$DV.Score)),
+      sum(!is.na(obj@meta.data$NT.Score)),
+      nrow(obj@meta.data)))
 
   obj <- NormalizeData(obj, verbose = FALSE)
   md  <- obj@meta.data; dv <- md$DV.Score; nt <- md$NT.Score
@@ -186,7 +197,11 @@ do_species <- function(obj, sp_name, donor_col, library_col){
 # ----- chick ----------------------------------------------------------------
 cat("loading chick...\n")
 chick <- readRDS(file.path(DATA_DIR, "20250604_02_fabp7.rds"))
-if ("RNA" %in% SeuratObject::Assays(chick)) SeuratObject::DefaultAssay(chick) <- "RNA"
+# Fail-fast (not no-op) if the upstream object lacks an RNA assay -- a
+# renamed assay (e.g. RNA_GRCh38, SCT) would silently flip LayerData() to a
+# different matrix and produce a wrong gene_mean / wrong DEG fit.
+stopifnot("RNA" %in% SeuratObject::Assays(chick))
+SeuratObject::DefaultAssay(chick) <- "RNA"
 # Seurat v5 splits counts/data into per-batch layers; `LayerData(..., layer =
 # "counts")` returns one of them, not a joined matrix. We need the joined
 # matrix downstream — let any JoinLayers failure surface rather than silently
@@ -214,7 +229,7 @@ meta <- read.delim(file.path(EXP, paste0(PFX, "metadata.tsv")),
 rn <- if (!is.null(rownames(meta)) && all(colnames(counts) %in% rownames(meta))) {
   rownames(meta)
 } else {
-  match_frac <- sapply(meta, function(c) mean(colnames(counts) %in% as.character(c)))
+  match_frac <- sapply(meta, function(col) mean(colnames(counts) %in% as.character(col)))
   bc <- names(which(match_frac > 0.99))
   if (length(bc) == 0L)
     stop("Could not locate a barcode column in human metadata.tsv ",
@@ -223,13 +238,17 @@ rn <- if (!is.null(rownames(meta)) && all(colnames(counts) %in% rownames(meta)))
          "Check the human MEX export at ", EXP)
   as.character(meta[[bc[1]]])
 }
+# Duplicate barcodes in `rn` would let `meta[colnames(counts), ]` silently
+# keep only the first row per barcode -- so cells sharing a barcode would all
+# inherit one cell's metadata (wrong library / donor / DV / NT). Catch that
+# BEFORE assigning rownames.
+stopifnot(!anyDuplicated(rn))
 rownames(meta) <- rn
+# After reorder, the metadata row order must align *exactly* with the count
+# matrix columns. `identical(...)` catches both ordering mismatches and
+# silent NA-rowname rows (the latter would produce `meta[NA, ]` -> NA row).
 meta <- meta[colnames(counts), , drop = FALSE]
-# Belt-and-suspenders: after the reorder, every cell barcode must resolve to a
-# non-NA metadata row. A silent all-NA frame would propagate through every
-# downstream group-by.
-stopifnot(all(colnames(counts) %in% rownames(meta)))
-stopifnot(!anyNA(rownames(meta)))
+stopifnot(identical(rownames(meta), colnames(counts)))
 human <- CreateSeuratObject(counts = counts, meta.data = meta)
 do_species(human, "human", donor_col = "sample", library_col = "library")
 cat("DONE\n")
