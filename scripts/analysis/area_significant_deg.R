@@ -149,7 +149,7 @@ do_species <- function(obj, sp_name, donor_col, library_col){
     # = 5,971 (= the published Fig 6H HAA arm); human Fovea = 2,236.
     if (!is.na(spec$expected_n))
       stopifnot(sum(sel) == spec$expected_n)
-    de <- region_deg(ct, md, gene_mean, sel, donor_col, library_col)
+    de <- region_deg(ct, md, gene_mean, sel, donor_col, library_col, min_cells = 50)
     if (is.null(de)) {
       skipped <- c(skipped, rg)
       cat(sprintf("[%s/%s] SKIPPED (a level emptied by min_cells)\n", sp_name, rg))

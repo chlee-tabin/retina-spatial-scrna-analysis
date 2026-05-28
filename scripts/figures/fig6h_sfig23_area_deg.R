@@ -158,7 +158,7 @@ plot.retina3 <- function(obj, gene, bin_size = 50,
 }
 
 # %% [markdown]
-# ## F6H: Chick area selection (HAA, temporal, nasal, dorsal, ventral)
+# ## F6H: Chick area selection (HAA, Temporal, Nasal, Dorsal, Ventral, DVcentral, NTcentral)
 
 # %% [markdown]
 # ### Select area: HAA
@@ -613,7 +613,7 @@ dplyr::count( sample )
 # the human SF23 selections.)
 
 # %% [markdown]
-# #### Select area: HAA
+# #### Select area: Fovea
 
 # %% tags=["cell-297"]
 options( repr.plot.width = 10.5, repr.plot.height = 10.5 )
@@ -636,7 +636,7 @@ plot.retina3(
 # scripts/analysis/area_significant_deg.R. No `is.null` guard, by design --
 # `length(NULL) == 2236L` is FALSE and stopifnot trips, which is what we want.
 stopifnot(length(fovea.area) == 2236L)
-ggsave( file.path(FIGURES_BASE, "Figure_SF23", "SF23_select_HAA.pdf"), width = 10.5, height = 10.5 )
+ggsave( file.path(FIGURES_BASE, "Figure_SF23", "SF23_select_Fovea.pdf"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
 # #### Select area: Temporal
