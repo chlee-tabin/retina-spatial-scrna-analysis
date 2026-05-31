@@ -14,7 +14,8 @@ If you use this code, please cite:
 
 - **Interactive viewer**: explore the cross-species 2D topographic gene-expression maps in your browser — [Retina scRNA-seq Pattern Viewer (Hugging Face Spaces)](https://huggingface.co/spaces/chlee-tabin/retina-scrnaseq-viewer)
 - **Raw and processed data**: [GEO accession GSE322831](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE322831)
-- **Public reference datasets**: GSE138002, GSE234963, GSE246169 (human); GSE139904, GSE118614 (mouse)
+- **Public reference datasets**: GSE138002, GSE234963, GSE246169 (human); GSE118614, GSE139904, GSE149040, GSE122466 (mouse)
+- **Mouse re-alignment (Cell Ranger 9.0.1 / GRCm39)**: the mouse arm has been re-aligned with Cell Ranger 9.0.1 to the GRCm39-2024-A reference and integrated across seven libraries spanning the four mouse GEO series above (E13.5–E16). This supersedes an earlier four-library alignment (GSE139904, GSE118614; older reference) that pooled wild-type and Fgfr1/2-mutant cells from a mislabeled source library (GSE139904); the re-alignment restricts that library to control cells only. The prior version is retained in the interactive viewer as a labeled `legacy` dataset for reproducibility only.
 
 ## Overview
 
