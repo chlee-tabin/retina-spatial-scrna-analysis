@@ -298,7 +298,7 @@ print(detailed_table.groupby('Anchor')[['Category', 'Cluster_Size']].first())
 # %% tags=["cell-120"]
 import anndata as ad
 # mouse_adata = ad.read_h5ad("../data/20240815_mouse_RPC.h5ad")
-mouse_adata = ad.read_h5ad("../data/20250604_mouse_RPC.h5ad")
+mouse_adata = ad.read_h5ad("../data/20260528_mouse_RPC_cr9_e13e16.h5ad")  # CR9 / GRCm39 re-aligned (supersedes 20250604)
 print(f"Loaded mouse data: {mouse_adata.n_obs:,} cells × {mouse_adata.n_vars:,} genes")
 # Derive parameters transparently based on the data characteristics
 mouse_params = SpatialAnalysisParams.derive_parameters_from_data(
@@ -325,7 +325,7 @@ mouse_analyzer = SpatialExpressionAnalyzer(mouse_params)
 # Run full analysis (this replaces all your manual preprocessing steps)
 # Update path to point to data file location relative to notebooks/ directory
 #mouse_results = mouse_analyzer.run_full_analysis("../data/20240815_mouse_RPC.h5ad")
-mouse_results = mouse_analyzer.run_full_analysis("../data/20250604_mouse_RPC.h5ad")
+mouse_results = mouse_analyzer.run_full_analysis("../data/20260528_mouse_RPC_cr9_e13e16.h5ad")
 
 # %% [markdown]
 # ## Mouse anchor selection

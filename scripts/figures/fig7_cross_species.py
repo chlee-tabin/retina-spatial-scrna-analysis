@@ -131,7 +131,7 @@ analyzers['human'] = human_analyzer
 print(f"  Loaded {len(human_analyzer.gene_names)} genes")
 # Load Mouse analyzer with CORRECT parameters and ERROR HANDLING
 print("Loading mouse analyzer...")
-mouse_pickle = "mouse_analyzer_correct.pkl"
+mouse_pickle = "mouse_analyzer_correct.pkl"  # delete this cache when changing the mouse dataset (e.g. CR9 swap) so the analyzer rebuilds
 mouse_analyzer = None
 # Try to load from pickle with error handling
 try:
@@ -157,9 +157,10 @@ if mouse_analyzer is None:
       mask_count_threshold=5  # From high density defaults
   )
   mouse_analyzer = SpatialExpressionAnalyzer(mouse_params)
-  # Try to load from h5ad
-  if os.path.exists("../data/20240815_mouse_RPC.h5ad"):
-      mouse_results = mouse_analyzer.run_full_analysis("../data/20240815_mouse_RPC.h5ad")
+  # Try to load from h5ad — CR9 / GRCm39 re-aligned mouse RPC (E13.5-E16),
+  # supersedes the legacy 20250604 (4-library) object kept as a fallback below.
+  if os.path.exists("../data/20260528_mouse_RPC_cr9_e13e16.h5ad"):
+      mouse_results = mouse_analyzer.run_full_analysis("../data/20260528_mouse_RPC_cr9_e13e16.h5ad")
   else:
       # Try alternative path
       if os.path.exists("../data/20250604_mouse_RPC.h5ad"):
