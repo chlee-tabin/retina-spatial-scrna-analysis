@@ -34,8 +34,8 @@ data/
   # Human (public datasets: GSE138002, GSE234963, GSE246169)
   20250604_human_RPC.h5ad         # Human RPC with DV/NT scores
 
-  # Mouse (public datasets: GSE139904, GSE118614)
-  20250604_mouse_RPC.h5ad         # Mouse RPC with DV/NT scores
+  # Mouse (CR9.0.1 / GRCm39 realignment; GSE118614, GSE139904, GSE149040, GSE122466)
+  20260528_mouse_RPC_cr9_e13e16.h5ad   # Mouse RPC (E13.5-E16) with DV/NT scores; supersedes 20250604_mouse_RPC.h5ad
 
   # Intermediate R objects (produced by preprocessing scripts)
   20250604_01_gex.rds             # Checkpoint 1: raw Seurat list

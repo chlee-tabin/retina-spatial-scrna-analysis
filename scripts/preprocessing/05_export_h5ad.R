@@ -41,11 +41,13 @@ export_seurat(fabp7, dir_path = file.path(DATA_DIR, "20250604chick.RPC"), assay 
 
 # %% [markdown]
 # ## Export mouse RPC subset
-# Produced by `04_mouse_preprocessing.R`
+# CR9 revision: the mouse RPC Seurat object is produced by the Cell Ranger 9.0.1 /
+# GRCm39 realignment pipeline (7 libraries / 4 GEO series; see `scripts/realign/` in
+# the analysis repo), superseding the prior `04_mouse_preprocessing.R` 4-library object.
 
 # %%
-# mouse <- readRDS(file.path(DATA_DIR, "mouse_integrated_RPCs.rds"))
-# export_seurat(mouse, dir_path = file.path(DATA_DIR, "20251007mouse.RPC"), assay = "RNA")
+# mouse <- readRDS(file.path(DATA_DIR, "mouse_cr9_RPC.rds"))   # CR9 RPC Seurat (DV/NT scored)
+# export_seurat(mouse, dir_path = file.path(DATA_DIR, "20260528mouse_cr9.RPC"), assay = "RNA")
 
 # %% [markdown]
 # ## Output files consumed by Python scripts
@@ -55,7 +57,7 @@ export_seurat(fabp7, dir_path = file.path(DATA_DIR, "20250604chick.RPC"), assay 
 # | `20250604chick/` | Not directly used by figure scripts | GEO submission |
 # | `20250604chick.RPC/` | `20250604_chick_RPC.h5ad` | fig6, fig7, sfig15-17 |
 # | `20250604_human_RPC.h5ad` | Same | fig7, fig8, sfig19-22 |
-# | `20250604_mouse_RPC.h5ad` | Same | fig7, sfig19-22 |
+# | `20260528_mouse_RPC_cr9_e13e16.h5ad` | Same | fig7, sfig18, sfig19 |
 
 # %%
 sessionInfo()
