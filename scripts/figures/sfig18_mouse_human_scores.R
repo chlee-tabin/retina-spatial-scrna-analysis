@@ -14,6 +14,12 @@
 # %%
 source("../preprocessing/00_utils.R")
 
+# NOTE: `human` and `mouse` are the per-species RPC Seurat objects loaded into the
+# session upstream (00_utils.R provides plotting utilities, not data). For the CR9
+# revision, `mouse` must be the Cell Ranger 9.0.1 / GRCm39 re-aligned mouse RPC Seurat
+# object (rebuilt from the CR9 atlas; supersedes the prior 4-library 20250604 object),
+# carrying DV.Score / NT.Score in its metadata.
+
 # %% [markdown]
 # ## Output directory setup
 

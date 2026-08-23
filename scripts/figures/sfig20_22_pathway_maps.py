@@ -9,7 +9,7 @@
 # ---
 
 # %% [markdown]
-# # Figures S20-S22: Fgf/BMP Pathway Maps in Mouse and Human Retinas
+# # Figures S20-S22: Fgf/BMP Pathway Maps in the Human Retina
 
 # %% [markdown]
 # ## SF22B: Human BMP signaling
