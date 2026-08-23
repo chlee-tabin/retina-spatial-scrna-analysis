@@ -41,7 +41,7 @@ mouse <-
   AddModuleScore(
       features = list(
             c(
-                # Dorsal genes
+                # Ventral genes
                 "Chrdl1",  # Chrdl1
                 "Aldh1a3",  # Aldh1a3
                 "Vax1"   # Vax1
@@ -53,7 +53,7 @@ mouse <-
   AddModuleScore(
       features = list(
           c(
-                # Ventral genes
+                # Dorsal genes
                 "Tbx2", # Tbx2
                 "Tbx3", # Tbx3
                 "Tbx5", # Tbx5

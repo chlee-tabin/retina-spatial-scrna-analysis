@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -p short
+#SBATCH -p short                # adapt the partition to your scheduler
 #SBATCH -t 0-04:00
 #SBATCH -c 4
 #SBATCH --mem=96G
@@ -17,9 +17,10 @@ REPO_DIR="${REPO_DIR:?Set REPO_DIR to your local clone of retina-spatial-scrna-a
 set -uo pipefail
 
 # Adapt the module/conda lines to your HPC environment
-module load conda/miniforge3/24.11.3-0
+# Set RETINA_CONDA_MODULE to the conda module on your cluster.
+module load "${RETINA_CONDA_MODULE:?RETINA_CONDA_MODULE is unset}"
 eval "$(conda shell.bash hook)"
-conda activate jupyter
+conda activate ${RETINA_CONDA_ENV:-retina-spatial}
 
 cd "${REPO_DIR}/scripts/preprocessing"
 mkdir -p ../../logs
