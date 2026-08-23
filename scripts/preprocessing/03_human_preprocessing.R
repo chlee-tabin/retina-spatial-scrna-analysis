@@ -72,7 +72,7 @@ human <-
                 "HMX1",
                 "EFNA5",
                 "EFNA2"
-                # "FOXG1", "HMX1", "EFNA5", "EFNA2" # listed by Heer
+                # "FOXG1", "HMX1", "EFNA5", "EFNA2" # nasal marker set curated by H.N.V. Joisher
             )
       ),
       ctrl = 5,

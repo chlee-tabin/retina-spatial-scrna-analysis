@@ -20,26 +20,28 @@ source("00_utils.R")
 # %% tags=["cell-9"]
 # ln -s loCRM1rep4 bloCRM1rep4
 # ln -s loCRMmulti bloCRMmulti
-raw.dir <- "/../../nlonfat/"
+# Root holding the per-library Cell Ranger `outs/` trees. Override with
+# RETINA_RAW_DIR; the default preserves the layout the analysis was run in.
+raw.dir <- Sys.getenv("RETINA_RAW_DIR", "/../../raw/")
 meta.dir2 <- tribble(
   ~dir, ~name,
-  "/../../nlonfat", "retina1",
-  "/../../nlonfat", "retina2",
-  "/../../nlonfat", "retina3",
-  "/../../nlonfat", "retina4",
-  "/../../nlonfat", "CRM1FLP",
-  "/../../nlonfat", "CRM1e6",
-  "/../../nlonfat", "CRM1rep4",
-  "/../../nlonfat", "mCherry",
-  "/../../nlonfat", "CRMmulti",
-  "/../../nlonfat", "Emerson",
-  "/../../nlonfat", "Rep1_neg",
-  "/../../nlonfat", "Rep1_pos",
-  "/../../nlonfat", "Rep2_neg",
-  "/../../nlonfat", "Rep2_pos",
-#  "/../nlonfat", "Rep3_neg_wrong",
-  "/../../nlonfat", "Rep3_neg",
-  "/../../nlonfat", "Rep3_pos",
+  raw.dir, "retina1",
+  raw.dir, "retina2",
+  raw.dir, "retina3",
+  raw.dir, "retina4",
+  raw.dir, "CRM1FLP",
+  raw.dir, "CRM1e6",
+  raw.dir, "CRM1rep4",
+  raw.dir, "mCherry",
+  raw.dir, "CRMmulti",
+  raw.dir, "Emerson",
+  raw.dir, "Rep1_neg",
+  raw.dir, "Rep1_pos",
+  raw.dir, "Rep2_neg",
+  raw.dir, "Rep2_pos",
+#  raw.dir, "Rep3_neg_wrong",
+  raw.dir, "Rep3_neg",
+  raw.dir, "Rep3_pos",
 )
 meta.dir2$name <- paste0( "blo", meta.dir2$name )
 
@@ -312,7 +314,8 @@ dplyr::count( library, total )
 # %% [markdown]
 # ## Doublet identification: scDblFinder
 # https://bioconductor.org/packages/release/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html
-# The package is coming from Aron Lun, and also [benchmark](https://f1000research.com/articles/10-979) seem to suggest it supersedes DoubletFinder. Note this could be still be benefitted if we have genotyping reconstruction working.
+# scDblFinder (Germain et al., F1000Research 10:979, doi:10.12688/f1000research.73600.2),
+# which that paper benchmarks as superseding DoubletFinder. Note this could be still be benefitted if we have genotyping reconstruction working.
 # We could actually run the doublet finder with information from the genotyping call, but instead, I want to inform the genotyping call by cleaning up doublets here.
 #
 # NOTE: scDblFinder is stochastic (generates random synthetic doublets to
@@ -464,7 +467,9 @@ setdiff( cc.genes$s.genes, gene.list )
 # %% tags=["cell-48"]
 # No mitochondrial gene annotation!
 mito.genes <- c("ND1", "MT-ND2", "MT-CO1", "COII", "ATP8", "ATP6", "COX3", "ND3", "ND4L", "ND4", "ND5", "ND6", "CYTB" )
-# cat /n/groups/tabin/chlee/singlecell/reference/star.reference.gg6a.nlonfat.retro/Gg6a_nlonfat_retro/genes/genes.gtf  | gawk '($1 == "MT" && $3 == "gene")' 
+# Mitochondrial gene symbols were taken from the MT contig of the GEO-deposited
+# GTF (GSE322831_GRCg6a_NCBI_extended3UTR.gtf.gz):
+#   zcat <gtf> | gawk '($1 == "MT" && $3 == "gene")'
 setdiff( mito.genes, gene.list )
 mito.genes <- intersect( mito.genes, gene.list )
 
@@ -545,7 +550,7 @@ tictoc::toc()
 
 # %% [markdown]
 # # Genotyping
-# This is following up the vireo genotyping pipeline again. See `nlonfat/` original directory for details.
+# This is following up the vireo genotyping pipeline again. See the vireo genotyping outputs described in the Methods.
 
 # %% tags=["cell-60"]
 map_dfr(

@@ -76,7 +76,7 @@ ggsave(p10.1, filename=file.path(FIGURES_BASE, "Figure_SF14", "SF14A_nt_distribu
 # %% tags=["cell-206"]
 genes.nasal <- 
             c(
-                "FOXG1", "SOHO-1", "HMX1", "EFNA5", "EFNA2" # listed by Heer
+                "FOXG1", "SOHO-1", "HMX1", "EFNA5", "EFNA2" # nasal marker set curated by H.N.V. Joisher
             )
 genes.temporal <- c(
               "FOXD1", "EPHA3"
