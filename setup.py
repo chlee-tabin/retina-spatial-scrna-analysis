@@ -12,7 +12,7 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 setup(
     name="retina-spatial-scrna",
     version="0.1.0",
-    author="ChangHee Lee Lab",
+    author="ChangHee Lee, Tabin Lab, Harvard Medical School",
     description="Spatial gene expression analysis toolkit for retinal single-cell RNA-seq data",
     long_description=long_description,
     long_description_content_type="text/markdown",
