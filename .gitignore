@@ -103,3 +103,6 @@ logs/
 *.temp
 temp/
 tmp/
+
+# Analyzer caches written by scripts/figures/*.py
+*.pkl

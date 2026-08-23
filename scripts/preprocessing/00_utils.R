@@ -29,13 +29,20 @@ data.dir <- "../../R4.4.0/"
 intermediate.prefix <- "20250604_"
 
 # Chick-specific sex chromosome gene lists (used by 01_chick_preprocessing.R)
+# NOTE: an empty list here does NOT disable the sex covariates downstream — it
+# makes percent.W / percent.Z exactly 0 for every cell and the chick pipeline
+# then regresses on all-zero covariates without error. Warn loudly.
 W.genes <- tryCatch(
     read_tsv(glue::glue("../../data/chick_W_genes.tsv"), col_names = "W", show_col_types = FALSE) %>% pull(W),
-    error = function(e) { message("Note: chick_W_genes.tsv not found (ok for non-chick scripts)"); character(0) }
+    error = function(e) { warning("chick_W_genes.tsv not found: percent.W will be 0 for every cell. ",
+                                   "Fine for non-chick scripts; a bug for 01_chick_preprocessing.R.",
+                                   call. = FALSE); character(0) }
 )
 Z.genes <- tryCatch(
     read_tsv(glue::glue("../../data/chick_Z_genes.tsv"), col_names = "Z", show_col_types = FALSE) %>% pull(Z),
-    error = function(e) { message("Note: chick_Z_genes.tsv not found (ok for non-chick scripts)"); character(0) }
+    error = function(e) { warning("chick_Z_genes.tsv not found: percent.Z will be 0 for every cell. ",
+                                   "Fine for non-chick scripts; a bug for 01_chick_preprocessing.R.",
+                                   call. = FALSE); character(0) }
 )
 
 # %% [markdown]

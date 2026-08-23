@@ -191,8 +191,11 @@ def get_gene_image(analyzer, gene_name, species):
       gene_variations.extend(['Ephrinb1', 'EphrinB1', 'EFNB1'])
   elif gene_name.lower() == 'efnb2':
       gene_variations.extend(['Ephrinb2', 'EphrinB2', 'EFNB2'])
-  elif gene_name.lower() == 'vax1':  # Fixed: was vax2, should be vax1 based on GENE_LIST
-      gene_variations.extend(['Vax', 'VAX', 'VAX1', 'Vax2'])
+  elif gene_name.lower() == 'vax1':
+      # Case/orthography variants of VAX1 only. 'Vax2' was previously in this
+      # list and is a DIFFERENT gene: a VAX1 miss would silently render VAX2
+      # under a panel titled 'Vax1'.
+      gene_variations.extend(['Vax', 'VAX', 'VAX1'])
   elif gene_name.lower() == 'chrdl1':
       gene_variations.extend(['Ventroptin', 'VENTROPTIN'])
   elif gene_name.lower() == 'soho1':
