@@ -82,7 +82,7 @@ ENV/
 # Results and outputs
 results/
 outputs/
-figures/
+/figures/
 !scripts/figures/
 plots/
 logs/

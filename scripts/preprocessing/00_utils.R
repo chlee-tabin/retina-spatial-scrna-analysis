@@ -24,8 +24,6 @@ library(ggforce)
 theme_set( theme_bw() )
 root.dir <- here::here()
 "%ni%" <- Negate("%in%")
-opt.recalc <- FALSE
-data.dir <- "../../R4.4.0/"
 intermediate.prefix <- "20250604_"
 
 # Chick-specific sex chromosome gene lists (used by 01_chick_preprocessing.R)
