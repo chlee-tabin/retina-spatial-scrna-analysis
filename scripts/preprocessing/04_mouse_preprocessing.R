@@ -98,4 +98,4 @@ mouse$NT.Score <- mouse$Nasal.Score1 - mouse$Temporal.Score1
 # #### Re-export correct age range
 
 # %% tags=["cell-328"]
-export_seurat( mouse, dir_path = "20251007mouse.RPC", assay = "RNA", prefix = "20251007mouse.RPC_" )
+export_seurat( mouse, dir_path = "../../data/20251007mouse.RPC", assay = "RNA", prefix = "20251007mouse.RPC_" )

@@ -14,6 +14,11 @@
 # %%
 source("00_utils.R")
 
+# %%
+# Output of 01_chick_preprocessing.R; also deposited in GEO GSE322831 — deposited in GEO GSE322831
+# (download GSE322831_20250604_01_retina.rds and strip the GSE322831_ prefix; see README).
+if (!exists("retina")) retina <- readRDS(file.path(here::here(), "data", "20250604_01_retina.rds"))
+
 # %% [markdown]
 # ## Subset RPCs and compute DV score
 

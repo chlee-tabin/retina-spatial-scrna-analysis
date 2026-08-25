@@ -31,13 +31,13 @@ intermediate.prefix <- "20250604_"
 # makes percent.W / percent.Z exactly 0 for every cell and the chick pipeline
 # then regresses on all-zero covariates without error. Warn loudly.
 W.genes <- tryCatch(
-    read_tsv(glue::glue("../../data/chick_W_genes.tsv"), col_names = "W", show_col_types = FALSE) %>% pull(W),
+    read_tsv(file.path(here::here(), "data", "chick_W_genes.tsv"), col_names = "W", show_col_types = FALSE) %>% pull(W),
     error = function(e) { warning("chick_W_genes.tsv not found: percent.W will be 0 for every cell. ",
                                    "Fine for non-chick scripts; a bug for 01_chick_preprocessing.R.",
                                    call. = FALSE); character(0) }
 )
 Z.genes <- tryCatch(
-    read_tsv(glue::glue("../../data/chick_Z_genes.tsv"), col_names = "Z", show_col_types = FALSE) %>% pull(Z),
+    read_tsv(file.path(here::here(), "data", "chick_Z_genes.tsv"), col_names = "Z", show_col_types = FALSE) %>% pull(Z),
     error = function(e) { warning("chick_Z_genes.tsv not found: percent.Z will be 0 for every cell. ",
                                    "Fine for non-chick scripts; a bug for 01_chick_preprocessing.R.",
                                    call. = FALSE); character(0) }

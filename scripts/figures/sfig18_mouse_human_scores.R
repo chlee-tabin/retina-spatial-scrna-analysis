@@ -12,7 +12,15 @@
 # # Figure S18: DV and NT Scores from Mouse and Human Retina scRNA-seq
 
 # %%
-source("../preprocessing/00_utils.R")
+source(file.path(here::here(), "scripts/preprocessing/00_utils.R"))
+
+# %%
+# The human/mouse Seurat objects are produced in-session by
+# scripts/preprocessing/03_human_preprocessing.R and 04_mouse_preprocessing.R,
+# whose inputs are pre-publication intermediates not distributed with the repo
+# (see README, "Reproducibility scope").
+if (!exists("human") || !exists("mouse"))
+    stop("Objects 'human' and 'mouse' not found: run scripts/preprocessing/03_ and 04_ in this R session first (see README).")
 
 # NOTE: `human` and `mouse` are the per-species RPC Seurat objects loaded into the
 # session upstream (00_utils.R provides plotting utilities, not data). For the CR9
@@ -24,7 +32,9 @@ source("../preprocessing/00_utils.R")
 # ## Output directory setup
 
 # %%
-FIGURES_BASE <- file.path(dirname(sys.frame(1)$ofile %||% "."), "..", "..", "figures")
+# here::here() anchors to the repo root (via .git), so the script works under
+# Rscript or source() from any working directory inside the repository.
+FIGURES_BASE <- file.path(here::here(), "figures")
 dir.create(file.path(FIGURES_BASE, "Figure_SF18"), recursive = TRUE, showWarnings = FALSE)
 dir.create(file.path(FIGURES_BASE, "Figure_SF18", "variants"), recursive = TRUE, showWarnings = FALSE)
 

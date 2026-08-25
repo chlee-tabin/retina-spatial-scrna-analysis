@@ -12,13 +12,20 @@
 # # Figure S12: Processing of scRNA-seq Datasets from Developing Chicken Retina
 
 # %%
-source("../preprocessing/00_utils.R")
+source(file.path(here::here(), "scripts/preprocessing/00_utils.R"))
+
+# %%
+# Full chick object — deposited in GEO GSE322831
+# (download GSE322831_20250604_01_retina.rds and strip the GSE322831_ prefix; see README).
+if (!exists("retina")) retina <- readRDS(file.path(here::here(), "data", "20250604_01_retina.rds"))
 
 # %% [markdown]
 # ## Output directory setup
 
 # %%
-FIGURES_BASE <- file.path(dirname(sys.frame(1)$ofile %||% "."), "..", "..", "figures")
+# here::here() anchors to the repo root (via .git), so the script works under
+# Rscript or source() from any working directory inside the repository.
+FIGURES_BASE <- file.path(here::here(), "figures")
 dir.create(file.path(FIGURES_BASE, "Figure_SF12"), recursive = TRUE, showWarnings = FALSE)
 
 # %% [markdown]

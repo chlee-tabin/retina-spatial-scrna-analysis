@@ -9,10 +9,12 @@
 # ---
 
 # %% [markdown]
-# # Export Seurat Objects to h5ad/MEX Format
+# # Export Seurat Objects to MEX Format
 #
-# This script documents the h5ad exports that serve as the interface
-# between R preprocessing and Python figure scripts.
+# This script documents the MEX exports (matrix.mtx / features / barcodes +
+# metadata TSVs) that serve as the interface between R preprocessing and the
+# Python figure scripts. The h5ad files deposited in GEO were assembled from
+# these exports on the Python side; this script itself writes MEX, not h5ad.
 #
 # **Note**: The export calls are embedded in the preprocessing scripts
 # that produce each object. This script can be used to re-export

@@ -12,13 +12,27 @@
 # # Figure 6H + Figure S23: Area-specific Differential Gene Expression
 
 # %%
-source("../preprocessing/00_utils.R")
+source(file.path(here::here(), "scripts/preprocessing/00_utils.R"))
+
+# %%
+# Chick RPC object with DV/NT scores — deposited in GEO GSE322831
+# (download GSE322831_20250604_02_fabp7.rds and strip the GSE322831_ prefix; see README).
+if (!exists("fabp7")) fabp7 <- readRDS(file.path(here::here(), "data", "20250604_02_fabp7.rds"))
+
+# %%
+# The human Seurat object is produced in-session by
+# scripts/preprocessing/03_human_preprocessing.R, whose input is a
+# pre-publication intermediate not distributed with the repo (see README).
+if (!exists("human"))
+    stop("Object 'human' not found: run scripts/preprocessing/03_human_preprocessing.R in this R session first (see README).")
 
 # %% [markdown]
 # ## Output directory setup
 
 # %%
-FIGURES_BASE <- file.path(dirname(sys.frame(1)$ofile %||% "."), "..", "..", "figures")
+# here::here() anchors to the repo root (via .git), so the script works under
+# Rscript or source() from any working directory inside the repository.
+FIGURES_BASE <- file.path(here::here(), "figures")
 dir.create(file.path(FIGURES_BASE, "Figure6"), recursive = TRUE, showWarnings = FALSE)
 dir.create(file.path(FIGURES_BASE, "Figure_SF23"), recursive = TRUE, showWarnings = FALSE)
 dir.create(file.path(FIGURES_BASE, "Tables"), recursive = TRUE, showWarnings = FALSE)
