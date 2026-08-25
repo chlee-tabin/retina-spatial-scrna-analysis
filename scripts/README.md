@@ -12,7 +12,7 @@ These scripts generate Figures 5–8 and Supplementary Figures 12–23 of the ma
 - R >= 4.4.0
 - Seurat v5, tidyverse, patchwork, svglite, viridis, ggforce, ggh4x
 - harmony, scDblFinder, presto, glmGamPoi, SingleCellExperiment
-- glue, tictoc
+- glue, tictoc, here
 
 ### Python (Python figure scripts)
 - Python >= 3.10
@@ -22,14 +22,14 @@ These scripts generate Figures 5–8 and Supplementary Figures 12–23 of the ma
 
 ## Data Requirements
 
-Download from [GEO (accession GSE322831)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE322831) or provide your own data in the expected layout:
+Everything that may appear in `data/`. Download the five GEO-deposited files from [GEO GSE322831](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE322831) and strip the `GSE322831_` prefix (rename table in the [top-level README](../README.md)); items marked `(not deposited)` or `(re-export artifact)` below are generated locally — the rest come from the GEO download:
 
 ```
 data/
   # Chick (from GEO submission)
   20250604_chick_RPC.h5ad         # Chick RPC with DV/NT scores
-  20250604chick/                  # Full chick MEX export
-  20250604chick.RPC/              # Chick RPC MEX export
+  20250604chick/                  # Full chick MEX export (re-export artifact; not needed for figures)
+  20250604chick.RPC/              # Chick RPC MEX export (re-export artifact; not needed for figures)
 
   # Human (public datasets: GSE138002, GSE234963, GSE246169)
   20250604_human_RPC.h5ad         # Human RPC with DV/NT scores
@@ -37,37 +37,44 @@ data/
   # Mouse (CR9.0.1 / GRCm39 realignment; GSE118614, GSE139904, GSE149040, GSE122466)
   20260528_mouse_RPC_cr9_e13e16.h5ad   # Mouse RPC (E13.5-E16) with DV/NT scores; supersedes 20250604_mouse_RPC.h5ad
 
-  # Intermediate R objects (produced by preprocessing scripts)
-  20250604_01_gex.rds             # Checkpoint 1: raw Seurat list
-  20250604_01_retina.rds          # Checkpoint 2: integrated Seurat
-  20250604_02_fabp7.rds           # Checkpoint 3: scored RPC subset
+  # R objects — 01_retina and 02_fabp7 are deposited in GEO; 01_gex is only
+  # produced by re-running the preprocessing provenance scripts
+  20250604_01_gex.rds             # Checkpoint 1: raw Seurat list (not deposited)
+  20250604_01_retina.rds          # Checkpoint 2: integrated Seurat (in GEO)
+  20250604_02_fabp7.rds           # Checkpoint 3: scored RPC subset (in GEO)
   chick_W_genes.tsv               # W chromosome gene list
   chick_Z_genes.tsv               # Z chromosome gene list
 ```
 
-Set `RETINA_DATA_DIR` environment variable to override the default `../data` path:
-```bash
-export RETINA_DATA_DIR=/path/to/your/data
-```
+`RETINA_DATA_DIR` is read only by `05_export_h5ad.R` (default: `../../data` relative to `scripts/preprocessing/`). The figure scripts always read `<repo>/data/` — symlink it if your files live elsewhere.
 
 ## Execution Order
 
-### 1. Preprocessing (R)
+### 1. Preprocessing (R) — provenance record
 
-Run in order — each script depends on outputs from the previous:
+These scripts document how the deposited objects were made; **running them is not
+required to reproduce the figures** (the GEO objects are the supported entry
+point). They are not fully re-runnable from public data alone: `01` reads the
+raw alignment tree and `01`/`03`/`04` read pre-publication intermediates — see
+"Reproducibility scope" in the top-level README. Run in order if re-executing
+from archived inputs:
 
 ```bash
 cd scripts/preprocessing/
 Rscript 01_chick_preprocessing.R      # ~30 min, produces checkpoints 1 & 2
-Rscript 02_chick_dv_nt_scoring.R      # ~5 min, produces checkpoint 3 + h5ad
+Rscript 02_chick_dv_nt_scoring.R      # ~5 min, produces checkpoint 3 + MEX export
 Rscript 03_human_preprocessing.R      # ~5 min
 Rscript 04_mouse_preprocessing.R      # ~5 min
-Rscript 05_export_h5ad.R              # Optional: re-export h5ad files
+Rscript 05_export_h5ad.R              # Optional: re-export MEX from checkpoints (h5ad assembly is Python-side)
 ```
 
 ### 2. Figure scripts (R and Python)
 
-Run in any order after preprocessing. Each script is independent:
+Run in any order once the GEO objects are in `data/`. Each script is
+independent (`sfig18` and the SF23 half of `fig6h_sfig23` additionally need
+in-session Seurat objects: `human` from source()'ing 03 in the same session,
+`mouse` from the CR9 re-alignment produced outside this repo — 04 yields the
+superseded pre-CR9 object):
 
 | Script | Figure | Language |
 |--------|--------|----------|
@@ -106,14 +113,14 @@ Cell Ranger outputs (10X)
   │
   ├── 01_chick_preprocessing.R
   │   └── 20250604_01_retina.rds (integrated Seurat)
-  │       └── h5ad export: 20250604chick/
+  │       └── MEX export: 20250604chick/
   │
   ├── 02_chick_dv_nt_scoring.R
   │   └── 20250604_02_fabp7.rds (RPC + DV/NT scores)
-  │       └── h5ad export: 20250604_chick_RPC.h5ad
+  │       └── MEX export → (Python-side assembly) → 20250604_chick_RPC.h5ad
   │
-  ├── 03_human_preprocessing.R → human RPC h5ad
-  └── 04_mouse_preprocessing.R → mouse RPC h5ad
+  ├── 03_human_preprocessing.R → human RPC MEX → (assembly) → h5ad
+  └── 04_mouse_preprocessing.R → mouse RPC MEX (data/20251007mouse.RPC/; superseded by the CR9 h5ads)
        │
        ├── Python figure scripts (consume h5ad files)
        │   ├── fig6ag: chick topos
@@ -140,6 +147,7 @@ Cell Ranger outputs (10X)
 
 ## Notes
 
-- Scripts use `source("00_utils.R")` for shared R functions; ensure working directory is `scripts/preprocessing/` or adjust the source path.
+- R figure scripts locate `00_utils.R` and `data/` via `here::here()` and run from any working directory inside the repository; the preprocessing scripts are run from `scripts/preprocessing/` (as `run_preprocess.sh` does).
 - The `plot_axial_expression()` function (in 00_utils.R) is used by fig5, sfig13, sfig14, and sfig18 scripts.
-- Python scripts import from `spatial_expression_analysis.py` and `control_genes.yaml` in the repository root. Ensure these are on your Python path.
+- Python figure scripts anchor imports and data paths to the repository root via `__file__` — no path setup needed.
+- fig7/fig8/sfig20_22 cache built analyzers as `<repo>/data/*_analyzer_correct.pkl`; a cache hit prints which file it loaded. Delete the `.pkl` after changing data or parameters to force a rebuild from the GEO h5ad.

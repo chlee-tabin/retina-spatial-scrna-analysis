@@ -8,9 +8,16 @@
 # Path to your local clone of this repository
 export REPO_DIR="/path/to/retina-spatial-scrna-analysis"
 
-# Path to raw data (Cell Ranger outputs / 10x .h5 files)
-# Download from GEO (accession GSE322831)
-export DATA_DIR="/path/to/raw_data"
+# Optional: where 05_export_h5ad.R reads/writes objects.
+# Its built-in default is ../../data relative to scripts/preprocessing/ —
+# i.e. REPO_DIR/data under the documented run_preprocess.sh invocation.
+export RETINA_DATA_DIR="${REPO_DIR}/data"
 
-# Path where preprocessed outputs (.rds, .h5ad) will be written
-export OUTPUT_DIR="/path/to/output"
+# HPC-specific (read by scripts/preprocessing/run_preprocess.sh):
+# the environment module providing conda, and the conda env with R 4.4 + packages.
+export RETINA_CONDA_MODULE="miniconda3/latest"   # required by run_preprocess.sh
+export RETINA_CONDA_ENV="retina-spatial"         # optional; this is the default
+
+# Optional: root of the raw Cell Ranger/cellsnp/vireo tree read by
+# 01_chick_preprocessing.R (internal provenance re-runs only; not distributed).
+# export RETINA_RAW_DIR="/path/to/raw"
