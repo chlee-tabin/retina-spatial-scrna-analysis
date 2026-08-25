@@ -16,11 +16,13 @@
 
 # %% tags=["cell-9"]
 import sys
-sys.path.append('..')
+from pathlib import Path
+REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+if str(REPO) not in sys.path:
+    sys.path.insert(0, str(REPO))
 from spatial_expression_analysis import SpatialAnalysisParams, SpatialExpressionAnalyzer
 import anndata as ad
-# chick_adata = ad.read_h5ad("../data/20240815_fabp7.h5ad")
-chick_adata = ad.read_h5ad("../data/20250604_chick_RPC.h5ad")
+chick_adata = ad.read_h5ad(f"{REPO}/data/20250604_chick_RPC.h5ad")
 print(f"Loaded chick data: {chick_adata.n_obs:,} cells × {chick_adata.n_vars:,} genes")
 # Derive parameters transparently based on the data characteristics
 chick_params = SpatialAnalysisParams.derive_parameters_from_data(
@@ -52,8 +54,7 @@ chick_params.min_gene_count = 20 # to align with human
 chick_analyzer = SpatialExpressionAnalyzer(chick_params)
 # Run full analysis (this replaces all your manual preprocessing steps)
 # Update path to point to data file location relative to notebooks/ directory
-# chick_results = chick_analyzer.run_full_analysis("../data/20240815_fabp7.h5ad")
-chick_results = chick_analyzer.run_full_analysis("../data/20250604_chick_RPC.h5ad")
+chick_results = chick_analyzer.run_full_analysis(f"{REPO}/data/20250604_chick_RPC.h5ad")
 
 # %% [markdown]
 # ## F6A-G: 2D topographic maps by gene group

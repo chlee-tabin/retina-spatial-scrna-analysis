@@ -27,8 +27,11 @@ from pathlib import Path
 import pickle
 import warnings
 warnings.filterwarnings('ignore')
-# Add parent directory to path for imports
-sys.path.append('..')
+# Put the repo root on sys.path for the module import
+from pathlib import Path
+REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+if str(REPO) not in sys.path:
+    sys.path.insert(0, str(REPO))
 from spatial_expression_analysis import (
   SpatialExpressionAnalyzer,
   SpatialAnalysisParams
@@ -75,14 +78,8 @@ if chick_analyzer is None:
       mask_count_threshold=3
   )
   chick_analyzer = SpatialExpressionAnalyzer(chick_params)
-  # Try to load from h5ad or import from export
-  if os.path.exists("../data/20250604_chick_RPC.h5ad"):
-      chick_results = chick_analyzer.run_full_analysis("../data/20250604_chick_RPC.h5ad")
-  else:
-      from spatial_expression_analysis import import_seurat_export
-      chick_adata = import_seurat_export("../data/20250604chick.RPC", prefix="20250604chickRPC_", parallel=False)
-      chick_adata.write_h5ad("../data/20250604_chick_RPC.h5ad")
-      chick_results = chick_analyzer.run_full_analysis("../data/20250604_chick_RPC.h5ad")
+  # The deposited h5ad from GEO GSE322831 is the supported input (see README).
+  chick_results = chick_analyzer.run_full_analysis(f"{REPO}/data/20250604_chick_RPC.h5ad")
   # Save for future use
   with open(chick_pickle, 'wb') as f:
       pickle.dump(chick_analyzer, f)
@@ -116,14 +113,8 @@ if human_analyzer is None:
       mask_count_threshold=3
   )
   human_analyzer = SpatialExpressionAnalyzer(human_params)
-  # Try to load from h5ad or import from export
-  if os.path.exists("../data/20250604_human_RPC.h5ad"):
-      human_results = human_analyzer.run_full_analysis("../data/20250604_human_RPC.h5ad")
-  else:
-      from spatial_expression_analysis import import_seurat_export
-      human_adata = import_seurat_export("../data/20250604human.RPC", prefix="20250604human.RPC_", parallel=False)
-      human_adata.write_h5ad("../data/20250604_human_RPC.h5ad")
-      human_results = human_analyzer.run_full_analysis("../data/20250604_human_RPC.h5ad")
+  # The deposited h5ad from GEO GSE322831 is the supported input (see README).
+  human_results = human_analyzer.run_full_analysis(f"{REPO}/data/20250604_human_RPC.h5ad")
   # Save for future use
   with open(human_pickle, 'wb') as f:
       pickle.dump(human_analyzer, f)
@@ -157,19 +148,9 @@ if mouse_analyzer is None:
       mask_count_threshold=5  # From high density defaults
   )
   mouse_analyzer = SpatialExpressionAnalyzer(mouse_params)
-  # Try to load from h5ad — CR9 / GRCm39 re-aligned mouse RPC (E13.5-E16),
-  # supersedes the legacy 20250604 (4-library) object kept as a fallback below.
-  if os.path.exists("../data/20260528_mouse_RPC_cr9_e13e16.h5ad"):
-      mouse_results = mouse_analyzer.run_full_analysis("../data/20260528_mouse_RPC_cr9_e13e16.h5ad")
-  else:
-      # Try alternative path
-      if os.path.exists("../data/20250604_mouse_RPC.h5ad"):
-          mouse_results = mouse_analyzer.run_full_analysis("../data/20250604_mouse_RPC.h5ad")
-      else:
-          from spatial_expression_analysis import import_seurat_export
-          mouse_adata = import_seurat_export("../data/20250604mouse.RPC", prefix="20250604mouse.RPC_", parallel=False)
-          mouse_adata.write_h5ad("../data/20250604_mouse_RPC.h5ad")
-          mouse_results = mouse_analyzer.run_full_analysis("../data/20250604_mouse_RPC.h5ad")
+  # CR9 / GRCm39 re-aligned mouse RPC (E13.5-E16), from GEO GSE322831 (see README).
+  # The deposited h5ad from GEO GSE322831 is the supported input (see README).
+  mouse_results = mouse_analyzer.run_full_analysis(f"{REPO}/data/20260528_mouse_RPC_cr9_e13e16.h5ad")
   # Save for future use
   with open(mouse_pickle, 'wb') as f:
       pickle.dump(mouse_analyzer, f)

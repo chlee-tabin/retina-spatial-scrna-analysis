@@ -18,6 +18,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/chlee-tabin/retina-spatial-scrna-analysis",
     packages=find_packages(),
+    py_modules=["spatial_expression_analysis"],  # root module used by scripts/figures
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",

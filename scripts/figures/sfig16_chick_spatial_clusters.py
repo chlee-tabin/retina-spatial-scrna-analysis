@@ -16,7 +16,10 @@
 
 # %% tags=["cell-54"]
 import sys
-sys.path.append('..')
+from pathlib import Path
+REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+if str(REPO) not in sys.path:
+    sys.path.insert(0, str(REPO))
 from spatial_expression_analysis import (
     SpatialAnalysisParams, SpatialExpressionAnalyzer,
     reload_control_genes, get_fixed_anchors, MarkerSelectorPy,
@@ -24,6 +27,21 @@ from spatial_expression_analysis import (
     CONTROL_GENES
 )
 # To customize anchors, edit `control_genes.yaml` and call reload_control_genes()
+
+# %% [markdown]
+# ## Build the chick analyzer (published parameters, as in fig6ag/fig7)
+
+# %%
+chick_params = SpatialAnalysisParams(
+    bin_size=51,
+    min_gene_count=20,
+    min_cells_per_pixel=3,
+    percentile_clip=0.93,
+    smooth_sigma=1.0,
+    mask_count_threshold=3
+)
+chick_analyzer = SpatialExpressionAnalyzer(chick_params)
+chick_analyzer.run_full_analysis(f"{REPO}/data/20250604_chick_RPC.h5ad")
 reload_control_genes()
 
 # %% tags=["cell-55"]
