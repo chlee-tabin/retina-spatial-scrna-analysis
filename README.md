@@ -38,7 +38,8 @@ pip install -e .
 # install.packages(c("Seurat", "tidyverse", "patchwork", "svglite", "harmony",
 #                     "glmGamPoi", "viridis", "ggforce", "ggh4x", "tictoc", "glue",
 #                     "here"))
-# BiocManager::install(c("scDblFinder", "SingleCellExperiment"))
+# BiocManager::install(c("scDblFinder", "SingleCellExperiment", "glmGamPoi"))
+# remotes::install_github("immunogenomics/presto")   # used by 01_chick_preprocessing.R
 ```
 
 ### Requirements
@@ -70,6 +71,7 @@ retina-spatial-scrna-analysis/
 │   ├── chick_W_genes.tsv          # W chromosome gene list
 │   └── chick_Z_genes.tsv          # Z chromosome gene list
 │
+├── tests/                         # Smoke tests for the Python package
 ├── scripts/
 │   ├── README.md                  # Detailed execution guide
 │   ├── preprocessing/

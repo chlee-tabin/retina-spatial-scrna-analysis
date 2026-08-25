@@ -12,7 +12,7 @@ These scripts generate Figures 5–8 and Supplementary Figures 12–23 of the ma
 - R >= 4.4.0
 - Seurat v5, tidyverse, patchwork, svglite, viridis, ggforce, ggh4x
 - harmony, scDblFinder, presto, glmGamPoi, SingleCellExperiment
-- glue, tictoc
+- glue, tictoc, here
 
 ### Python (Python figure scripts)
 - Python >= 3.10
@@ -22,7 +22,7 @@ These scripts generate Figures 5–8 and Supplementary Figures 12–23 of the ma
 
 ## Data Requirements
 
-Everything that may appear in `data/`. Download the five GEO-deposited files from [GEO GSE322831](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE322831) and strip the `GSE322831_` prefix (rename table in the [top-level README](../README.md)); the annotated items below are generated locally, not downloaded:
+Everything that may appear in `data/`. Download the five GEO-deposited files from [GEO GSE322831](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE322831) and strip the `GSE322831_` prefix (rename table in the [top-level README](../README.md)); items marked `(not deposited)` or `(re-export artifact)` below are generated locally — the rest come from the GEO download:
 
 ```
 data/
