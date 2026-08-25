@@ -14,6 +14,15 @@
 # %%
 source("00_utils.R")
 
+# %%
+# Output of 01_chick_preprocessing.R; also deposited in GEO GSE322831
+# (download GSE322831_20250604_01_retina.rds and strip the GSE322831_ prefix; see README).
+if (exists("retina")) {
+    message("retina: using in-session object (", ncol(retina), " cells); GEO object of record is data/20250604_01_retina.rds")
+} else {
+    retina <- readRDS(file.path(here::here(), "data", "20250604_01_retina.rds"))
+}
+
 # %% [markdown]
 # ## Subset RPCs and compute DV score
 
@@ -86,7 +95,7 @@ saveRDS( fabp7, file=glue::glue( "../../data/{intermediate.prefix}02_fabp7.rds" 
 tictoc::toc()
 
 # %% [markdown]
-# ## Export RPC h5ad for Python
+# ## Export RPC MEX for Python (h5ad assembled Python-side)
 # Uses `export_seurat()` from `00_utils.R`
 
 # %% tags=["cell-234"]

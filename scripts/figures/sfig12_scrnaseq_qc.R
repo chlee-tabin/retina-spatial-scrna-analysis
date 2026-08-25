@@ -12,13 +12,25 @@
 # # Figure S12: Processing of scRNA-seq Datasets from Developing Chicken Retina
 
 # %%
-source("../preprocessing/00_utils.R")
+source(file.path(here::here(), "scripts/preprocessing/00_utils.R"))
+
+# %%
+# Full chick object — deposited in GEO GSE322831
+# (download GSE322831_20250604_01_retina.rds and strip the GSE322831_ prefix; see README).
+if (exists("retina")) {
+    message("retina: using in-session object (", ncol(retina), " cells); GEO object of record is data/20250604_01_retina.rds")
+} else {
+    retina <- readRDS(file.path(here::here(), "data", "20250604_01_retina.rds"))
+}
 
 # %% [markdown]
 # ## Output directory setup
 
 # %%
-FIGURES_BASE <- file.path(dirname(sys.frame(1)$ofile %||% "."), "..", "..", "figures")
+# here::here() anchors to the repo root (via the committed .here sentinel, so it
+# also works in ZIP/Zenodo archives without .git); the script works under
+# Rscript or source() from any working directory inside the repository.
+FIGURES_BASE <- file.path(here::here(), "figures")
 dir.create(file.path(FIGURES_BASE, "Figure_SF12"), recursive = TRUE, showWarnings = FALSE)
 
 # %% [markdown]
@@ -73,6 +85,10 @@ ggsave( p3, filename=file.path(FIGURES_BASE, "Figure_SF12", "SF12A_umap_clusters
 # %% [markdown]
 # ## SF12C: UMAP QC panels (phase, tech, mito, gene count)
 
+# NOTE: `technology` is present in the deposited 20250604_01_retina.rds
+# (added during the original analysis session); the public
+# 01_chick_preprocessing.R provenance script does not recreate it.
+# (`percent.mito` IS computed per library by 01.)
 # %% tags=["cell-127"]
 Idents( retina ) <- "annotation"
 # p4 <-

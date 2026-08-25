@@ -12,13 +12,25 @@
 # # Figure S13: Generation of DV Score from Chicken Retina scRNA-seq
 
 # %%
-source("../preprocessing/00_utils.R")
+source(file.path(here::here(), "scripts/preprocessing/00_utils.R"))
+
+# %%
+# Chick RPC object with DV/NT scores — deposited in GEO GSE322831
+# (download GSE322831_20250604_02_fabp7.rds and strip the GSE322831_ prefix; see README).
+if (exists("fabp7")) {
+    message("fabp7: using in-session object (", ncol(fabp7), " cells); GEO object of record is data/20250604_02_fabp7.rds")
+} else {
+    fabp7 <- readRDS(file.path(here::here(), "data", "20250604_02_fabp7.rds"))
+}
 
 # %% [markdown]
 # ## Output directory setup
 
 # %%
-FIGURES_BASE <- file.path(dirname(sys.frame(1)$ofile %||% "."), "..", "..", "figures")
+# here::here() anchors to the repo root (via the committed .here sentinel, so it
+# also works in ZIP/Zenodo archives without .git); the script works under
+# Rscript or source() from any working directory inside the repository.
+FIGURES_BASE <- file.path(here::here(), "figures")
 dir.create(file.path(FIGURES_BASE, "Figure_SF13"), recursive = TRUE, showWarnings = FALSE)
 
 # %% [markdown]

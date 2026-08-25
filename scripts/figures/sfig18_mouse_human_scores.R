@@ -12,19 +12,37 @@
 # # Figure S18: DV and NT Scores from Mouse and Human Retina scRNA-seq
 
 # %%
-source("../preprocessing/00_utils.R")
+source(file.path(here::here(), "scripts/preprocessing/00_utils.R"))
 
-# NOTE: `human` and `mouse` are the per-species RPC Seurat objects loaded into the
-# session upstream (00_utils.R provides plotting utilities, not data). For the CR9
-# revision, `mouse` must be the Cell Ranger 9.0.1 / GRCm39 re-aligned mouse RPC Seurat
-# object (rebuilt from the CR9 atlas; supersedes the prior 4-library 20250604 object),
-# carrying DV.Score / NT.Score in its metadata.
+# %%
+# Both objects are in-session Seurat objects this repo cannot fully rebuild from
+# public data (see README, "Reproducibility scope"):
+# - `human`: produced by source()'ing scripts/preprocessing/03_human_preprocessing.R
+#   (its input is a pre-publication intermediate, not distributed).
+# - `mouse`: must be the Cell Ranger 9.0.1 / GRCm39 re-aligned RPC Seurat object
+#   (rebuilt from the CR9 atlas, carrying DV.Score / NT.Score in its metadata).
+#   scripts/preprocessing/04_mouse_preprocessing.R yields the SUPERSEDED pre-CR9
+#   4-library object — do not use it for this figure.
+if (!exists("human"))
+    stop("Object 'human' not found: source scripts/preprocessing/03_human_preprocessing.R in this R session first (see README).")
+if (!exists("mouse"))
+    stop("Object 'mouse' not found. It must be the CR9/GRCm39 re-aligned mouse RPC Seurat object ",
+         "(produced by the re-alignment pipeline outside this repo; 04_mouse_preprocessing.R yields the superseded pre-CR9 object). See README.")
+# exists() alone would accept 04's superseded object (which is also named `mouse`);
+# 25,202 cells is that object's deterministic count — reject it outright.
+# ponytail: count check only; a metadata provenance tag would be stronger if one is ever added.
+if (ncol(mouse) == 25202)
+    stop("`mouse` has 25,202 cells — this is 04_mouse_preprocessing.R's superseded pre-CR9 object, ",
+         "not the CR9/GRCm39 re-aligned RPC object (26,505 cells, E13.5-E16). See README.")
 
 # %% [markdown]
 # ## Output directory setup
 
 # %%
-FIGURES_BASE <- file.path(dirname(sys.frame(1)$ofile %||% "."), "..", "..", "figures")
+# here::here() anchors to the repo root (via the committed .here sentinel, so it
+# also works in ZIP/Zenodo archives without .git); the script works under
+# Rscript or source() from any working directory inside the repository.
+FIGURES_BASE <- file.path(here::here(), "figures")
 dir.create(file.path(FIGURES_BASE, "Figure_SF18"), recursive = TRUE, showWarnings = FALSE)
 dir.create(file.path(FIGURES_BASE, "Figure_SF18", "variants"), recursive = TRUE, showWarnings = FALSE)
 

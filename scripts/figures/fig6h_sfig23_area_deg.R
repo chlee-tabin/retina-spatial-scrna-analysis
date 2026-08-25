@@ -12,13 +12,25 @@
 # # Figure 6H + Figure S23: Area-specific Differential Gene Expression
 
 # %%
-source("../preprocessing/00_utils.R")
+source(file.path(here::here(), "scripts/preprocessing/00_utils.R"))
+
+# %%
+# Chick RPC object with DV/NT scores — deposited in GEO GSE322831
+# (download GSE322831_20250604_02_fabp7.rds and strip the GSE322831_ prefix; see README).
+if (exists("fabp7")) {
+    message("fabp7: using in-session object (", ncol(fabp7), " cells); GEO object of record is data/20250604_02_fabp7.rds")
+} else {
+    fabp7 <- readRDS(file.path(here::here(), "data", "20250604_02_fabp7.rds"))
+}
 
 # %% [markdown]
 # ## Output directory setup
 
 # %%
-FIGURES_BASE <- file.path(dirname(sys.frame(1)$ofile %||% "."), "..", "..", "figures")
+# here::here() anchors to the repo root (via the committed .here sentinel, so it
+# also works in ZIP/Zenodo archives without .git); the script works under
+# Rscript or source() from any working directory inside the repository.
+FIGURES_BASE <- file.path(here::here(), "figures")
 dir.create(file.path(FIGURES_BASE, "Figure6"), recursive = TRUE, showWarnings = FALSE)
 dir.create(file.path(FIGURES_BASE, "Figure_SF23"), recursive = TRUE, showWarnings = FALSE)
 dir.create(file.path(FIGURES_BASE, "Tables"), recursive = TRUE, showWarnings = FALSE)
@@ -533,6 +545,21 @@ ggsave( p, file=file.path(FIGURES_BASE, "Figure6", "F6H_volcano.png"), width = 4
 
 # %% [markdown]
 # ## SF23: Human area selection
+
+# %%
+# Everything above (the Figure 6H half) runs from the deposited GEO fabp7 object.
+# The SF23 half below needs the human Seurat object, produced in-session by
+# scripts/preprocessing/03_human_preprocessing.R, whose input is a
+# pre-publication intermediate not distributed with the repo (see README).
+if (!exists("human")) {
+    message("Figure 6H outputs are written. Skipping SF23: object 'human' not found — ",
+            "source scripts/preprocessing/03_human_preprocessing.R in this R session first (see README).")
+    # interactive() is FALSE under IRkernel too — quit() there would kill a live
+    # Jupyter kernel and its session state. Only quit in a real Rscript run.
+    if (!interactive() && !nzchar(Sys.getenv("JPY_PARENT_PID")))
+        quit(save = "no", status = 0)  # supported GEO-only run: F6H done, exit clean
+    stop("SF23 skipped: object 'human' not found (see message above).")
+}
 
 # %% [markdown]
 # ### Figure 100 - Topographic DEG
