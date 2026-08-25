@@ -28,8 +28,11 @@ import pickle
 import warnings
 warnings.filterwarnings('ignore')
 # Put the repo root on sys.path for the module import
-from pathlib import Path
-REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+try:
+    REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+except NameError:  # running as a notebook kernel (jupytext): no __file__ — start Jupyter from the repo root
+    REPO = Path.cwd()
+    print(f"NOTE: no __file__ (notebook mode); assuming repo root = {REPO}")
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 from spatial_expression_analysis import (
@@ -39,7 +42,7 @@ from spatial_expression_analysis import (
 print("Loading human analyzer...")
 print("=" * 60)
 # Load Human analyzer with correct parameters from notebook
-human_pickle = "human_analyzer_correct.pkl"
+human_pickle = f"{REPO}/data/human_analyzer_correct.pkl"  # one cache per repo, not per CWD
 if os.path.exists(human_pickle):
   print("Loading from pickle file...")
   with open(human_pickle, 'rb') as f:
@@ -193,8 +196,11 @@ import pickle
 import warnings
 warnings.filterwarnings('ignore')
 # Put the repo root on sys.path for the module import
-from pathlib import Path
-REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+try:
+    REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+except NameError:  # running as a notebook kernel (jupytext): no __file__ — start Jupyter from the repo root
+    REPO = Path.cwd()
+    print(f"NOTE: no __file__ (notebook mode); assuming repo root = {REPO}")
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 from spatial_expression_analysis import (
@@ -204,7 +210,7 @@ from spatial_expression_analysis import (
 print("Loading human analyzer...")
 print("=" * 60)
 # Load Human analyzer with correct parameters from notebook
-human_pickle = "human_analyzer_correct.pkl"
+human_pickle = f"{REPO}/data/human_analyzer_correct.pkl"  # one cache per repo, not per CWD
 if os.path.exists(human_pickle):
   print("Loading from pickle file...")
   with open(human_pickle, 'rb') as f:

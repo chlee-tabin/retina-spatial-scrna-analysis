@@ -28,8 +28,11 @@ import pickle
 import warnings
 warnings.filterwarnings('ignore')
 # Put the repo root on sys.path for the module import
-from pathlib import Path
-REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+try:
+    REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+except NameError:  # running as a notebook kernel (jupytext): no __file__ — start Jupyter from the repo root
+    REPO = Path.cwd()
+    print(f"NOTE: no __file__ (notebook mode); assuming repo root = {REPO}")
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 from spatial_expression_analysis import (
@@ -52,14 +55,14 @@ print("=" * 60)
 analyzers = {}
 # Load Chick analyzer with CORRECT parameters and ERROR HANDLING
 print("Loading chick analyzer...")
-chick_pickle = "chick_analyzer_correct.pkl"
+chick_pickle = f"{REPO}/data/chick_analyzer_correct.pkl"  # one cache per repo, not per CWD
 chick_analyzer = None
 # Try to load from pickle with error handling
 try:
   if os.path.exists(chick_pickle):
       with open(chick_pickle, 'rb') as f:
           chick_analyzer = pickle.load(f)
-      print("  Successfully loaded chick analyzer from pickle")
+      print(f"  Loaded cached chick analyzer from {chick_pickle} — delete it to rebuild from the GEO h5ad")
 except (KeyError, ImportError, AttributeError, EOFError) as e:
   print(f"  Failed to load pickle ({type(e).__name__}: {e})")
   print("  Removing corrupted pickle and creating new analyzer...")
@@ -87,14 +90,14 @@ analyzers['chick'] = chick_analyzer
 print(f"  Loaded {len(chick_analyzer.gene_names)} genes")
 # Load Human analyzer with CORRECT parameters and ERROR HANDLING
 print("Loading human analyzer...")
-human_pickle = "human_analyzer_correct.pkl"
+human_pickle = f"{REPO}/data/human_analyzer_correct.pkl"  # one cache per repo, not per CWD
 human_analyzer = None
 # Try to load from pickle with error handling
 try:
   if os.path.exists(human_pickle):
       with open(human_pickle, 'rb') as f:
           human_analyzer = pickle.load(f)
-      print("  Successfully loaded human analyzer from pickle")
+      print(f"  Loaded cached human analyzer from {human_pickle} — delete it to rebuild from the GEO h5ad")
 except (KeyError, ImportError, AttributeError, EOFError) as e:
   print(f"  Failed to load pickle ({type(e).__name__}: {e})")
   print("  Removing corrupted pickle and creating new analyzer...")
@@ -122,14 +125,14 @@ analyzers['human'] = human_analyzer
 print(f"  Loaded {len(human_analyzer.gene_names)} genes")
 # Load Mouse analyzer with CORRECT parameters and ERROR HANDLING
 print("Loading mouse analyzer...")
-mouse_pickle = "mouse_analyzer_correct.pkl"  # delete this cache when changing the mouse dataset (e.g. CR9 swap) so the analyzer rebuilds
+mouse_pickle = f"{REPO}/data/mouse_analyzer_correct.pkl"  # one cache per repo, not per CWD  # delete this cache when changing the mouse dataset (e.g. CR9 swap) so the analyzer rebuilds
 mouse_analyzer = None
 # Try to load from pickle with error handling
 try:
   if os.path.exists(mouse_pickle):
       with open(mouse_pickle, 'rb') as f:
           mouse_analyzer = pickle.load(f)
-      print("  Successfully loaded mouse analyzer from pickle")
+      print(f"  Loaded cached mouse analyzer from {mouse_pickle} — delete it to rebuild from the GEO h5ad")
 except (KeyError, ImportError, AttributeError, EOFError) as e:
   print(f"  Failed to load pickle ({type(e).__name__}: {e})")
   print("  Removing corrupted pickle and creating new analyzer...")
@@ -148,8 +151,8 @@ if mouse_analyzer is None:
       mask_count_threshold=5  # From high density defaults
   )
   mouse_analyzer = SpatialExpressionAnalyzer(mouse_params)
-  # CR9 / GRCm39 re-aligned mouse RPC (E13.5-E16), from GEO GSE322831 (see README).
-  # The deposited h5ad from GEO GSE322831 is the supported input (see README).
+  # CR9 / GRCm39 re-aligned mouse RPC (E13.5-E16) — the deposited GEO GSE322831
+  # h5ad is the supported input (see README).
   mouse_results = mouse_analyzer.run_full_analysis(f"{REPO}/data/20260528_mouse_RPC_cr9_e13e16.h5ad")
   # Save for future use
   with open(mouse_pickle, 'wb') as f:

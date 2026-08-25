@@ -17,7 +17,11 @@
 # %% tags=["cell-9"]
 import sys
 from pathlib import Path
-REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+try:
+    REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+except NameError:  # running as a notebook kernel (jupytext): no __file__ — start Jupyter from the repo root
+    REPO = Path.cwd()
+    print(f"NOTE: no __file__ (notebook mode); assuming repo root = {REPO}")
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 from spatial_expression_analysis import SpatialAnalysisParams, SpatialExpressionAnalyzer
@@ -44,7 +48,6 @@ chick_params.bin_size = 100
 # Initialize analyzer
 chick_analyzer = SpatialExpressionAnalyzer(chick_params)
 # Run full analysis (this replaces all your manual preprocessing steps)
-# Update path to point to data file location relative to notebooks/ directory
 chick_results = chick_analyzer.run_full_analysis(f"{REPO}/data/20250604_chick_RPC.h5ad")
 
 # %% tags=["cell-14"]
@@ -126,7 +129,6 @@ chick_params.bin_size = 20
 # Initialize analyzer
 chick_analyzer = SpatialExpressionAnalyzer(chick_params)
 # Run full analysis (this replaces all your manual preprocessing steps)
-# Update path to point to data file location relative to notebooks/ directory
 chick_results = chick_analyzer.run_full_analysis(f"{REPO}/data/20250604_chick_RPC.h5ad")
 
 # %% tags=["cell-18"]
@@ -216,5 +218,4 @@ chick_params.min_gene_count = 20 # to align with human
 # Initialize analyzer
 chick_analyzer = SpatialExpressionAnalyzer(chick_params)
 # Run full analysis (this replaces all your manual preprocessing steps)
-# Update path to point to data file location relative to notebooks/ directory
 chick_results = chick_analyzer.run_full_analysis(f"{REPO}/data/20250604_chick_RPC.h5ad")

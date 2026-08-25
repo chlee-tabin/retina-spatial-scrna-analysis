@@ -18,7 +18,11 @@
 import os
 import sys
 from pathlib import Path
-REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+try:
+    REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+except NameError:  # running as a notebook kernel (jupytext): no __file__ — start Jupyter from the repo root
+    REPO = Path.cwd()
+    print(f"NOTE: no __file__ (notebook mode); assuming repo root = {REPO}")
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
@@ -36,6 +40,17 @@ human_params = SpatialAnalysisParams.derive_parameters_from_data(
     n_cells=human_adata.n_obs, 
     species='human'
 )
+human_params
+
+# %% tags=["cell-76"]
+# Published overrides (as executed in the source notebook; matches fig7's human
+# block): without these, derive_parameters_from_data() yields bin_size=46 /
+# min_gene_count=50 and the panels diverge from the published SF19.
+human_params.bin_size = 40
+human_params.smooth_sigma = 1.0
+human_params.min_gene_count = 15  # keeps sparse genes such as CYP26C1
+human_params.min_cells_per_pixel = 3
+human_params.mask_count_threshold = 3
 human_params
 
 # %% [markdown]
@@ -325,7 +340,6 @@ mouse_params.min_gene_count=30 # changing to match human/chick
 # Initialize analyzer
 mouse_analyzer = SpatialExpressionAnalyzer(mouse_params)
 # Run full analysis (this replaces all your manual preprocessing steps)
-# Update path to point to data file location relative to notebooks/ directory
 mouse_results = mouse_analyzer.run_full_analysis(f"{REPO}/data/20260528_mouse_RPC_cr9_e13e16.h5ad")
 
 # %% [markdown]
