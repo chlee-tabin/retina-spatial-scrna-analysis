@@ -1,33 +1,16 @@
 # Data Directory
 
-Place your spatial single-cell RNA-seq data files here.
+The five processed objects the figure scripts read land here, downloaded from
+[GEO GSE322831](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE322831)
+with the `GSE322831_` prefix stripped — the download → rename table and a
+copy-paste snippet are in the [top-level README](../README.md#reproducing-figures):
 
-## Expected File Format
+- `20250604_chick_RPC.h5ad`, `20250604_human_RPC.h5ad`,
+  `20260528_mouse_RPC_cr9_e13e16.h5ad` (Python figure scripts)
+- `20250604_01_retina.rds`, `20250604_02_fabp7.rds` (R figure scripts)
 
-- **Format**: AnnData (.h5ad files)
-- **Required columns in `.obs`**:
-  - `DV.Score`: Dorsal-ventral spatial coordinate
-  - `NT.Score`: Nasal-temporal spatial coordinate
-- **Gene expression**: Standard AnnData format in `.X`
+Also tracked here: `chick_W_genes.tsv` / `chick_Z_genes.tsv` (W/Z chromosome
+gene lists used by the chick preprocessing provenance scripts).
 
-## Example Files
-
-Your data files should be named descriptively, for example:
-- `20240815_fabp7.h5ad` (chick FABP7+ cells)
-- `20240815_human_RPC.h5ad` (human retinal progenitor cells)
-- `20240815_mouse_RPC.h5ad` (mouse retinal progenitor cells)
-
-## Data Sources
-
-Document your data sources here:
-- **Chick**: [Source/paper citation]
-- **Human**: [Source/paper citation]  
-- **Mouse**: [Source/paper citation]
-
-## Processing Notes
-
-- Ensure spatial coordinates are properly normalized
-- Verify gene symbols are standardized for your species
-- Remove any unwanted cell types if focusing on specific populations
-
-**Note**: Data files are ignored by git due to their large size. Consider using git-lfs or external storage for data sharing. 
+Everything else that appears in this directory (analyzer `*.pkl` caches, MEX
+re-export subdirectories) is generated output and is gitignored.
