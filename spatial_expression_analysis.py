@@ -25,7 +25,9 @@ from sklearn.preprocessing import normalize
 import matplotlib.pyplot as plt
 import anndata as ad
 
-warnings.filterwarnings('ignore')
+# NOTE: no module-level warnings.filterwarnings('ignore') — it silenced
+# anndata/numpy warnings for the whole host process, including ones that
+# flag genuine data problems. Filter narrowly at the call site if needed.
 
 # Load control genes from YAML file
 def load_control_genes(config_file: str = "control_genes.yaml") -> Dict[str, Dict[str, List[str]]]:
@@ -44,13 +46,13 @@ def load_control_genes(config_file: str = "control_genes.yaml") -> Dict[str, Dic
             print(f"✓ Loaded control genes from: {config_file_abs}")
             return control_genes
     except FileNotFoundError:
-        print(f"Warning: {config_file_abs} not found. Using minimal default control genes.")
-        # Minimal fallback if file is missing
-        return {
-            'chick': {'Fovea': ['FGF8'], 'Dorsal': ['TBX5'], 'Ventral': ['EPHB2']},
-            'human': {'Fovea': ['FGF8'], 'Dorsal': ['TBX5'], 'Ventral': ['EPHB2']},
-            'mouse': {'Fovea': ['Fgf8'], 'Dorsal': ['Tbx5'], 'Ventral': ['Ephb2']}
-        }
+        # A fallback anchor set here would silently change which genes drive
+        # marker selection and clustering. The YAML ships with the package and
+        # as package_data, so a miss means a broken install, not a normal state.
+        raise FileNotFoundError(
+            f"control_genes.yaml not found at {config_file_abs}. It ships with "
+            "the package; a missing file means the install is incomplete."
+        )
 
 # Load the control genes (users can edit control_genes.yaml to customize)
 CONTROL_GENES = load_control_genes()

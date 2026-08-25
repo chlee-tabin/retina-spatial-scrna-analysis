@@ -82,7 +82,7 @@ ENV/
 # Results and outputs
 results/
 outputs/
-figures/
+/figures/
 !scripts/figures/
 plots/
 logs/
@@ -103,3 +103,6 @@ logs/
 *.temp
 temp/
 tmp/
+
+# Analyzer caches written by scripts/figures/*.py
+*.pkl
