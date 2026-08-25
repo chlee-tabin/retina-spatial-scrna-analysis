@@ -551,9 +551,12 @@ ggsave( p, file=file.path(FIGURES_BASE, "Figure6", "F6H_volcano.png"), width = 4
 # The SF23 half below needs the human Seurat object, produced in-session by
 # scripts/preprocessing/03_human_preprocessing.R, whose input is a
 # pre-publication intermediate not distributed with the repo (see README).
-if (!exists("human"))
-    stop("Figure 6H outputs are written. Stopping before SF23: object 'human' not found — ",
-         "source scripts/preprocessing/03_human_preprocessing.R in this R session first (see README).")
+if (!exists("human")) {
+    message("Figure 6H outputs are written. Skipping SF23: object 'human' not found — ",
+            "source scripts/preprocessing/03_human_preprocessing.R in this R session first (see README).")
+    if (!interactive()) quit(save = "no", status = 0)  # supported GEO-only run: F6H done, exit clean
+    stop("SF23 skipped: object 'human' not found (see message above).")
+}
 
 # %% [markdown]
 # ### Figure 100 - Topographic DEG

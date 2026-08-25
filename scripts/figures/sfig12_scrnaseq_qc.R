@@ -85,9 +85,10 @@ ggsave( p3, filename=file.path(FIGURES_BASE, "Figure_SF12", "SF12A_umap_clusters
 # %% [markdown]
 # ## SF12C: UMAP QC panels (phase, tech, mito, gene count)
 
-# NOTE: `technology` and `percent.mito` are present in the deposited
-# 20250604_01_retina.rds (added during the original analysis session); the
-# public 01_chick_preprocessing.R provenance script does not recreate them.
+# NOTE: `technology` is present in the deposited 20250604_01_retina.rds
+# (added during the original analysis session); the public
+# 01_chick_preprocessing.R provenance script does not recreate it.
+# (`percent.mito` IS computed per library by 01.)
 # %% tags=["cell-127"]
 Idents( retina ) <- "annotation"
 # p4 <-
