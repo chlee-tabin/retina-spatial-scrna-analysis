@@ -17,16 +17,23 @@
 # %% tags=["cell-74"]
 import os
 import sys
-sys.path.append('..')
+from pathlib import Path
+try:
+    REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+except NameError:  # running as a notebook kernel (jupytext): no __file__ — start Jupyter from the repo root
+    REPO = Path.cwd()
+    print(f"NOTE: no __file__ (notebook mode); assuming repo root = {REPO}")
+if str(REPO) not in sys.path:
+    sys.path.insert(0, str(REPO))
 
-FIGURES_BASE = os.path.join(os.path.dirname(__file__), "..", "..", "figures")
+FIGURES_BASE = os.path.join(str(REPO), "figures")  # REPO is notebook-safe; a bare __file__ here is not
 from spatial_expression_analysis import (
     SpatialAnalysisParams, SpatialExpressionAnalyzer,
     reload_control_genes, get_fixed_anchors, MarkerSelectorPy,
     cluster_by_anchor, create_cluster_summary, CONTROL_GENES
 )
 import anndata as ad
-human_adata = ad.read_h5ad("../data/20250604_human_RPC.h5ad")
+human_adata = ad.read_h5ad(f"{REPO}/data/20250604_human_RPC.h5ad")
 print(f"Loaded human data: {human_adata.n_obs:,} cells × {human_adata.n_vars:,} genes")
 # Derive parameters transparently based on the data characteristics
 human_params = SpatialAnalysisParams.derive_parameters_from_data(
@@ -35,13 +42,25 @@ human_params = SpatialAnalysisParams.derive_parameters_from_data(
 )
 human_params
 
+# %% tags=["cell-76"]
+# Published overrides (as executed in the source notebook; matches fig7's human
+# block): without these, derive_parameters_from_data() yields bin_size=46 /
+# min_gene_count=50 and the panels diverge from the published SF19.
+human_params.bin_size = 40
+human_params.smooth_sigma = 1.0
+human_params.min_gene_count = 15  # keeps sparse genes such as CYP26C1
+human_params.min_cells_per_pixel = 3
+human_params.mask_count_threshold = 3
+human_params.percentile_clip = 0.93  # pin explicitly: the derived value matches only while n_cells stays in the 10k-50k bucket
+human_params
+
 # %% [markdown]
 # ## Create human spatial analyzer
 
 # %% tags=["cell-78"]
 # Initialize analyzer
 human_analyzer = SpatialExpressionAnalyzer(human_params)
-human_results = human_analyzer.run_full_analysis("../data/20250604_human_RPC.h5ad")
+human_results = human_analyzer.run_full_analysis(f"{REPO}/data/20250604_human_RPC.h5ad")
 
 # %% [markdown]
 # ## Human anchor selection
@@ -297,8 +316,7 @@ print(detailed_table.groupby('Anchor')[['Category', 'Cluster_Size']].first())
 
 # %% tags=["cell-120"]
 import anndata as ad
-# mouse_adata = ad.read_h5ad("../data/20240815_mouse_RPC.h5ad")
-mouse_adata = ad.read_h5ad("../data/20260528_mouse_RPC_cr9_e13e16.h5ad")  # CR9 / GRCm39 re-aligned (supersedes 20250604)
+mouse_adata = ad.read_h5ad(f"{REPO}/data/20260528_mouse_RPC_cr9_e13e16.h5ad")  # CR9 / GRCm39 re-aligned (supersedes 20250604)
 print(f"Loaded mouse data: {mouse_adata.n_obs:,} cells × {mouse_adata.n_vars:,} genes")
 # Derive parameters transparently based on the data characteristics
 mouse_params = SpatialAnalysisParams.derive_parameters_from_data(
@@ -323,9 +341,7 @@ mouse_params.min_gene_count=30 # changing to match human/chick
 # Initialize analyzer
 mouse_analyzer = SpatialExpressionAnalyzer(mouse_params)
 # Run full analysis (this replaces all your manual preprocessing steps)
-# Update path to point to data file location relative to notebooks/ directory
-#mouse_results = mouse_analyzer.run_full_analysis("../data/20240815_mouse_RPC.h5ad")
-mouse_results = mouse_analyzer.run_full_analysis("../data/20260528_mouse_RPC_cr9_e13e16.h5ad")
+mouse_results = mouse_analyzer.run_full_analysis(f"{REPO}/data/20260528_mouse_RPC_cr9_e13e16.h5ad")
 
 # %% [markdown]
 # ## Mouse anchor selection

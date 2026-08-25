@@ -194,10 +194,14 @@ class SpatialAnalysisParams:
     @classmethod
     def get_species_defaults(cls, species: str, show_reasoning: bool = True) -> 'SpatialAnalysisParams':
         """
-        Get default parameters optimized for specific species.
-        
-        Note: These are hard-coded defaults from the original analysis.
-        For transparent parameter selection based on your data, use 
+        Get heuristic starting-point parameters for a species.
+
+        Note: these are convenience defaults and do NOT reproduce the published
+        panels. The published figures set (or deterministically derive and then
+        override) their parameters in each figure script (e.g. chick: bin_size=51, min_gene_count=20, min_cells_per_pixel=3,
+        percentile_clip=0.93, smooth_sigma=1.0, mask_count_threshold=3 — see
+        scripts/figures/fig7_cross_species.py). Those scripts are the ground
+        truth for reproduction; for data-driven selection use
         derive_parameters_from_data() instead.
         
         Args:

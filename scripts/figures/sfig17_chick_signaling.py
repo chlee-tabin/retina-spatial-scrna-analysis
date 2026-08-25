@@ -16,11 +16,38 @@
 
 # %% tags=["cell-34"]
 import sys
-sys.path.append('..')
+from pathlib import Path
+try:
+    REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+except NameError:  # running as a notebook kernel (jupytext): no __file__ — start Jupyter from the repo root
+    REPO = Path.cwd()
+    print(f"NOTE: no __file__ (notebook mode); assuming repo root = {REPO}")
+if str(REPO) not in sys.path:
+    sys.path.insert(0, str(REPO))
 from spatial_expression_analysis import SpatialAnalysisParams, SpatialExpressionAnalyzer
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+
+# %% [markdown]
+# ## Build the chick analyzer (published parameters, as in fig6ag/fig7)
+
+# %%
+chick_params = SpatialAnalysisParams(
+    bin_size=51,
+    min_gene_count=20,
+    min_cells_per_pixel=3,
+    percentile_clip=0.93,
+    smooth_sigma=1.0,
+    mask_count_threshold=3
+)
+chick_analyzer = SpatialExpressionAnalyzer(chick_params)
+chick_analyzer.run_full_analysis(f"{REPO}/data/20250604_chick_RPC.h5ad")
+
+# %% [markdown]
+# ## Utility continues
+
+# %%
 def save_correlation_panels(gene, analyzer, panel_top_n=12, compact_top_n=5, 
                          panel_ncols=4, output_dir="figures/correlation_panels"):
   """
@@ -167,7 +194,7 @@ def save_correlation_panels(gene, analyzer, panel_top_n=12, compact_top_n=5,
 
 # %% tags=["cell-35"]
 # Create output directory if it doesn't exist
-FIGURES_BASE = os.path.join(os.path.dirname(__file__), "..", "..", "figures")
+FIGURES_BASE = os.path.join(str(REPO), "figures")  # REPO is notebook-safe; a bare __file__ here is not
 output_dir = os.path.join(FIGURES_BASE, "Figure_SF17")
 os.makedirs(output_dir, exist_ok=True)
 # Example usage with different parameters

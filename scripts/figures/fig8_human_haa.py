@@ -27,8 +27,14 @@ from pathlib import Path
 import pickle
 import warnings
 warnings.filterwarnings('ignore')
-# Add parent directory to path for imports
-sys.path.append('..')
+# Put the repo root on sys.path for the module import
+try:
+    REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+except NameError:  # running as a notebook kernel (jupytext): no __file__ — start Jupyter from the repo root
+    REPO = Path.cwd()
+    print(f"NOTE: no __file__ (notebook mode); assuming repo root = {REPO}")
+if str(REPO) not in sys.path:
+    sys.path.insert(0, str(REPO))
 from spatial_expression_analysis import (
   SpatialExpressionAnalyzer,
   SpatialAnalysisParams
@@ -36,9 +42,9 @@ from spatial_expression_analysis import (
 print("Loading human analyzer...")
 print("=" * 60)
 # Load Human analyzer with correct parameters from notebook
-human_pickle = "human_analyzer_correct.pkl"
+human_pickle = f"{REPO}/data/human_analyzer_correct.pkl"  # one cache per repo, not per CWD
 if os.path.exists(human_pickle):
-  print("Loading from pickle file...")
+  print(f"Loading cached human analyzer from {human_pickle} — delete it to rebuild from the GEO h5ad")
   with open(human_pickle, 'rb') as f:
       human_analyzer = pickle.load(f)
 else:
@@ -53,14 +59,8 @@ else:
       mask_count_threshold=3
   )
   human_analyzer = SpatialExpressionAnalyzer(human_params)
-  # Try to load from h5ad or import from export
-  if os.path.exists("../data/20250604_human_RPC.h5ad"):
-      human_results = human_analyzer.run_full_analysis("../data/20250604_human_RPC.h5ad")
-  else:
-      from spatial_expression_analysis import import_seurat_export
-      human_adata = import_seurat_export("../data/20250604human.RPC", prefix="20250604human.RPC_", parallel=False)
-      human_adata.write_h5ad("../data/20250604_human_RPC.h5ad")
-      human_results = human_analyzer.run_full_analysis("../data/20250604_human_RPC.h5ad")
+  # The deposited h5ad from GEO GSE322831 is the supported input (see README).
+  human_results = human_analyzer.run_full_analysis(f"{REPO}/data/20250604_human_RPC.h5ad")
   # Save for future use
   with open(human_pickle, 'wb') as f:
       pickle.dump(human_analyzer, f)
@@ -87,7 +87,7 @@ print(f"\nTop correlations for {target_gene}:")
 for i, (gene, corr) in enumerate(correlations):
   print(f"  {i+1}. {gene}: {corr:.3f}")
 # Create output directory
-FIGURES_BASE = os.path.join(os.path.dirname(__file__), "..", "..", "figures")
+FIGURES_BASE = os.path.join(str(REPO), "figures")  # REPO is notebook-safe; a bare __file__ here is not
 output_dir = os.path.join(FIGURES_BASE, "Figure8")
 os.makedirs(output_dir, exist_ok=True)
 print("\n" + "=" * 60)
@@ -195,8 +195,14 @@ from pathlib import Path
 import pickle
 import warnings
 warnings.filterwarnings('ignore')
-# Add parent directory to path for imports
-sys.path.append('..')
+# Put the repo root on sys.path for the module import
+try:
+    REPO = Path(__file__).resolve().parents[2]  # repo root; keeps the script runnable from any CWD
+except NameError:  # running as a notebook kernel (jupytext): no __file__ — start Jupyter from the repo root
+    REPO = Path.cwd()
+    print(f"NOTE: no __file__ (notebook mode); assuming repo root = {REPO}")
+if str(REPO) not in sys.path:
+    sys.path.insert(0, str(REPO))
 from spatial_expression_analysis import (
   SpatialExpressionAnalyzer,
   SpatialAnalysisParams
@@ -204,9 +210,9 @@ from spatial_expression_analysis import (
 print("Loading human analyzer...")
 print("=" * 60)
 # Load Human analyzer with correct parameters from notebook
-human_pickle = "human_analyzer_correct.pkl"
+human_pickle = f"{REPO}/data/human_analyzer_correct.pkl"  # one cache per repo, not per CWD
 if os.path.exists(human_pickle):
-  print("Loading from pickle file...")
+  print(f"Loading cached human analyzer from {human_pickle} — delete it to rebuild from the GEO h5ad")
   with open(human_pickle, 'rb') as f:
       human_analyzer = pickle.load(f)
 else:
@@ -221,14 +227,8 @@ else:
       mask_count_threshold=3
   )
   human_analyzer = SpatialExpressionAnalyzer(human_params)
-  # Try to load from h5ad or import from export
-  if os.path.exists("../data/20250604_human_RPC.h5ad"):
-      human_results = human_analyzer.run_full_analysis("../data/20250604_human_RPC.h5ad")
-  else:
-      from spatial_expression_analysis import import_seurat_export
-      human_adata = import_seurat_export("../data/20250604human.RPC", prefix="20250604human.RPC_", parallel=False)
-      human_adata.write_h5ad("../data/20250604_human_RPC.h5ad")
-      human_results = human_analyzer.run_full_analysis("../data/20250604_human_RPC.h5ad")
+  # The deposited h5ad from GEO GSE322831 is the supported input (see README).
+  human_results = human_analyzer.run_full_analysis(f"{REPO}/data/20250604_human_RPC.h5ad")
   # Save for future use
   with open(human_pickle, 'wb') as f:
       pickle.dump(human_analyzer, f)
