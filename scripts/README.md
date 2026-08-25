@@ -22,7 +22,7 @@ These scripts generate Figures 5–8 and Supplementary Figures 12–23 of the ma
 
 ## Data Requirements
 
-Download from [GEO (accession GSE322831)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE322831) or provide your own data in the expected layout:
+Download from [GEO (accession GSE322831)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE322831), strip the `GSE322831_` prefix (rename table in the [top-level README](../README.md)), and place files in `data/`:
 
 ```
 data/
@@ -37,10 +37,11 @@ data/
   # Mouse (CR9.0.1 / GRCm39 realignment; GSE118614, GSE139904, GSE149040, GSE122466)
   20260528_mouse_RPC_cr9_e13e16.h5ad   # Mouse RPC (E13.5-E16) with DV/NT scores; supersedes 20250604_mouse_RPC.h5ad
 
-  # Intermediate R objects (produced by preprocessing scripts)
-  20250604_01_gex.rds             # Checkpoint 1: raw Seurat list
-  20250604_01_retina.rds          # Checkpoint 2: integrated Seurat
-  20250604_02_fabp7.rds           # Checkpoint 3: scored RPC subset
+  # R objects — 01_retina and 02_fabp7 are deposited in GEO; 01_gex is only
+  # produced by re-running the preprocessing provenance scripts
+  20250604_01_gex.rds             # Checkpoint 1: raw Seurat list (not deposited)
+  20250604_01_retina.rds          # Checkpoint 2: integrated Seurat (in GEO)
+  20250604_02_fabp7.rds           # Checkpoint 3: scored RPC subset (in GEO)
   chick_W_genes.tsv               # W chromosome gene list
   chick_Z_genes.tsv               # Z chromosome gene list
 ```
@@ -52,9 +53,14 @@ export RETINA_DATA_DIR=/path/to/your/data
 
 ## Execution Order
 
-### 1. Preprocessing (R)
+### 1. Preprocessing (R) — provenance record
 
-Run in order — each script depends on outputs from the previous:
+These scripts document how the deposited objects were made; **running them is not
+required to reproduce the figures** (the GEO objects are the supported entry
+point). They are not fully re-runnable from public data alone: `01` reads the
+raw alignment tree and `01`/`03`/`04` read pre-publication intermediates — see
+"Reproducibility scope" in the top-level README. Run in order if re-executing
+from archived inputs:
 
 ```bash
 cd scripts/preprocessing/
@@ -67,7 +73,9 @@ Rscript 05_export_h5ad.R              # Optional: re-export h5ad files
 
 ### 2. Figure scripts (R and Python)
 
-Run in any order after preprocessing. Each script is independent:
+Run in any order once the GEO objects are in `data/`. Each script is
+independent (`sfig18` and the SF23 half of `fig6h_sfig23` additionally need the
+in-session human/mouse objects from preprocessing 03/04):
 
 | Script | Figure | Language |
 |--------|--------|----------|
@@ -140,6 +148,6 @@ Cell Ranger outputs (10X)
 
 ## Notes
 
-- Scripts use `source("00_utils.R")` for shared R functions; ensure working directory is `scripts/preprocessing/` or adjust the source path.
+- R figure scripts locate `00_utils.R` and `data/` via `here::here()` and run from any working directory inside the repository; the preprocessing scripts are run from `scripts/preprocessing/` (as `run_preprocess.sh` does).
 - The `plot_axial_expression()` function (in 00_utils.R) is used by fig5, sfig13, sfig14, and sfig18 scripts.
-- Python scripts import from `spatial_expression_analysis.py` and `control_genes.yaml` in the repository root. Ensure these are on your Python path.
+- Python figure scripts anchor imports and data paths to the repository root via `__file__` — no path setup needed.

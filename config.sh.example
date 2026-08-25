@@ -8,9 +8,5 @@
 # Path to your local clone of this repository
 export REPO_DIR="/path/to/retina-spatial-scrna-analysis"
 
-# Path to raw data (Cell Ranger outputs / 10x .h5 files)
-# Download from GEO (accession GSE322831)
-export DATA_DIR="/path/to/raw_data"
-
-# Path where preprocessed outputs (.rds, .h5ad) will be written
-export OUTPUT_DIR="/path/to/output"
+# Optional: where 05_export_h5ad.R reads/writes objects (defaults to REPO_DIR/data)
+export RETINA_DATA_DIR="${REPO_DIR}/data"
