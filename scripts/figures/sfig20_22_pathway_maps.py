@@ -40,7 +40,8 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 from spatial_expression_analysis import (
   SpatialExpressionAnalyzer,
-  SpatialAnalysisParams
+  SpatialAnalysisParams,
+  load_or_build_analyzer
 )
 # Define BMP signaling genes by functional category
 BMP_GENES = {
@@ -60,25 +61,18 @@ print("Loading human analyzer...")
 print("=" * 60)
 # Load Human analyzer with correct parameters from notebook
 human_pickle = f"{REPO}/data/human_analyzer_correct.pkl"  # one cache per repo, not per CWD
-if os.path.exists(human_pickle):
-  print(f"Loading cached human analyzer from {human_pickle} — delete it to rebuild from the GEO h5ad")
-  with open(human_pickle, 'rb') as f:
-      human_analyzer = pickle.load(f)
-else:
-  print("Creating new analyzer...")
-  human_params = SpatialAnalysisParams(
-      bin_size=40,
-      min_gene_count=15,
-      min_cells_per_pixel=3,
-      percentile_clip=0.93,
-      smooth_sigma=1.0,
-      mask_count_threshold=3
-  )
-  human_analyzer = SpatialExpressionAnalyzer(human_params)
-  # The deposited h5ad from GEO GSE322831 is the supported input (see README).
-  human_results = human_analyzer.run_full_analysis(f"{REPO}/data/20250604_human_RPC.h5ad")
-  with open(human_pickle, 'wb') as f:
-      pickle.dump(human_analyzer, f)
+human_params = SpatialAnalysisParams(
+    bin_size=40,
+    min_gene_count=15,
+    min_cells_per_pixel=3,
+    percentile_clip=0.93,
+    smooth_sigma=1.0,
+    mask_count_threshold=3
+)
+# The deposited h5ad from GEO GSE322831 is the supported input (see README);
+# the cache self-invalidates when the source h5ad or parameters change.
+human_analyzer = load_or_build_analyzer(human_pickle, human_params,
+                                       f"{REPO}/data/20250604_human_RPC.h5ad", label="human")
 print(f"Loaded {len(human_analyzer.gene_names)} genes")
 # Create output directories
 FIGURES_BASE = os.path.join(str(REPO), "figures")  # REPO is notebook-safe; a bare __file__ here is not
@@ -324,7 +318,8 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 from spatial_expression_analysis import (
   SpatialExpressionAnalyzer,
-  SpatialAnalysisParams
+  SpatialAnalysisParams,
+  load_or_build_analyzer
 )
 # Define FGF8-related genes by functional category
 FGF8_GENES = {
@@ -341,25 +336,18 @@ print("Loading human analyzer...")
 print("=" * 60)
 # Load Human analyzer with correct parameters from notebook
 human_pickle = f"{REPO}/data/human_analyzer_correct.pkl"  # one cache per repo, not per CWD
-if os.path.exists(human_pickle):
-  print(f"Loading cached human analyzer from {human_pickle} — delete it to rebuild from the GEO h5ad")
-  with open(human_pickle, 'rb') as f:
-      human_analyzer = pickle.load(f)
-else:
-  print("Creating new analyzer...")
-  human_params = SpatialAnalysisParams(
-      bin_size=40,
-      min_gene_count=15,
-      min_cells_per_pixel=3,
-      percentile_clip=0.93,
-      smooth_sigma=1.0,
-      mask_count_threshold=3
-  )
-  human_analyzer = SpatialExpressionAnalyzer(human_params)
-  # The deposited h5ad from GEO GSE322831 is the supported input (see README).
-  human_results = human_analyzer.run_full_analysis(f"{REPO}/data/20250604_human_RPC.h5ad")
-  with open(human_pickle, 'wb') as f:
-      pickle.dump(human_analyzer, f)
+human_params = SpatialAnalysisParams(
+    bin_size=40,
+    min_gene_count=15,
+    min_cells_per_pixel=3,
+    percentile_clip=0.93,
+    smooth_sigma=1.0,
+    mask_count_threshold=3
+)
+# The deposited h5ad from GEO GSE322831 is the supported input (see README);
+# the cache self-invalidates when the source h5ad or parameters change.
+human_analyzer = load_or_build_analyzer(human_pickle, human_params,
+                                       f"{REPO}/data/20250604_human_RPC.h5ad", label="human")
 print(f"Loaded {len(human_analyzer.gene_names)} genes")
 # Create output directories
 output_dir = os.path.join(FIGURES_BASE, "Figure_SF21")
@@ -681,7 +669,8 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 from spatial_expression_analysis import (
   SpatialExpressionAnalyzer,
-  SpatialAnalysisParams
+  SpatialAnalysisParams,
+  load_or_build_analyzer
 )
 # Define FGF family genes by category
 # Note: FGF11-14 are actually a subfamily, FGF15 in mouse = FGF19 in humans
@@ -701,25 +690,18 @@ print("Loading human analyzer...")
 print("=" * 60)
 # Load Human analyzer with correct parameters from notebook
 human_pickle = f"{REPO}/data/human_analyzer_correct.pkl"  # one cache per repo, not per CWD
-if os.path.exists(human_pickle):
-  print(f"Loading cached human analyzer from {human_pickle} — delete it to rebuild from the GEO h5ad")
-  with open(human_pickle, 'rb') as f:
-      human_analyzer = pickle.load(f)
-else:
-  print("Creating new analyzer...")
-  human_params = SpatialAnalysisParams(
-      bin_size=40,
-      min_gene_count=15,
-      min_cells_per_pixel=3,
-      percentile_clip=0.93,
-      smooth_sigma=1.0,
-      mask_count_threshold=3
-  )
-  human_analyzer = SpatialExpressionAnalyzer(human_params)
-  # The deposited h5ad from GEO GSE322831 is the supported input (see README).
-  human_results = human_analyzer.run_full_analysis(f"{REPO}/data/20250604_human_RPC.h5ad")
-  with open(human_pickle, 'wb') as f:
-      pickle.dump(human_analyzer, f)
+human_params = SpatialAnalysisParams(
+    bin_size=40,
+    min_gene_count=15,
+    min_cells_per_pixel=3,
+    percentile_clip=0.93,
+    smooth_sigma=1.0,
+    mask_count_threshold=3
+)
+# The deposited h5ad from GEO GSE322831 is the supported input (see README);
+# the cache self-invalidates when the source h5ad or parameters change.
+human_analyzer = load_or_build_analyzer(human_pickle, human_params,
+                                       f"{REPO}/data/20250604_human_RPC.h5ad", label="human")
 print(f"Loaded {len(human_analyzer.gene_names)} genes")
 # Create output directories
 output_dir = os.path.join(FIGURES_BASE, "Figure_SF20")

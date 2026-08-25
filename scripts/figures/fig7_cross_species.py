@@ -37,7 +37,8 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 from spatial_expression_analysis import (
   SpatialExpressionAnalyzer,
-  SpatialAnalysisParams
+  SpatialAnalysisParams,
+  load_or_build_analyzer
 )
 # Define the genes list - 24 genes total, will be arranged in 4 rows of 6
 GENE_LIST = [
@@ -56,108 +57,52 @@ analyzers = {}
 # Load Chick analyzer with CORRECT parameters and ERROR HANDLING
 print("Loading chick analyzer...")
 chick_pickle = f"{REPO}/data/chick_analyzer_correct.pkl"  # one cache per repo, not per CWD
-chick_analyzer = None
-# Try to load from pickle with error handling
-try:
-  if os.path.exists(chick_pickle):
-      with open(chick_pickle, 'rb') as f:
-          chick_analyzer = pickle.load(f)
-      print(f"  Loaded cached chick analyzer from {chick_pickle} — delete it to rebuild from the GEO h5ad")
-except (KeyError, ImportError, AttributeError, EOFError) as e:
-  print(f"  Failed to load pickle ({type(e).__name__}: {e})")
-  print("  Removing corrupted pickle and creating new analyzer...")
-  if os.path.exists(chick_pickle):
-      os.remove(chick_pickle)
-  chick_analyzer = None
-# Create new analyzer if loading failed
-if chick_analyzer is None:
-  print("  Creating new chick analyzer...")
-  chick_params = SpatialAnalysisParams(
-      bin_size=51,
-      min_gene_count=20,  # Aligned with other species
-      min_cells_per_pixel=3,
-      percentile_clip=0.93,
-      smooth_sigma=1.0,
-      mask_count_threshold=3
-  )
-  chick_analyzer = SpatialExpressionAnalyzer(chick_params)
-  # The deposited h5ad from GEO GSE322831 is the supported input (see README).
-  chick_results = chick_analyzer.run_full_analysis(f"{REPO}/data/20250604_chick_RPC.h5ad")
-  # Save for future use
-  with open(chick_pickle, 'wb') as f:
-      pickle.dump(chick_analyzer, f)
+chick_params = SpatialAnalysisParams(
+    bin_size=51,
+    min_gene_count=20,  # Aligned with other species
+    min_cells_per_pixel=3,
+    percentile_clip=0.93,
+    smooth_sigma=1.0,
+    mask_count_threshold=3
+)
+# The deposited h5ad from GEO GSE322831 is the supported input (see README);
+# the cache self-invalidates when the source h5ad or parameters change.
+chick_analyzer = load_or_build_analyzer(chick_pickle, chick_params,
+                                       f"{REPO}/data/20250604_chick_RPC.h5ad", label="chick")
 analyzers['chick'] = chick_analyzer
 print(f"  Loaded {len(chick_analyzer.gene_names)} genes")
 # Load Human analyzer with CORRECT parameters and ERROR HANDLING
 print("Loading human analyzer...")
 human_pickle = f"{REPO}/data/human_analyzer_correct.pkl"  # one cache per repo, not per CWD
-human_analyzer = None
-# Try to load from pickle with error handling
-try:
-  if os.path.exists(human_pickle):
-      with open(human_pickle, 'rb') as f:
-          human_analyzer = pickle.load(f)
-      print(f"  Loaded cached human analyzer from {human_pickle} — delete it to rebuild from the GEO h5ad")
-except (KeyError, ImportError, AttributeError, EOFError) as e:
-  print(f"  Failed to load pickle ({type(e).__name__}: {e})")
-  print("  Removing corrupted pickle and creating new analyzer...")
-  if os.path.exists(human_pickle):
-      os.remove(human_pickle)
-  human_analyzer = None
-# Create new analyzer if loading failed
-if human_analyzer is None:
-  print("  Creating new human analyzer...")
-  human_params = SpatialAnalysisParams(
-      bin_size=40,  # Changed from 20 to 40 as per notebook
-      min_gene_count=15,  # This should keep CYP26C1
-      min_cells_per_pixel=3,
-      percentile_clip=0.93,
-      smooth_sigma=1.0,
-      mask_count_threshold=3
-  )
-  human_analyzer = SpatialExpressionAnalyzer(human_params)
-  # The deposited h5ad from GEO GSE322831 is the supported input (see README).
-  human_results = human_analyzer.run_full_analysis(f"{REPO}/data/20250604_human_RPC.h5ad")
-  # Save for future use
-  with open(human_pickle, 'wb') as f:
-      pickle.dump(human_analyzer, f)
+human_params = SpatialAnalysisParams(
+    bin_size=40,  # Changed from 20 to 40 as per notebook
+    min_gene_count=15,  # This should keep CYP26C1
+    min_cells_per_pixel=3,
+    percentile_clip=0.93,
+    smooth_sigma=1.0,
+    mask_count_threshold=3
+)
+# The deposited h5ad from GEO GSE322831 is the supported input (see README);
+# the cache self-invalidates when the source h5ad or parameters change.
+human_analyzer = load_or_build_analyzer(human_pickle, human_params,
+                                       f"{REPO}/data/20250604_human_RPC.h5ad", label="human")
 analyzers['human'] = human_analyzer
 print(f"  Loaded {len(human_analyzer.gene_names)} genes")
 # Load Mouse analyzer with CORRECT parameters and ERROR HANDLING
 print("Loading mouse analyzer...")
 mouse_pickle = f"{REPO}/data/mouse_analyzer_correct.pkl"  # one cache per repo, not per CWD
-# Delete this cache when changing the mouse dataset (e.g. CR9 swap) so the analyzer rebuilds.
-mouse_analyzer = None
-# Try to load from pickle with error handling
-try:
-  if os.path.exists(mouse_pickle):
-      with open(mouse_pickle, 'rb') as f:
-          mouse_analyzer = pickle.load(f)
-      print(f"  Loaded cached mouse analyzer from {mouse_pickle} — delete it to rebuild from the GEO h5ad")
-except (KeyError, ImportError, AttributeError, EOFError) as e:
-  print(f"  Failed to load pickle ({type(e).__name__}: {e})")
-  print("  Removing corrupted pickle and creating new analyzer...")
-  if os.path.exists(mouse_pickle):
-      os.remove(mouse_pickle)
-  mouse_analyzer = None
-# Create new analyzer if loading failed
-if mouse_analyzer is None:
-  print("  Creating new mouse analyzer...")
-  mouse_params = SpatialAnalysisParams(
-      bin_size=51,  # Changed from 20 to 51 as per notebook
-      min_gene_count=30,  # Changed to match human/chick
-      min_cells_per_pixel=5,  # From high density defaults
-      percentile_clip=0.95,  # From high density defaults
-      smooth_sigma=1.0,  # Adjusted from 2.0
-      mask_count_threshold=5  # From high density defaults
-  )
-  mouse_analyzer = SpatialExpressionAnalyzer(mouse_params)
-  # CR9 / GRCm39 re-aligned mouse RPC (E13.5-E16) — the deposited GEO GSE322831
-  # h5ad is the supported input (see README).
-  mouse_results = mouse_analyzer.run_full_analysis(f"{REPO}/data/20260528_mouse_RPC_cr9_e13e16.h5ad")
-  # Save for future use
-  with open(mouse_pickle, 'wb') as f:
-      pickle.dump(mouse_analyzer, f)
+mouse_params = SpatialAnalysisParams(
+    bin_size=51,  # Changed from 20 to 51 as per notebook
+    min_gene_count=30,  # Changed to match human/chick
+    min_cells_per_pixel=5,  # From high density defaults
+    percentile_clip=0.95,  # From high density defaults
+    smooth_sigma=1.0,  # Adjusted from 2.0
+    mask_count_threshold=5  # From high density defaults
+)
+# The deposited h5ad from GEO GSE322831 is the supported input (see README);
+# the cache self-invalidates when the source h5ad or parameters change.
+mouse_analyzer = load_or_build_analyzer(mouse_pickle, mouse_params,
+                                       f"{REPO}/data/20260528_mouse_RPC_cr9_e13e16.h5ad", label="mouse")
 analyzers['mouse'] = mouse_analyzer
 print(f"  Loaded {len(mouse_analyzer.gene_names)} genes")
 def get_gene_image(analyzer, gene_name, species):
