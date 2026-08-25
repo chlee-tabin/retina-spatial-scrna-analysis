@@ -92,12 +92,17 @@ print(f"  Loaded {len(human_analyzer.gene_names)} genes")
 print("Loading mouse analyzer...")
 mouse_pickle = f"{REPO}/data/mouse_analyzer_correct.pkl"  # one cache per repo, not per CWD
 mouse_params = SpatialAnalysisParams(
-    bin_size=51,  # Changed from 20 to 51 as per notebook
-    min_gene_count=30,  # Changed to match human/chick
-    min_cells_per_pixel=5,  # From high density defaults
-    percentile_clip=0.95,  # From high density defaults
-    smooth_sigma=1.0,  # Adjusted from 2.0
-    mask_count_threshold=5  # From high density defaults
+    bin_size=51,
+    min_gene_count=30,  # matches human/chick floors scaled per species
+    # Harmonized with the chick/human rows of this same figure (and with SF19's
+    # mouse analyzer): 3 / 0.93 / 3. The previous 5 / 0.95 / 5 came from "high
+    # density defaults" — a >50k-cell bucket no mouse object ever occupied
+    # (old arm: 25,202 cells; CR9 e13e16: 26,505 — both medium density,
+    # which derives exactly these values).
+    min_cells_per_pixel=3,
+    percentile_clip=0.93,
+    smooth_sigma=1.0,
+    mask_count_threshold=3
 )
 # The deposited h5ad from GEO GSE322831 is the supported input (see README);
 # the cache self-invalidates when the source h5ad or parameters change.
