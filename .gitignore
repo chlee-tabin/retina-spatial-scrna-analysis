@@ -106,3 +106,7 @@ tmp/
 
 # Analyzer caches written by scripts/figures/*.py
 *.pkl
+
+# MEX matrices exported under data/ by the provenance scripts
+*.mtx
+*.mtx.gz

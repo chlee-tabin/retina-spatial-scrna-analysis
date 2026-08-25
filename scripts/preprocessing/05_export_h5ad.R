@@ -11,8 +11,8 @@
 # %% [markdown]
 # # Export Seurat Objects to MEX Format
 #
-# This script documents the MEX exports (matrix.mtx / features / barcodes +
-# metadata TSVs) that serve as the interface between R preprocessing and the
+# This script documents the MEX exports ({prefix}raw_counts.mtx.gz,
+# {prefix}normalized_data.mtx.gz, features/barcodes/metadata TSVs, embeddings) that serve as the interface between R preprocessing and the
 # Python figure scripts. The h5ad files deposited in GEO were assembled from
 # these exports on the Python side; this script itself writes MEX, not h5ad.
 #
@@ -59,7 +59,7 @@ export_seurat(fabp7, dir_path = file.path(DATA_DIR, "20250604chick.RPC"), assay 
 # | `20250604chick/` | Not directly used by figure scripts | GEO submission |
 # | `20250604chick.RPC/` | `20250604_chick_RPC.h5ad` | fig6, fig7, sfig15-17 |
 # | `20250604_human_RPC.h5ad` | Same | fig7, fig8, sfig19-22 |
-# | `20260528_mouse_RPC_cr9_e13e16.h5ad` | Same | fig7, sfig18, sfig19 |
+# | `20260528_mouse_RPC_cr9_e13e16.h5ad` | Same | fig7, sfig19 |
 
 # %%
 sessionInfo()

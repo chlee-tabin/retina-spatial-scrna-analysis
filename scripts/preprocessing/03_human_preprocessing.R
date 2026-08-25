@@ -96,7 +96,7 @@ human$DV.Score <- human$Dorsal.Score1 - human$Ventral.Score1
 human$NT.Score <- human$Nasal.Score1 - human$Temporal.Score1
 
 # %% [markdown]
-# ## Export human RPC h5ad
+# ## Export human RPC MEX (h5ad assembled Python-side)
 
 # %%
 export_seurat( human, dir_path = "../../data/20250604human.RPC", assay = "RNA", prefix = "20250604human.RPC_" )

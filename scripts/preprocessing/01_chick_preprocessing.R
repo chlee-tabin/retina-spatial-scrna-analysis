@@ -1078,6 +1078,10 @@ temp2
 
 # %% tags=["cell-100"]
 options(future.globals.maxSize = 3e+09)
+# percent.W / percent.Z are regressed below; empty gene lists would make them
+# all-zero covariates and the regression would proceed silently (see 00_utils.R).
+if (length(W.genes) == 0 || length(Z.genes) == 0)
+    stop("chick W/Z gene lists are empty (data/chick_W_genes.tsv / chick_Z_genes.tsv not read) — refusing to regress on all-zero percent.W/percent.Z.")
 retina <-
 retina %>%
 NormalizeData() %>%
@@ -1221,7 +1225,7 @@ saveRDS( retina, file=glue::glue( "../../data/{intermediate.prefix}01_retina.rds
 tictoc::toc()
 
 # %% [markdown]
-# ## Export to h5ad (full dataset)
+# ## Export to MEX (full dataset)
 # Uses `export_seurat()` from `00_utils.R`
 
 # %% tags=["cell-138"]

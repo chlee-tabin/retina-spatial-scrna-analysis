@@ -44,7 +44,7 @@ Z.genes <- tryCatch(
 )
 
 # %% [markdown]
-# ## export_seurat(): Seurat to h5ad/MEX export
+# ## export_seurat(): Seurat to MEX export (h5ad assembly happens Python-side)
 
 # %% tags=["cell-3"]
 export_seurat <- function(s, dir_path = "export", assay = "RNA", prefix = "", parallel = FALSE) {

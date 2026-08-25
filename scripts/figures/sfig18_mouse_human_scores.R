@@ -15,12 +15,18 @@
 source(file.path(here::here(), "scripts/preprocessing/00_utils.R"))
 
 # %%
-# The human/mouse Seurat objects are produced in-session by
-# scripts/preprocessing/03_human_preprocessing.R and 04_mouse_preprocessing.R,
-# whose inputs are pre-publication intermediates not distributed with the repo
-# (see README, "Reproducibility scope").
-if (!exists("human") || !exists("mouse"))
-    stop("Objects 'human' and 'mouse' not found: run scripts/preprocessing/03_ and 04_ in this R session first (see README).")
+# Both objects are in-session Seurat objects this repo cannot fully rebuild from
+# public data (see README, "Reproducibility scope"):
+# - `human`: produced by source()'ing scripts/preprocessing/03_human_preprocessing.R
+#   (its input is a pre-publication intermediate, not distributed).
+# - `mouse`: must be the Cell Ranger 9.0.1 / GRCm39 re-aligned RPC Seurat object
+#   (see NOTE below). scripts/preprocessing/04_mouse_preprocessing.R yields the
+#   SUPERSEDED pre-CR9 4-library object — do not use it for this figure.
+if (!exists("human"))
+    stop("Object 'human' not found: source scripts/preprocessing/03_human_preprocessing.R in this R session first (see README).")
+if (!exists("mouse"))
+    stop("Object 'mouse' not found. It must be the CR9/GRCm39 re-aligned mouse RPC Seurat object ",
+         "(produced by the re-alignment pipeline outside this repo; 04_mouse_preprocessing.R yields the superseded pre-CR9 object). See README.")
 
 # NOTE: `human` and `mouse` are the per-species RPC Seurat objects loaded into the
 # session upstream (00_utils.R provides plotting utilities, not data). For the CR9
@@ -32,7 +38,8 @@ if (!exists("human") || !exists("mouse"))
 # ## Output directory setup
 
 # %%
-# here::here() anchors to the repo root (via .git), so the script works under
+# here::here() anchors to the repo root (via the committed .here sentinel, so it
+# also works in ZIP/Zenodo archives without .git); the script works under
 # Rscript or source() from any working directory inside the repository.
 FIGURES_BASE <- file.path(here::here(), "figures")
 dir.create(file.path(FIGURES_BASE, "Figure_SF18"), recursive = TRUE, showWarnings = FALSE)
