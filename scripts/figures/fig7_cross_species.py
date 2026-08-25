@@ -125,7 +125,8 @@ analyzers['human'] = human_analyzer
 print(f"  Loaded {len(human_analyzer.gene_names)} genes")
 # Load Mouse analyzer with CORRECT parameters and ERROR HANDLING
 print("Loading mouse analyzer...")
-mouse_pickle = f"{REPO}/data/mouse_analyzer_correct.pkl"  # one cache per repo, not per CWD  # delete this cache when changing the mouse dataset (e.g. CR9 swap) so the analyzer rebuilds
+mouse_pickle = f"{REPO}/data/mouse_analyzer_correct.pkl"  # one cache per repo, not per CWD
+# Delete this cache when changing the mouse dataset (e.g. CR9 swap) so the analyzer rebuilds.
 mouse_analyzer = None
 # Try to load from pickle with error handling
 try:

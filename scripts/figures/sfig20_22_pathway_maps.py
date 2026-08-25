@@ -61,7 +61,7 @@ print("=" * 60)
 # Load Human analyzer with correct parameters from notebook
 human_pickle = f"{REPO}/data/human_analyzer_correct.pkl"  # one cache per repo, not per CWD
 if os.path.exists(human_pickle):
-  print("Loading from pickle file...")
+  print(f"Loading cached human analyzer from {human_pickle} — delete it to rebuild from the GEO h5ad")
   with open(human_pickle, 'rb') as f:
       human_analyzer = pickle.load(f)
 else:
@@ -342,7 +342,7 @@ print("=" * 60)
 # Load Human analyzer with correct parameters from notebook
 human_pickle = f"{REPO}/data/human_analyzer_correct.pkl"  # one cache per repo, not per CWD
 if os.path.exists(human_pickle):
-  print("Loading from pickle file...")
+  print(f"Loading cached human analyzer from {human_pickle} — delete it to rebuild from the GEO h5ad")
   with open(human_pickle, 'rb') as f:
       human_analyzer = pickle.load(f)
 else:
@@ -702,7 +702,7 @@ print("=" * 60)
 # Load Human analyzer with correct parameters from notebook
 human_pickle = f"{REPO}/data/human_analyzer_correct.pkl"  # one cache per repo, not per CWD
 if os.path.exists(human_pickle):
-  print("Loading from pickle file...")
+  print(f"Loading cached human analyzer from {human_pickle} — delete it to rebuild from the GEO h5ad")
   with open(human_pickle, 'rb') as f:
       human_analyzer = pickle.load(f)
 else:
