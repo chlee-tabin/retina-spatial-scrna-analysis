@@ -150,4 +150,4 @@ Cell Ranger outputs (10X)
 - R figure scripts locate `00_utils.R` and `data/` via `here::here()` and run from any working directory inside the repository; the preprocessing scripts are run from `scripts/preprocessing/` (as `run_preprocess.sh` does).
 - The `plot_axial_expression()` function (in 00_utils.R) is used by fig5, sfig13, sfig14, and sfig18 scripts.
 - Python figure scripts anchor imports and data paths to the repository root via `__file__` — no path setup needed.
-- fig7/fig8/sfig20_22 cache built analyzers as `<repo>/data/*_analyzer_correct.pkl`; a cache hit prints which file it loaded. Delete the `.pkl` after changing data or parameters to force a rebuild from the GEO h5ad.
+- fig7/fig8/sfig20_22 cache built analyzers as `<repo>/data/*_analyzer_correct.pkl`. Caches are fingerprinted against the source h5ad (path/mtime/size) and the full parameter set, and rebuild automatically when either changes; a hit or rebuild prints what happened. Deleting the `.pkl` still forces a rebuild.

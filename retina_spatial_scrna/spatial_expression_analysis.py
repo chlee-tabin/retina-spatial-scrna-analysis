@@ -1865,3 +1865,46 @@ if __name__ == "__main__":
     print("- interrogate_cluster: Get detailed cluster information")
     print("- get_fixed_anchors: Get species-specific anchor genes")
     print("- reload_control_genes: Reload anchor gene configuration") 
+
+
+def load_or_build_analyzer(cache_path, params, h5ad_path, label="analyzer"):
+    """Load a cached SpatialExpressionAnalyzer only if its fingerprint matches.
+
+    The fingerprint records the source h5ad (absolute path, mtime, size) and the
+    full parameter set, so a cache built from different data or parameters is
+    rebuilt instead of silently reused. Legacy caches (bare pickled analyzers,
+    no fingerprint) are treated as stale and rebuilt. A missing h5ad raises
+    before any cache is touched — the deposited GEO objects are the supported
+    inputs (see README).
+    """
+    import pickle
+    from dataclasses import asdict, is_dataclass
+
+    st = os.stat(h5ad_path)  # raises if the GEO input is missing — intended
+    fingerprint = {
+        "h5ad": os.path.abspath(h5ad_path),
+        "mtime": st.st_mtime,
+        "size": st.st_size,
+        "params": asdict(params) if is_dataclass(params) else dict(vars(params)),
+    }
+    if os.path.exists(cache_path):
+        try:
+            with open(cache_path, "rb") as f:
+                payload = pickle.load(f)
+            if isinstance(payload, dict) and payload.get("fingerprint") == fingerprint:
+                print(f"Loaded cached {label} analyzer from {cache_path} "
+                      "(data + parameters match) — delete it to force a rebuild")
+                return payload["analyzer"]
+            print(f"Cache {cache_path} is stale (data or parameters changed) — rebuilding")
+        except Exception as exc:  # corrupted / incompatible pickle
+            print(f"Cache {cache_path} unreadable ({type(exc).__name__}) — rebuilding")
+        try:
+            os.remove(cache_path)
+        except OSError:
+            pass
+    analyzer = SpatialExpressionAnalyzer(params)
+    analyzer.run_full_analysis(h5ad_path)
+    with open(cache_path, "wb") as f:
+        pickle.dump({"analyzer": analyzer, "fingerprint": fingerprint}, f)
+    print(f"Built {label} analyzer from {h5ad_path}; cached at {cache_path}")
+    return analyzer
