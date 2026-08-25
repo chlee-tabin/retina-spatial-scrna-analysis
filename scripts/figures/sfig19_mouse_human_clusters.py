@@ -26,7 +26,7 @@ except NameError:  # running as a notebook kernel (jupytext): no __file__ — st
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
-FIGURES_BASE = os.path.join(os.path.dirname(__file__), "..", "..", "figures")
+FIGURES_BASE = os.path.join(str(REPO), "figures")  # REPO is notebook-safe; a bare __file__ here is not
 from spatial_expression_analysis import (
     SpatialAnalysisParams, SpatialExpressionAnalyzer,
     reload_control_genes, get_fixed_anchors, MarkerSelectorPy,
@@ -51,6 +51,7 @@ human_params.smooth_sigma = 1.0
 human_params.min_gene_count = 15  # keeps sparse genes such as CYP26C1
 human_params.min_cells_per_pixel = 3
 human_params.mask_count_threshold = 3
+human_params.percentile_clip = 0.93  # pin explicitly: the derived value matches only while n_cells stays in the 10k-50k bucket
 human_params
 
 # %% [markdown]

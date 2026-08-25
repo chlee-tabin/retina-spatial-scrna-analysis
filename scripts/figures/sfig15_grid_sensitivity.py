@@ -55,7 +55,7 @@ import matplotlib.pyplot as plt
 import os
 import numpy as np
 # Create output directory if it doesn't exist
-FIGURES_BASE = os.path.join(os.path.dirname(__file__), "..", "..", "figures")
+FIGURES_BASE = os.path.join(str(REPO), "figures")  # REPO is notebook-safe; a bare __file__ here is not
 output_dir = os.path.join(FIGURES_BASE, "Figure_SF15", "100x100")
 os.makedirs(output_dir, exist_ok=True)
 key_genes = [

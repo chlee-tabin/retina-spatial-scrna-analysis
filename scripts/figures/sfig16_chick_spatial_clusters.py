@@ -123,7 +123,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
 
-FIGURES_BASE = os.path.join(os.path.dirname(__file__), "..", "..", "figures")
+FIGURES_BASE = os.path.join(str(REPO), "figures")  # REPO is notebook-safe; a bare __file__ here is not
 # The 20 anchors in order
 key_genes = chick_markers[:20]
 # Get the anchors that actually formed clusters from the clustering results

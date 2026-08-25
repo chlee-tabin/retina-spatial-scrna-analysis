@@ -81,7 +81,7 @@ else:
       pickle.dump(human_analyzer, f)
 print(f"Loaded {len(human_analyzer.gene_names)} genes")
 # Create output directories
-FIGURES_BASE = os.path.join(os.path.dirname(__file__), "..", "..", "figures")
+FIGURES_BASE = os.path.join(str(REPO), "figures")  # REPO is notebook-safe; a bare __file__ here is not
 output_dir = os.path.join(FIGURES_BASE, "Figure_SF22")
 individual_dir = f"{output_dir}/individual_genes"
 os.makedirs(output_dir, exist_ok=True)

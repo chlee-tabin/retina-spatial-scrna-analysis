@@ -87,7 +87,7 @@ print(f"\nTop correlations for {target_gene}:")
 for i, (gene, corr) in enumerate(correlations):
   print(f"  {i+1}. {gene}: {corr:.3f}")
 # Create output directory
-FIGURES_BASE = os.path.join(os.path.dirname(__file__), "..", "..", "figures")
+FIGURES_BASE = os.path.join(str(REPO), "figures")  # REPO is notebook-safe; a bare __file__ here is not
 output_dir = os.path.join(FIGURES_BASE, "Figure8")
 os.makedirs(output_dir, exist_ok=True)
 print("\n" + "=" * 60)

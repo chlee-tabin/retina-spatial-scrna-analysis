@@ -67,7 +67,7 @@ import matplotlib.pyplot as plt
 import os
 import numpy as np
 # Output directory setup
-FIGURES_BASE = os.path.join(os.path.dirname(__file__), "..", "..", "figures")
+FIGURES_BASE = os.path.join(str(REPO), "figures")  # REPO is notebook-safe; a bare __file__ here is not
 output_dir = os.path.join(FIGURES_BASE, "Figure6", "F6A-G_spatial_maps")
 os.makedirs(output_dir, exist_ok=True)
 key_genes = [
