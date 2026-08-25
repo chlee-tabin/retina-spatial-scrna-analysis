@@ -110,3 +110,7 @@ tmp/
 # MEX matrices exported under data/ by the provenance scripts
 *.mtx
 *.mtx.gz
+
+# MEX re-export subdirectories under data/ (sidecar features/barcodes/metadata/
+# embeddings TSVs included) — generated output, never committed
+data/*/

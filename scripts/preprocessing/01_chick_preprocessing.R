@@ -1082,6 +1082,8 @@ options(future.globals.maxSize = 3e+09)
 # all-zero covariates and the regression would proceed silently (see 00_utils.R).
 if (length(W.genes) == 0 || length(Z.genes) == 0)
     stop("chick W/Z gene lists are empty (data/chick_W_genes.tsv / chick_Z_genes.tsv not read) — refusing to regress on all-zero percent.W/percent.Z.")
+if (length(mito.genes) == 0)
+    stop("mito.genes is empty after intersecting with the dataset's gene list — refusing to regress on an all-zero percent.mito.")
 retina <-
 retina %>%
 NormalizeData() %>%

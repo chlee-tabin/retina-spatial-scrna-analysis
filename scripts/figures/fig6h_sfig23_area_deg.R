@@ -554,7 +554,10 @@ ggsave( p, file=file.path(FIGURES_BASE, "Figure6", "F6H_volcano.png"), width = 4
 if (!exists("human")) {
     message("Figure 6H outputs are written. Skipping SF23: object 'human' not found — ",
             "source scripts/preprocessing/03_human_preprocessing.R in this R session first (see README).")
-    if (!interactive()) quit(save = "no", status = 0)  # supported GEO-only run: F6H done, exit clean
+    # interactive() is FALSE under IRkernel too — quit() there would kill a live
+    # Jupyter kernel and its session state. Only quit in a real Rscript run.
+    if (!interactive() && !nzchar(Sys.getenv("JPY_PARENT_PID")))
+        quit(save = "no", status = 0)  # supported GEO-only run: F6H done, exit clean
     stop("SF23 skipped: object 'human' not found (see message above).")
 }
 
