@@ -22,7 +22,7 @@ These scripts generate Figures 5–8 and Supplementary Figures 12–23 of the ma
 
 ## Data Requirements
 
-Download from [GEO (accession GSE322831)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE322831), strip the `GSE322831_` prefix (rename table in the [top-level README](../README.md)), and place files in `data/`:
+Everything that may appear in `data/`. Download the five GEO-deposited files from [GEO GSE322831](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE322831) and strip the `GSE322831_` prefix (rename table in the [top-level README](../README.md)); the annotated items below are generated locally, not downloaded:
 
 ```
 data/
