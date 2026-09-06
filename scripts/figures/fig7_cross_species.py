@@ -237,6 +237,10 @@ for gene_idx, gene in enumerate(GENE_LIST):
           individual_fig.savefig(individual_path_pdf, bbox_inches='tight')
           individual_path_png = f"{output_dir}/variants/{gene}_{species}.png"
           individual_fig.savefig(individual_path_png, dpi=150, bbox_inches='tight')
+          # SVG with text kept as editable <text> (svg.fonttype='none'), so the
+          # panel title / max badge can be removed or restyled in Illustrator/Inkscape.
+          with plt.rc_context({'svg.fonttype': 'none'}):
+              individual_fig.savefig(f"{output_dir}/variants/{gene}_{species}.svg", bbox_inches='tight')
           plt.close(individual_fig)
       else:
           # Gene not found - show empty plot with message
