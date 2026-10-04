@@ -265,7 +265,7 @@ if anchor_to_cluster_size:
   print(f"  Range: {min(sizes)} - {max(sizes):,} genes")
 
 # %% [markdown]
-# ## Table S2: Human anchor gene pairs
+# ## SF19 companion table: human anchor gene pairs (not a numbered supplementary table)
 
 # %% [markdown]
 # ### Supplemental Table 2
@@ -304,7 +304,7 @@ detailed_table = pd.DataFrame(detailed_data)
 detailed_table = detailed_table.sort_values(['Anchor', 'Correlation_Rank'])
 # Save to TSV
 os.makedirs(os.path.join(FIGURES_BASE, "Tables"), exist_ok=True)
-detailed_table.to_csv(os.path.join(FIGURES_BASE, "Tables", "TableS2_human_cluster_members.tsv"), sep='\t', index=False)
+detailed_table.to_csv(os.path.join(FIGURES_BASE, "Tables", "SF19_human_cluster_members.tsv"), sep='\t', index=False)
 print(f"Saved {len(detailed_table)} cluster member entries")
 print(f"This should match total of all cluster sizes: {human_summary[human_summary['anchor_name'] != 'NULL']['cluster_size'].sum()}")
 # Show summary
@@ -545,7 +545,7 @@ if anchor_to_cluster_size:
   print(f"  Range: {min(sizes)} - {max(sizes):,} genes")
 
 # %% [markdown]
-# ## Table S3: Mouse anchor gene pairs
+# ## SF19 companion table: mouse anchor gene pairs (not a numbered supplementary table)
 
 # %% [markdown]
 # ### Supplemental Table 3
@@ -583,7 +583,7 @@ for _, row in mouse_summary.iterrows():
 detailed_table = pd.DataFrame(detailed_data)
 detailed_table = detailed_table.sort_values(['Anchor', 'Correlation_Rank'])
 # Save to TSV
-detailed_table.to_csv(os.path.join(FIGURES_BASE, "Tables", "TableS3_mouse_cluster_members.tsv"), sep='\t', index=False)
+detailed_table.to_csv(os.path.join(FIGURES_BASE, "Tables", "SF19_mouse_cluster_members.tsv"), sep='\t', index=False)
 print(f"Saved {len(detailed_table)} cluster member entries")
 print(f"This should match total of all cluster sizes: {mouse_summary[mouse_summary['anchor_name'] != 'NULL']['cluster_size'].sum()}")
 # Show summary
