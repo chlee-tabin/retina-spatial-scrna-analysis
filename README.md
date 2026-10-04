@@ -23,7 +23,7 @@ This repository contains:
 
 1. **`retina_spatial_scrna/`** — Installable Python package for spatial expression analysis: 2D topographic maps, gene similarity, and spatial clustering
 2. **`scripts/preprocessing/`** — R pipeline for QC, integration, and spatial axis scoring
-3. **`scripts/figures/`** — Standalone scripts reproducing Figures 5-8 and Supplementary Figures 12-23
+3. **`scripts/figures/`** — Standalone scripts reproducing the scRNA-seq panels of Figures 5-8, Supplementary Figures 12-24 and Supplementary Tables 1-2
 
 ## Installation
 
@@ -37,7 +37,7 @@ pip install -e .
 # R dependencies (run in R)
 # install.packages(c("Seurat", "tidyverse", "patchwork", "svglite", "harmony",
 #                     "glmGamPoi", "viridis", "ggforce", "ggh4x", "tictoc", "glue",
-#                     "here"))
+#                     "here", "reticulate"))   # reticulate: R scripts that read the human h5ad
 # BiocManager::install(c("scDblFinder", "SingleCellExperiment", "glmGamPoi"))
 # remotes::install_github("immunogenomics/presto")   # used by 01_chick_preprocessing.R
 ```
@@ -45,7 +45,7 @@ pip install -e .
 ### Requirements
 
 - **Python** >= 3.10: scanpy, anndata, numpy, pandas, scipy, matplotlib, mygene
-- **R** >= 4.4.0: Seurat v5, tidyverse, patchwork, harmony, scDblFinder, here
+- **R** >= 4.4.0: Seurat v5, tidyverse, patchwork, harmony, scDblFinder, glmGamPoi, here, reticulate (reads the human h5ad via Python anndata)
 
 See `requirements.txt` for full Python dependencies.
 
@@ -69,7 +69,8 @@ retina-spatial-scrna-analysis/
 │
 ├── data/
 │   ├── chick_W_genes.tsv          # W chromosome gene list
-│   └── chick_Z_genes.tsv          # Z chromosome gene list
+│   ├── chick_Z_genes.tsv          # Z chromosome gene list
+│   └── fig8d_pathway_modules/     # per-bin module maps rendered as Figure 8D
 │
 ├── tests/                         # Smoke tests for the Python package
 ├── scripts/
@@ -85,15 +86,17 @@ retina-spatial-scrna-analysis/
 │   └── figures/
 │       ├── fig5_dv_nt_scores.R
 │       ├── fig6ag_chick_topographic.py
-│       ├── fig6h_sfig23_area_deg.R
 │       ├── fig7_cross_species.py
-│       ├── fig8_human_haa.py
+│       ├── fig8d_pathway_module_data.R / fig8d_pathway_module_topography.R
 │       ├── sfig12-14 (DV/NT scores).R
 │       ├── sfig15_grid_sensitivity.py
 │       ├── sfig16-17 (chick clusters/signaling).py
 │       ├── sfig18_mouse_human_scores.R
 │       ├── sfig19_mouse_human_clusters.py
-│       └── sfig20_22_pathway_maps.py
+│       ├── sfig20_22_pathway_maps.py
+│       ├── sfig23_human_cyp26_correlations.py
+│       ├── sfig24_area_deg.R
+│       └── supptables1_2_area_deg.R
 │
 └── notebooks/figures/             # (figure legends + methods text added at publication)
     ├── figure_legends.md
@@ -117,9 +120,9 @@ The deposited [GEO GSE322831](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc
    | GEO supplementary file | becomes | used by |
    |---|---|---|
    | `GSE322831_20250604_chick_RPC.h5ad` | `data/20250604_chick_RPC.h5ad` | fig6ag, fig7, sfig15–17 |
-   | `GSE322831_20250604_human_RPC.h5ad` | `data/20250604_human_RPC.h5ad` | fig7, fig8, sfig19–22 |
+   | `GSE322831_20250604_human_RPC.h5ad` | `data/20250604_human_RPC.h5ad` | fig7, fig8d (data), sfig19–24, supptables1_2 |
    | `GSE322831_20260528_mouse_RPC_cr9_e13e16.h5ad` | `data/20260528_mouse_RPC_cr9_e13e16.h5ad` | fig7, sfig19 |
-   | `GSE322831_20250604_02_fabp7.rds` | `data/20250604_02_fabp7.rds` | fig5, sfig13, sfig14, fig6h |
+   | `GSE322831_20250604_02_fabp7.rds` | `data/20250604_02_fabp7.rds` | fig5, sfig13, sfig14, fig8d (data), sfig24, supptables1_2 |
    | `GSE322831_20250604_01_retina.rds` | `data/20250604_01_retina.rds` | sfig12 |
 
    The remaining `GSE322831_*` supplementary files are not needed for the figures: `..._mouse_RPC_cr9.h5ad` is the full seven-library mouse object behind the interactive viewer (the figures use the E13.5–E16 subset), and the GTF/genome files support re-alignment from raw reads. GEO's bundled `readme.txt` predates the mouse re-alignment; this table is current.
@@ -130,10 +133,9 @@ The deposited [GEO GSE322831](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc
    Rscript scripts/figures/fig5_dv_nt_scores.R           # Figure 5B-E
    ```
 
-   12 of the 14 figure scripts run from the GEO objects alone. The two exceptions consume *in-session* Seurat objects — objects that exist only as variables inside a running R session, never written to disk, so `Rscript` (a fresh session per script) cannot chain them:
+   Every figure/table script except `sfig18` runs from the GEO objects alone (`fig8d_pathway_module_topography.R` needs only the committed CSVs in `data/fig8d_pathway_modules/`). R scripts that read the human object (`fig8d_pathway_module_data.R`, `sfig24_area_deg.R`, `supptables1_2_area_deg.R`) load the h5ad through `read_h5ad_as_seurat()` in `00_utils.R`, which needs the R package `reticulate` and the Python package `anndata`.
 
-   - **SF23 half of `fig6h_sfig23`** (the Figure 6H half runs from the GEO objects and exits cleanly): needs `human`. In one R session: `source("scripts/preprocessing/03_human_preprocessing.R", chdir = TRUE)`, then source the figure script. Note 03 itself reads an archived pre-publication intermediate (internal; available on request) — see *Reproducibility scope*.
-   - **`sfig18`** (all panels): needs `human` (as above) **and** the CR9 re-aligned `mouse` object, which is produced outside this repo — not reproducible from public data alone.
+   The exception, **`sfig18`** (all panels), consumes *in-session* Seurat objects — objects that exist only as variables inside a running R session, never written to disk, so `Rscript` (a fresh session per script) cannot chain them: `human` from `source("scripts/preprocessing/03_human_preprocessing.R", chdir = TRUE)` (03 itself reads an archived pre-publication intermediate; internal, available on request — see *Reproducibility scope*) **and** the CR9 re-aligned `mouse` object, which is produced outside this repo. It is not reproducible from public data alone.
 
 See [`scripts/README.md`](scripts/README.md) for the complete figure-to-script mapping and data flow.
 
@@ -159,30 +161,39 @@ correlations = analyzer.get_gene_correlations('FGF8', top_n=10)
 
 ## Figure-to-Script Mapping
 
-| Figure | Script | Language |
+Numbering follows the revised manuscript (v15).
+
+| Figure / table | Script | Language |
 |--------|--------|----------|
 | F5B-E | `fig5_dv_nt_scores.R` | R |
 | F6A-G | `fig6ag_chick_topographic.py` | Python |
-| F6H + SF23 | `fig6h_sfig23_area_deg.R` | R |
 | F7A-G | `fig7_cross_species.py` | Python |
-| F8B-C | `fig8_human_haa.py` | Python |
+| F8A (2D maps) | partial: chick DUSP6 / SPRY1 per-gene maps (`Figure_SF17/spatial_fgf8_downstream/`) and MYOF (`F6A-G_composite_set2`) are emitted by `fig6ag_chick_topographic.py`; no NPY map producer is included | Python |
+| F8B (2D map) | the human BAMBI per-gene map is emitted by `sfig20_22_pathway_maps.py` (`Figure_SF22/individual_genes/`) | Python |
+| F8C (2D maps) | the human CYP26A1 / CYP26C1 maps are the target-gene panels of `sfig23_human_cyp26_correlations.py` | Python |
+| F8D | `fig8d_pathway_module_data.R` (per-bin module maps from the GEO objects) → `fig8d_pathway_module_topography.R` (render) | R |
 | SF12A-E | `sfig12_scrnaseq_qc.R` | R |
 | SF13A-E | `sfig13_dv_score.R` | R |
 | SF14A-E | `sfig14_nt_score.R` | R |
 | SF15 | `sfig15_grid_sensitivity.py` | Python |
-| SF16 + Table S1 | `sfig16_chick_spatial_clusters.py` | Python |
+| SF16 | `sfig16_chick_spatial_clusters.py` (+ cluster-member table) | Python |
 | SF17A-D | `sfig17_chick_signaling.py` | Python |
 | SF18A-D | `sfig18_mouse_human_scores.R` | R |
-| SF19 + Tables S2-S3 | `sfig19_mouse_human_clusters.py` | Python |
-| SF20-22 | `sfig20_22_pathway_maps.py` | Python |
+| SF19A-B | `sfig19_mouse_human_clusters.py` (+ cluster-member tables) | Python |
+| SF20-22 B (human) | `sfig20_22_pathway_maps.py` | Python |
+| SF23A-B | `sfig23_human_cyp26_correlations.py` | Python |
+| SF24A-B | `sfig24_area_deg.R` | R |
+| Supplementary Tables 1-2 | `supptables1_2_area_deg.R` | R |
+
+Not yet covered by a script here: the mouse panels (A) of SF20-22, and Supplementary Table 3 (FGF/BMP pathway gene detection in human and mouse).
 
 ### Figures Not in Scope
 
-Figures generated by RNA-FISH imaging (MATLAB pipeline): F1-F3, SF1-SF11, F4, F5A, F8A.
+RNA-FISH imaging and quantification (MATLAB pipeline): F1-F4, SF1-SF11, and the RNA-FISH halves of F8A-C. Schematics: F5A (BioRender), F6H.
 
 ## Reproducibility scope
 
-**Supported entry point: the GEO GSE322831 processed objects** (table above). 12 of the 14 figure scripts run directly from them; the two exceptions are listed under *Reproducing Figures*.
+**Supported entry point: the GEO GSE322831 processed objects** (table above). All figure/table scripts except `sfig18` run directly from them; the exception is described under *Reproducing Figures*.
 
 **`scripts/preprocessing/` is the provenance record** of how those objects were made. It is published for transparency and is not fully re-runnable from public data alone:
 
