@@ -739,3 +739,36 @@ plot_axial_expression <- function(
     return(p_main)
   }
 }
+
+# %% [markdown]
+# ## read_h5ad_as_seurat(): deposited GEO .h5ad -> Seurat object on raw counts
+
+# %%
+# The deposited RPC .h5ad files (GEO GSE322831) were assembled Python-side from
+# the Seurat MEX exports: `X` holds the log-normalized matrix, `.raw.X` the raw
+# UMI counts, and `obs` the cell metadata (DV.Score, NT.Score, library, sample,
+# ...). This rebuilds a Seurat object on the RAW counts (re-normalize with
+# NormalizeData() as usual) so R analyses can start from the deposited human
+# object, which is distributed only as .h5ad. Reading goes through the Python
+# `anndata` package (already a requirement of this repository) via reticulate.
+read_h5ad_as_seurat <- function(path) {
+    if (!file.exists(path)) stop("h5ad not found: ", path, " (download it from GEO GSE322831; see README)")
+    if (!requireNamespace("reticulate", quietly = TRUE))
+        stop("read_h5ad_as_seurat() needs the R package 'reticulate' and the Python package 'anndata'.")
+    ad <- reticulate::import("anndata", convert = FALSE)
+    sp <- reticulate::import("scipy.sparse", convert = FALSE)
+    a  <- ad$read_h5ad(path)
+    use_raw <- isTRUE(reticulate::py_eval("lambda a: a.raw is not None")(a))
+    src   <- if (use_raw) a$raw else a
+    m     <- reticulate::py_to_r(sp$csc_matrix(src$X))             # cells x genes, dgCMatrix
+    genes <- unlist(reticulate::py_to_r(src$var_names$tolist()))
+    cells <- unlist(reticulate::py_to_r(a$obs_names$tolist()))
+    if (!use_raw && any(m@x != round(m@x)))
+        stop("h5ad has no .raw and X is not integer counts: ", path)
+    dimnames(m) <- list(cells, genes)
+    obs <- as.data.frame(reticulate::py_to_r(a$obs))
+    rownames(obs) <- cells
+    message(sprintf("read_h5ad_as_seurat: %d cells x %d genes from %s (%s)",
+                    nrow(m), ncol(m), basename(path), if (use_raw) ".raw counts" else "X counts"))
+    CreateSeuratObject(counts = Matrix::t(m), meta.data = obs)
+}
