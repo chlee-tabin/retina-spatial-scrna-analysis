@@ -114,3 +114,7 @@ tmp/
 # MEX re-export subdirectories under data/ (sidecar features/barcodes/metadata/
 # embeddings TSVs included) — generated output, never committed
 data/*/
+
+# Small committed per-bin module maps rendered by scripts/figures/fig8d_pathway_module_topography.R
+!data/fig8d_pathway_modules/
+!data/fig8d_pathway_modules/*.csv
