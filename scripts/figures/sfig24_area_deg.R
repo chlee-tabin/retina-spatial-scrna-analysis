@@ -9,7 +9,13 @@
 # ---
 
 # %% [markdown]
-# # Figure 6H + Figure S23: Area-specific Differential Gene Expression
+# # Figure S24: Area-specific Differential Gene Expression (A chick, B human)
+#
+# Region selections on the 2D map (marker gene + highlighted grid quadrants)
+# and pseudobulk region-vs-rest volcanoes (glmGamPoi, `~ library + area`,
+# pseudobulk groups with >= 50 cells). The full adj-p < 0.05 tables for the
+# same regions (Supplementary Tables 1 and 2) are written by
+# `supptables1_2_area_deg.R`. Both halves run from the deposited GEO objects.
 
 # %%
 source(file.path(here::here(), "scripts/preprocessing/00_utils.R"))
@@ -31,9 +37,7 @@ if (exists("fabp7")) {
 # also works in ZIP/Zenodo archives without .git); the script works under
 # Rscript or source() from any working directory inside the repository.
 FIGURES_BASE <- file.path(here::here(), "figures")
-dir.create(file.path(FIGURES_BASE, "Figure6"), recursive = TRUE, showWarnings = FALSE)
-dir.create(file.path(FIGURES_BASE, "Figure_SF23"), recursive = TRUE, showWarnings = FALSE)
-dir.create(file.path(FIGURES_BASE, "Tables"), recursive = TRUE, showWarnings = FALSE)
+dir.create(file.path(FIGURES_BASE, "Figure_SF24"), recursive = TRUE, showWarnings = FALSE)
 
 # %% [markdown]
 # ## Utility: plot.retina3() region selection function
@@ -166,7 +170,7 @@ plot.retina3 <- function(obj, gene, reverse.mapping.table = NULL, bin_size = 50,
 }
 
 # %% [markdown]
-# ## F6H: Chick area selection (HAA, temporal, nasal, dorsal, ventral)
+# ## SF24A: Chick area selection (HAA, temporal, nasal, dorsal, ventral, DV-central, NT-central)
 
 # %% [markdown]
 # ### Select area: HAA
@@ -186,7 +190,10 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 10
 )
-ggsave( file.path(FIGURES_BASE, "Figure6", "F6H_select_HAA.png"), width = 10.5, height = 10.5 )
+# Gate check: the chick HAA gate selects 5,971 cells. supptables1_2_area_deg.R
+# encodes the same gate as index ranges and asserts the same count.
+stopifnot(length(fovea.area) == 5971L)
+ggsave( file.path(FIGURES_BASE, "Figure_SF24", "SF24A_select_HAA.png"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
 # ### Select area: Temporal
@@ -211,7 +218,7 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 7
 )
-ggsave( file.path(FIGURES_BASE, "Figure6", "F6H_select_Temporal.png"), width = 10.5, height = 10.5 )
+ggsave( file.path(FIGURES_BASE, "Figure_SF24", "SF24A_select_Temporal.png"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
 # ### Select area: Nasal
@@ -236,7 +243,7 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 7
 )
-ggsave( file.path(FIGURES_BASE, "Figure6", "F6H_select_Nasal.png"), width = 10.5, height = 10.5 )
+ggsave( file.path(FIGURES_BASE, "Figure_SF24", "SF24A_select_Nasal.png"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
 # ### Select area: Dorsal
@@ -257,7 +264,7 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 7
 )
-ggsave( file.path(FIGURES_BASE, "Figure6", "F6H_select_Dorsal.png"), width = 10.5, height = 10.5 )
+ggsave( file.path(FIGURES_BASE, "Figure_SF24", "SF24A_select_Dorsal.png"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
 # ### Select area: Ventral
@@ -278,7 +285,7 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 7
 )
-ggsave( file.path(FIGURES_BASE, "Figure6", "F6H_select_Ventral.png"), width = 10.5, height = 10.5 )
+ggsave( file.path(FIGURES_BASE, "Figure_SF24", "SF24A_select_Ventral.png"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
 # ### Select area: DVcentral
@@ -297,7 +304,7 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 7
 )
-ggsave( file.path(FIGURES_BASE, "Figure6", "F6H_select_DVcentral.png"), width = 10.5, height = 10.5 )
+ggsave( file.path(FIGURES_BASE, "Figure_SF24", "SF24A_select_DVcentral.png"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
 # ### Select area: NTcentral
@@ -317,7 +324,7 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 9
 )
-ggsave( file.path(FIGURES_BASE, "Figure6", "F6H_select_NTcentral.png"), width = 10.5, height = 10.5 )
+ggsave( file.path(FIGURES_BASE, "Figure_SF24", "SF24A_select_NTcentral.png"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
 # ## Pseudobulk DEG functions
@@ -327,7 +334,7 @@ ggsave( file.path(FIGURES_BASE, "Figure6", "F6H_select_NTcentral.png"), width = 
 
 # %% tags=["cell-254"]
 # Function to run pseudobulk DEG analysis for all areas
-run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "donor_id", library_col = "library", min_cells = 10) {
+run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "donor_id", library_col = "library", min_cells = 50) {
     require(glmGamPoi)
     require(SingleCellExperiment)
     require(Seurat)
@@ -366,9 +373,22 @@ run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "donor_id", library_c
                     donor
                 )
             )
-            # Create design matrix
-            colData(pseudobulk_data)$area <- factor(colData(pseudobulk_data)$area)
-            colData(pseudobulk_data)$library <- factor(colData(pseudobulk_data)$library)
+            # Drop pseudobulk groups (library x area x donor) below min_cells:
+            # tiny groups, down to single cells, inflate the dispersion estimate.
+            .grp_n <- minimal_obj@meta.data %>%
+                dplyr::count(library, area, donor, name = "ncell") %>%
+                dplyr::mutate(dplyr::across(c(library, area, donor), as.character))
+            .cd <- as.data.frame(colData(pseudobulk_data))
+            .cd$.ord <- seq_len(nrow(.cd))
+            .nvec <- dplyr::left_join(
+                dplyr::mutate(.cd, dplyr::across(c(library, area, donor), as.character)),
+                .grp_n, by = c("library", "area", "donor")
+            )
+            .nvec <- .nvec$ncell[order(.nvec$.ord)]
+            pseudobulk_data <- pseudobulk_data[, .nvec >= min_cells]
+            # Create design matrix (drop levels emptied by the min_cells gate)
+            colData(pseudobulk_data)$area <- droplevels(factor(colData(pseudobulk_data)$area))
+            colData(pseudobulk_data)$library <- droplevels(factor(colData(pseudobulk_data)$library))
             # Fit model using formula notation
             fit <- glm_gp(
                 pseudobulk_data,
@@ -451,15 +471,15 @@ add.area.columns <- function(seurat_obj, areas) {
 fabp7 <- add.area.columns(fabp7, areas)
 
 # %% [markdown]
-# ## F6H: Run DEG analysis (chick)
+# ## SF24A: Run DEG analysis (chick)
 
 # %% tags=["cell-257"]
 # Run the analysis
-deg_results <- run_all_pseudobulk_deg(fabp7, donor_col = "genotype", library_col = "library", min_cells = 100)
+deg_results <- run_all_pseudobulk_deg(fabp7, donor_col = "genotype", library_col = "library", min_cells = 50)
 # deg_results
 
 # %% [markdown]
-# ## F6H: Volcano plot (chick)
+# ## SF24A: Volcano plot (chick)
 
 # %% tags=["cell-260"]
 options( repr.plot.width = 10.5, repr.plot.height = 7 )
@@ -541,28 +561,26 @@ mutate(
 }
 options( repr.plot.width = 49, repr.plot.height = 7 )
 p
-ggsave( p, file=file.path(FIGURES_BASE, "Figure6", "F6H_volcano.png"), width = 49, height = 7 )
+ggsave( p, file=file.path(FIGURES_BASE, "Figure_SF24", "SF24A_volcano.png"), width = 49, height = 7 )
 
 # %% [markdown]
-# ## SF23: Human area selection
+# ## SF24B: Human area selection
 
 # %%
-# Everything above (the Figure 6H half) runs from the deposited GEO fabp7 object.
-# The SF23 half below needs the human Seurat object, produced in-session by
-# scripts/preprocessing/03_human_preprocessing.R, whose input is a
-# pre-publication intermediate not distributed with the repo (see README).
-if (!exists("human")) {
-    message("Figure 6H outputs are written. Skipping SF23: object 'human' not found — ",
-            "source scripts/preprocessing/03_human_preprocessing.R in this R session first (see README).")
-    # interactive() is FALSE under IRkernel too — quit() there would kill a live
-    # Jupyter kernel and its session state. Only quit in a real Rscript run.
-    if (!interactive() && !nzchar(Sys.getenv("JPY_PARENT_PID")))
-        quit(save = "no", status = 0)  # supported GEO-only run: F6H done, exit clean
-    stop("SF23 skipped: object 'human' not found (see message above).")
+# Human RPCs with the published DV/NT scores — deposited in GEO GSE322831 as
+# 20250604_human_RPC.h5ad (download and strip the GSE322831_ prefix; see README).
+# The Seurat object is rebuilt on the raw counts (read_h5ad_as_seurat, 00_utils.R)
+# and log-normalized here. The scores must be the deposited ones: re-deriving
+# DV/NT shifts the grid and moves the region gates.
+if (exists("human")) {
+    message("human: using in-session object (", ncol(human), " cells); GEO object of record is data/20250604_human_RPC.h5ad")
+} else {
+    human <- read_h5ad_as_seurat(file.path(here::here(), "data", "20250604_human_RPC.h5ad"))
 }
+human <- NormalizeData(human, verbose = FALSE)
 
 # %% [markdown]
-# ### Figure 100 - Topographic DEG
+# ### SF24B: human region selection
 
 # %% tags=["cell-293"]
 human@meta.data %>% 
@@ -713,7 +731,10 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 10
 )
-ggsave( file.path(FIGURES_BASE, "Figure_SF23", "SF23_select_HAA.pdf"), width = 10.5, height = 10.5 )
+# Gate check: the human HAA (fovea) gate selects 2,236 cells; asserted
+# identically in supptables1_2_area_deg.R.
+stopifnot(length(fovea.area) == 2236L)
+ggsave( file.path(FIGURES_BASE, "Figure_SF24", "SF24B_select_HAA.pdf"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
 # #### Select area: Temporal
@@ -738,7 +759,7 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 7
 )
-ggsave( file.path(FIGURES_BASE, "Figure_SF23", "SF23_select_Temporal.pdf"), width = 10.5, height = 10.5 )
+ggsave( file.path(FIGURES_BASE, "Figure_SF24", "SF24B_select_Temporal.pdf"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
 # #### Select area: Nasal
@@ -763,7 +784,7 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 7
 )
-ggsave( file.path(FIGURES_BASE, "Figure_SF23", "SF23_select_Nasal.pdf"), width = 10.5, height = 10.5 )
+ggsave( file.path(FIGURES_BASE, "Figure_SF24", "SF24B_select_Nasal.pdf"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
 # #### Select area: Dorsal
@@ -784,7 +805,7 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 7
 )
-ggsave( file.path(FIGURES_BASE, "Figure_SF23", "SF23_select_Dorsal.pdf"), width = 10.5, height = 10.5 )
+ggsave( file.path(FIGURES_BASE, "Figure_SF24", "SF24B_select_Dorsal.pdf"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
 # #### Select area: Ventral
@@ -805,7 +826,7 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 7
 )
-ggsave( file.path(FIGURES_BASE, "Figure_SF23", "SF23_select_Ventral.pdf"), width = 10.5, height = 10.5 )
+ggsave( file.path(FIGURES_BASE, "Figure_SF24", "SF24B_select_Ventral.pdf"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
 # #### Select area: DVcentral
@@ -824,7 +845,7 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 7
 )
-ggsave( file.path(FIGURES_BASE, "Figure_SF23", "SF23_select_DVcentral.pdf"), width = 10.5, height = 10.5 )
+ggsave( file.path(FIGURES_BASE, "Figure_SF24", "SF24B_select_DVcentral.pdf"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
 # #### Select area: NTcentral
@@ -844,17 +865,17 @@ plot.retina3(
     percentile = 0.95,
     n_grid = 9
 )
-ggsave( file.path(FIGURES_BASE, "Figure_SF23", "SF23_select_NTcentral.pdf"), width = 10.5, height = 10.5 )
+ggsave( file.path(FIGURES_BASE, "Figure_SF24", "SF24B_select_NTcentral.pdf"), width = 10.5, height = 10.5 )
 
 # %% [markdown]
-# ## SF23: Human pseudobulk DEG + volcano
+# ## SF24B: Human pseudobulk DEG + volcano
 
 # %% [markdown]
 # #### Pseudobulk DEG
 
 # %% tags=["cell-313"]
 # Function to run pseudobulk DEG analysis for all areas
-run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "sample", library_col = "library", min_cells = 10) {
+run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "sample", library_col = "library", min_cells = 50) {
     require(glmGamPoi)
     require(SingleCellExperiment)
     require(Seurat)
@@ -893,9 +914,22 @@ run_all_pseudobulk_deg <- function(seurat_obj, donor_col = "sample", library_col
                     donor
                 )
             )
-            # Create design matrix
-            colData(pseudobulk_data)$area <- factor(colData(pseudobulk_data)$area)
-            colData(pseudobulk_data)$library <- factor(colData(pseudobulk_data)$library)
+            # Drop pseudobulk groups (library x area x donor) below min_cells:
+            # tiny groups, down to single cells, inflate the dispersion estimate.
+            .grp_n <- minimal_obj@meta.data %>%
+                dplyr::count(library, area, donor, name = "ncell") %>%
+                dplyr::mutate(dplyr::across(c(library, area, donor), as.character))
+            .cd <- as.data.frame(colData(pseudobulk_data))
+            .cd$.ord <- seq_len(nrow(.cd))
+            .nvec <- dplyr::left_join(
+                dplyr::mutate(.cd, dplyr::across(c(library, area, donor), as.character)),
+                .grp_n, by = c("library", "area", "donor")
+            )
+            .nvec <- .nvec$ncell[order(.nvec$.ord)]
+            pseudobulk_data <- pseudobulk_data[, .nvec >= min_cells]
+            # Create design matrix (drop levels emptied by the min_cells gate)
+            colData(pseudobulk_data)$area <- droplevels(factor(colData(pseudobulk_data)$area))
+            colData(pseudobulk_data)$library <- droplevels(factor(colData(pseudobulk_data)$library))
             # Fit model using formula notation
             fit <- glm_gp(
                 pseudobulk_data,
@@ -979,23 +1013,15 @@ human <- add.area.columns(human, areas)
 
 # %% tags=["cell-316"]
 # Run the analysis
-deg_results <- run_all_pseudobulk_deg(human, donor_col = "sample", library_col = "library", min_cells = 100)
+deg_results <- run_all_pseudobulk_deg(human, donor_col = "sample", library_col = "library", min_cells = 50)
 # deg_results
 
 # %% tags=["cell-317"]
 deg_results %>%
 dplyr::filter( abs(lfc) > 1, adj_pval < 0.05 ) %>%
 dplyr::arrange( area, desc(lfc) )
-# deg_results %>%
-# dplyr::filter( abs(lfc) > 1, adj_pval < 0.05 ) %>%
-# dplyr::arrange( desc(lfc) ) %>%
-# dplyr::select( -name ) %>%
-# write_tsv( "figures/TableS0_human_area.tsv" )
-deg_results %>%
-dplyr::filter( abs(lfc) > 1, adj_pval < 0.05 ) %>%
-dplyr::arrange( desc(lfc) ) %>%
-dplyr::select( -name ) %>%
-write_tsv( file.path(FIGURES_BASE, "Tables", "TableS0_human_area.tsv") )
+# Volcano-flagged set (|log2FC| > 1, adj-p < 0.05). The full adj-p < 0.05
+# table is Supplementary Table 2, written by supptables1_2_area_deg.R.
 
 # %% tags=["cell-318"]
 deg_results %>%
@@ -1083,4 +1109,4 @@ mutate(
 }
 options( repr.plot.width = 49, repr.plot.height = 7 )
 p
-ggsave( p, file=file.path(FIGURES_BASE, "Figure_SF23", "SF23_volcano.pdf"), width = 49, height = 7 )
+ggsave( p, file=file.path(FIGURES_BASE, "Figure_SF24", "SF24B_volcano.pdf"), width = 49, height = 7 )
