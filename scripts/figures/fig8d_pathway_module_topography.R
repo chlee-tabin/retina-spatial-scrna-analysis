@@ -67,11 +67,17 @@ df$item <- factor(df$item, levels = item_levels, labels = item_labs)
 sp_labs <- c("chick  (HAA = central-nasal)", "human  (fovea = temporal-center)")
 df$species <- factor(df$species, levels = c("chick", "human"), labels = sp_labs)
 
-# HAA / fovea gate boxes on the 15 x 15 bin grid (chick central-nasal, human temporal-center).
-boxes <- tibble(
-    species = factor(sp_labs, levels = levels(df$species)),
-    xmin = c(8.5, 3.5), xmax = c(12.5, 7.5), ymin = c(6.5, 6.5), ymax = c(9.5, 9.5)
-)
+# HAA / fovea gate boxes: the (NT, DV) quadrants of the 10 x 10 gate grid in
+# fig8d_pathway_module_data.R (keep in sync), mapped onto the 15 x 15 display grid
+# (bin i spans fractions (i-1)/15..i/15, so fraction f sits at f * 15 + 0.5).
+gates <- list(chick = list(c(7,5), c(6,5), c(7,4), c(6,4)),
+              human = list(c(3,5), c(4,5), c(3,4), c(4,4)))
+gate_box <- function(q, n = 10, nb = 15) {
+    nt <- sapply(q, `[`, 1); dv <- sapply(q, `[`, 2)
+    c(xmin = min(nt), xmax = max(nt) + 1, ymin = min(dv), ymax = max(dv) + 1) / n * nb + 0.5
+}
+boxes <- bind_cols(species = factor(sp_labs, levels = levels(df$species)),
+                   as_tibble(do.call(rbind, lapply(gates, gate_box))))
 # Species-specific FGF-ligand label, top-left inside the FGF-ligand column.
 ligtext <- tibble(
     species = factor(sp_labs, levels = levels(df$species)),

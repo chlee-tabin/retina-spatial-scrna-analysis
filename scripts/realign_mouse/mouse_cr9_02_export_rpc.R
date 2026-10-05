@@ -30,8 +30,9 @@ export_mex <- function(s, dir_path, assay = "RNA", prefix = "") {
   counts <- LayerData(ja, layer = "counts"); data <- LayerData(ja, layer = "data")
   rc_gz <- file.path(dir_path, paste0(prefix, "raw_counts.mtx.gz"))
   nd_gz <- file.path(dir_path, paste0(prefix, "normalized_data.mtx.gz"))
-  if (!file.exists(rc_gz)) { Matrix::writeMM(counts, sub("\\.gz$", "", rc_gz)); system2("gzip", c("-f", sub("\\.gz$", "", rc_gz))) } else log("skip existing", rc_gz)
-  if (!file.exists(nd_gz)) { Matrix::writeMM(data,   sub("\\.gz$", "", nd_gz)); system2("gzip", c("-f", sub("\\.gz$", "", nd_gz))) } else log("skip existing", nd_gz)
+  # Always rewrite the matrices so they stay in step with the sidecars below.
+  Matrix::writeMM(counts, sub("\\.gz$", "", rc_gz)); system2("gzip", c("-f", sub("\\.gz$", "", rc_gz)))
+  Matrix::writeMM(data,   sub("\\.gz$", "", nd_gz)); system2("gzip", c("-f", sub("\\.gz$", "", nd_gz)))
   write.table(rownames(counts), file.path(dir_path, paste0(prefix, "features.tsv")),
               row.names = FALSE, col.names = FALSE, quote = FALSE)
   write.table(colnames(counts), file.path(dir_path, paste0(prefix, "barcodes.tsv")),

@@ -31,7 +31,7 @@ for fqdir in "$ROOT"/*/*/fastq; do
     case "$crid" in georges_*) continue;; esac           # deferred
     ls "$fqdir"/*_R1_*.fastq.gz >/dev/null 2>&1 || continue
     ls "$fqdir"/*_R2_*.fastq.gz >/dev/null 2>&1 || continue
-    if [ -d "$ROOT/counts/$crid/outs" ]; then echo "skip (counted): $crid"; continue; fi
+    if [ -s "$ROOT/counts/$crid/outs/filtered_feature_bc_matrix.h5" ]; then echo "skip (counted): $crid"; continue; fi
     running=$(squeue --me -h -o '%j' 2>/dev/null)
     # a job named exactly $crid = its download is still running
     if grep -qx "$crid" <<<"$running"; then echo "skip (download running): $crid"; continue; fi
