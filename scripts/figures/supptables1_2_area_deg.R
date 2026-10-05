@@ -31,7 +31,7 @@
 # copy of a gate without the other stops the run.
 #
 # Inputs: `data/20250604_02_fabp7.rds` (chick) and
-# `data/20250604_human_RPC.h5ad` (human) from GEO GSE322831.
+# the archived human R-export `data/20250604human.RPC/` (23,031 cells; see README).
 # Outputs: `figures/Tables/SuppTable1_chick_area_significant.csv` (6,383
 # region-gene rows) and `figures/Tables/SuppTable2_human_area_significant.csv`
 # (1,396 rows). Columns: gene, region, average_expression, log2FC, pval,
@@ -143,5 +143,6 @@ rm(chick); invisible(gc())
 # ## Supplementary Table 2: human
 
 # %%
-human <- read_h5ad_as_seurat(file.path(here::here(), "data", "20250604_human_RPC.h5ad"))
+# R-export-stage human RPCs (23,031 cells) -- the object the published Table 2 used.
+human <- read_human_rexport()
 area_tables(human, "human", donor_col = "sample", library_col = "library", table_no = "2")

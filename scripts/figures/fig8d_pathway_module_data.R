@@ -138,9 +138,10 @@ module_maps(chick, "chick", ligand = "FGF8")
 rm(chick); invisible(gc())
 
 # %% [markdown]
-# ## Human (deposited RPC h5ad; published DV/NT scores)
+# ## Human (R-export-stage RPCs; published DV/NT scores)
 
 # %%
-human <- read_h5ad_as_seurat(file.path(here::here(), "data", "20250604_human_RPC.h5ad"))
+# R-export-stage human RPCs (23,031 cells) -- the object the published Fig. 8D used.
+human <- read_human_rexport()
 module_maps(human, "human", ligand = "FGF7")
 cat("\nwrote", OUTDIR, "\n")

@@ -567,15 +567,15 @@ ggsave( p, file=file.path(FIGURES_BASE, "Figure_SF24", "SF24A_volcano.png"), wid
 # ## SF24B: Human area selection
 
 # %%
-# Human RPCs with the published DV/NT scores — deposited in GEO GSE322831 as
-# 20250604_human_RPC.h5ad (download and strip the GSE322831_ prefix; see README).
-# The Seurat object is rebuilt on the raw counts (read_h5ad_as_seurat, 00_utils.R)
-# and log-normalized here. The scores must be the deposited ones: re-deriving
+# Human RPCs with the published DV/NT scores: the R-export-stage object (23,031 cells)
+# archived with this code (see README, "Human R-export"), which Fig. S24B used. The
+# GEO h5ad (21,793 cells, after assembly filtering) shifts the gate and does not
+# reproduce S24B. The Seurat object is rebuilt on the raw counts and log-normalized here. The scores must be the deposited ones: re-deriving
 # DV/NT shifts the grid and moves the region gates.
 if (exists("human")) {
-    message("human: using in-session object (", ncol(human), " cells); GEO object of record is data/20250604_human_RPC.h5ad")
+    message("human: using in-session object (", ncol(human), " cells); object of record is data/20250604human.RPC/ (R export)")
 } else {
-    human <- read_h5ad_as_seurat(file.path(here::here(), "data", "20250604_human_RPC.h5ad"))
+    human <- read_human_rexport()
 }
 human <- NormalizeData(human, verbose = FALSE)
 

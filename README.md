@@ -124,10 +124,12 @@ The deposited [GEO GSE322831](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc
    | GEO supplementary file | becomes | used by |
    |---|---|---|
    | `GSE322831_20250604_chick_RPC.h5ad` | `data/20250604_chick_RPC.h5ad` | fig6ag, fig7, sfig15–17 |
-   | `GSE322831_20250604_human_RPC.h5ad` | `data/20250604_human_RPC.h5ad` | fig7, fig8d (data), sfig19–24, supptables1_2 |
+   | `GSE322831_20250604_human_RPC.h5ad` | `data/20250604_human_RPC.h5ad` | fig7, sfig19–23 |
    | `GSE322831_20260528_mouse_RPC_cr9_e13e16.h5ad` | `data/20260528_mouse_RPC_cr9_e13e16.h5ad` | fig7, sfig19, sfig20–22 (mouse) |
    | `GSE322831_20250604_02_fabp7.rds` | `data/20250604_02_fabp7.rds` | fig5, sfig13, sfig14, fig8d (data), sfig24, supptables1_2 |
    | `GSE322831_20250604_01_retina.rds` | `data/20250604_01_retina.rds` | sfig12 |
+
+   **Human R-export.** The human area-DEG (Supplementary Table 2, Fig. S24B) and the Fig. 8D human module maps were computed on the R-export-stage human RPC object (23,031 cells), before the Python-side assembly filtering that produced the GEO h5ad (21,793 cells). The HAA/fovea gate is defined on each object's DV/NT range, so the GEO object does not reproduce these three exactly. The R-export (MEX: raw counts, barcodes, features, metadata) is archived at [Zenodo DOI to be added]; unpack it to `data/20250604human.RPC/`. It is read by `read_human_rexport()` in `scripts/preprocessing/00_utils.R` and used by fig8d (data), sfig24 (human) and supptables1_2 (Table 2).
 
    The remaining `GSE322831_*` supplementary files are not needed for the figures: `..._mouse_RPC_cr9.h5ad` is the full ten-library E13.5–P0 mouse object (43,991 RPCs) behind the interactive viewer (the figures use the seven-library E13.5–E16 subset, 26,505 cells), and the GTF/genome files support re-alignment from raw reads. GEO's bundled `readme.txt` predates the mouse re-alignment; this table is current.
 

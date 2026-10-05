@@ -772,3 +772,27 @@ read_h5ad_as_seurat <- function(path) {
                     nrow(m), ncol(m), basename(path), if (use_raw) ".raw counts" else "X counts"))
     CreateSeuratObject(counts = Matrix::t(m), meta.data = obs)
 }
+
+# %% [markdown]
+# ## read_mex_export_as_seurat(): Seurat MEX export -> Seurat object on raw counts
+
+# %%
+# The human area-DEG (Supplementary Table 2, Fig. S24B) and Fig. 8D human module maps
+# were computed on the R-export-stage human RPC object (23,031 cells), before the
+# Python-side assembly filtering that produced the GEO h5ad (21,793 cells). That export
+# is archived with this code (see README, "Human R-export"); this reads it back.
+read_mex_export_as_seurat <- function(dir, prefix) {
+    f <- function(x) file.path(dir, paste0(prefix, x))
+    if (!file.exists(f("raw_counts.mtx.gz"))) stop("MEX export not found: ", dir, " (see README)")
+    counts <- ReadMtx(mtx = f("raw_counts.mtx.gz"), cells = f("barcodes.tsv"),
+                      features = f("features.tsv"), feature.column = 1, cell.column = 1)
+    meta <- read.delim(f("metadata.tsv"), check.names = FALSE, stringsAsFactors = FALSE)
+    stopifnot(all(colnames(counts) %in% rownames(meta)))
+    message(sprintf("read_mex_export_as_seurat: %d cells x %d genes from %s", ncol(counts), nrow(counts), basename(dir)))
+    CreateSeuratObject(counts = counts, meta.data = meta[colnames(counts), , drop = FALSE])
+}
+
+# The archived human R-export used by the three analyses above.
+read_human_rexport <- function() {
+    read_mex_export_as_seurat(file.path(here::here(), "data", "20250604human.RPC"), "20250604human.RPC_")
+}
