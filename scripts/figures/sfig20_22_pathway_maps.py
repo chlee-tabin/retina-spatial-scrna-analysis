@@ -15,7 +15,7 @@
 # ## SF22B: Human BMP signaling
 
 # %% [markdown]
-# ## Figure 94
+# ### SF22B: BMP pathway maps
 
 # %% tags=["cell-187"]
 # Self-contained cell for generating BMP signaling genes figure for human
@@ -199,7 +199,7 @@ for idx in range(plot_idx, nrows * ncols):
 fig.suptitle('BMP Signaling Pathway Components in Human Retinal RPCs',
            fontsize=16, fontweight='bold', y=0.98)
 # Save the composite figure
-composite_path = f"{output_dir}/SF22_bmp_signaling.png"
+composite_path = f"{output_dir}/SF22B_bmp_signaling.png"
 fig.savefig(composite_path, dpi=300, bbox_inches='tight', facecolor='white')
 print(f"\nComposite figure saved to: {composite_path}")
 plt.show()
@@ -250,12 +250,12 @@ for cat_idx, (category, genes) in enumerate(BMP_GENES.items()):
 fig2.suptitle('BMP Signaling Pathway Components in Human Retinal RPCs (By Category)',
             fontsize=16, fontweight='bold')
 # Save the category-separated figure
-category_path = f"{output_dir}/SF22_bmp_by_category.png"
+category_path = f"{output_dir}/SF22B_bmp_by_category.png"
 fig2.savefig(category_path, dpi=300, bbox_inches='tight', facecolor='white')
 print(f"Category-separated figure saved to: {category_path}")
 plt.show()
 # Save summary to text file
-summary_path = f"{output_dir}/SF22_bmp_summary.txt"
+summary_path = f"{output_dir}/SF22B_bmp_summary.txt"
 with open(summary_path, 'w') as f:
   f.write("BMP Signaling Pathway Components Analysis\n")
   f.write("=" * 60 + "\n\n")
@@ -293,7 +293,7 @@ if genes_not_found:
 # ## SF21B: Human FGF8 downstream
 
 # %% [markdown]
-# ## Figure 95
+# ### SF21B: FGF8 downstream maps
 
 # %% tags=["cell-189"]
 # Self-contained cell for generating FGF8 downstream and related genes figure for human
@@ -484,7 +484,7 @@ for idx in range(plot_idx, nrows * ncols):
 fig.suptitle('FGF8 Signaling and Related Genes in Human Retinal RPCs',
            fontsize=16, fontweight='bold', y=0.96)
 # Save the composite figure
-composite_path = f"{output_dir}/SF21_fgf8_pathway.png"
+composite_path = f"{output_dir}/SF21B_fgf8_pathway.png"
 fig.savefig(composite_path, dpi=300, bbox_inches='tight', facecolor='white')
 print(f"\nComposite figure saved to: {composite_path}")
 plt.show()
@@ -534,7 +534,7 @@ for cat_idx, (category, genes) in enumerate(FGF8_GENES.items()):
 fig2.suptitle('FGF8 Signaling and Related Genes in Human Retinal RPCs (By Category)',
             fontsize=16, fontweight='bold')
 # Save the category-separated figure
-category_path = f"{output_dir}/SF21_fgf8_by_category.png"
+category_path = f"{output_dir}/SF21B_fgf8_by_category.png"
 fig2.savefig(category_path, dpi=300, bbox_inches='tight', facecolor='white')
 print(f"Category-separated figure saved to: {category_path}")
 plt.show()
@@ -590,12 +590,12 @@ if fgf8_variant:
   ]
   ax.legend(handles=legend_elements, loc='lower right')
   plt.tight_layout()
-  correlation_path = f"{output_dir}/SF21_fgf8_correlations.png"
+  correlation_path = f"{output_dir}/SF21B_fgf8_correlations.png"
   fig3.savefig(correlation_path, dpi=300, bbox_inches='tight', facecolor='white')
   print(f"Correlation plot saved to: {correlation_path}")
   plt.show()
 # Save summary to text file
-summary_path = f"{output_dir}/SF21_fgf8_summary.txt"
+summary_path = f"{output_dir}/SF21B_fgf8_summary.txt"
 with open(summary_path, 'w') as f:
   f.write("FGF8 Signaling and Related Genes Analysis\n")
   f.write("=" * 60 + "\n\n")
@@ -644,7 +644,7 @@ if fgf8_variant and gene_correlations:
 # ## SF20B: Human FGF family
 
 # %% [markdown]
-# ## Figure 96
+# ### SF20B: FGF ligand and receptor maps
 
 # %% tags=["cell-191"]
 # Self-contained cell for generating comprehensive FGF family genes figure for human
@@ -842,7 +842,7 @@ for idx in range(plot_idx, nrows * ncols):
 fig.suptitle('Comprehensive FGF Family Expression in Human Retinal RPCs',
            fontsize=16, fontweight='bold', y=0.96)
 # Save the composite figure
-composite_path = f"{output_dir}/SF20_fgf_family.png"
+composite_path = f"{output_dir}/SF20B_fgf_family.png"
 fig.savefig(composite_path, dpi=300, bbox_inches='tight', facecolor='white')
 print(f"\nComposite figure saved to: {composite_path}")
 plt.show()
@@ -879,7 +879,7 @@ if genes_with_expression:
       ax.axis('off')
   fig2.suptitle('FGF Family Members with Notable Expression in Human Retinal RPCs',
                 fontsize=14, fontweight='bold')
-  expressed_path = f"{output_dir}/SF20_fgf_expressed_only.png"
+  expressed_path = f"{output_dir}/SF20B_fgf_expressed_only.png"
   fig2.savefig(expressed_path, dpi=300, bbox_inches='tight', facecolor='white')
   print(f"Expressed genes figure saved to: {expressed_path}")
   plt.show()
@@ -929,7 +929,7 @@ if expression_data:
       ax2.text(0, i, f'{val[0]:.3f}', ha='center', va='center', fontsize=7)
   fig3.suptitle('FGF Family Expression Summary', fontsize=12, fontweight='bold')
   plt.tight_layout()
-  heatmap_path = f"{output_dir}/SF20_fgf_expression_summary.png"
+  heatmap_path = f"{output_dir}/SF20B_fgf_expression_summary.png"
   fig3.savefig(heatmap_path, dpi=300, bbox_inches='tight', facecolor='white')
   print(f"Expression heatmap saved to: {heatmap_path}")
   plt.show()

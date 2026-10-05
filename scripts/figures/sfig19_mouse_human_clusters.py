@@ -135,7 +135,7 @@ print(human_summary)
 # ## SF19B: Human 20-anchor spatial patterns
 
 # %% [markdown]
-# ### Figure 5B
+# ### SF19B: Human anchor maps
 
 # %% tags=["cell-104"]
 import matplotlib.pyplot as plt
@@ -268,7 +268,7 @@ if anchor_to_cluster_size:
 # ## SF19 companion table: human anchor gene pairs (not a numbered supplementary table)
 
 # %% [markdown]
-# ### Supplemental Table 2
+# ### SF19B cluster-member table
 
 # %% tags=["cell-106"]
 import pandas as pd
@@ -416,7 +416,7 @@ print(mouse_summary)
 # ## SF19A: Mouse 20-anchor spatial patterns
 
 # %% [markdown]
-# ### Figure 5D
+# ### SF19A: Mouse anchor maps
 
 # %% tags=["cell-141"]
 import matplotlib.pyplot as plt
@@ -548,7 +548,7 @@ if anchor_to_cluster_size:
 # ## SF19 companion table: mouse anchor gene pairs (not a numbered supplementary table)
 
 # %% [markdown]
-# ### Supplemental Table 3
+# ### SF19A cluster-member table
 
 # %% tags=["cell-144"]
 import pandas as pd

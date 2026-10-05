@@ -58,7 +58,7 @@ item_labs <- c(
     "FGF ligand\n(chick: FGF8 / human: FGF7)",
     "FGF-feedback\n(SPRY/DUSP/ETV5)",
     "BMP ligand\n(BMP2/4/7)",
-    "BMP antagonist\n(SOSTDC1/NOG/GREM)",
+    "BMP antagonist\n(SOSTDC1/NOG/GREM/FST)",
     "RA-degradation\n(CYP26)",
     "RA-synthesis\n(ALDH1A)"
 )

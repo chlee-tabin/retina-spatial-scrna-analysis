@@ -1,0 +1,13 @@
+cellranger_id	source	primary_accession	run_or_bam	stage	strain_or_genotype	whole_retina	chemistry	dl_route	notes
+clark_E14_rep1	SRA/ENA	GSM3334486 / GSE118614	ENA BAM: SRR7699772/E14_rep1.bam.1	E14	CD1 WT	yes	10x v2	bam_single	Clark 2019 Neuron; BAM-submitted (fasterq gives cDNA-only) -> bamtofastq
+clark_E14_rep2	SRA/ENA	GSM3334487 / GSE118614	ENA BAM: SRR7699773/E14_rep2.bam.1	E14	CD1 WT	yes	10x v2	bam_single	Clark 2019 Neuron rep2
+clark_E16	SRA/ENA	GSM3334488 / GSE118614	ENA BAM: SRR7699774/E16.bam.1	E16	CD1 WT	yes	10x v2	bam_single	Clark 2019 Neuron E16; Cyp26c1 sparse-present stage
+clark_E18_rep2	SRA/ENA	GSE118614	ENA BAM: SRR7699775/E18_rep2.bam.1	E18	CD1 WT	yes	10x v2	bam_single	Clark E18; Cyp26c1 established
+clark_E18_rep3	SRA/ENA	GSE118614	ENA BAM: SRR7699776/E18_rep3.bam.1	E18	CD1 WT	yes	10x v2	bam_single	Clark E18 rep3
+clark_P0	SRA/ENA	GSE118614	ENA BAM: SRR7699777/P0.bam.1	P0	CD1 WT	yes	10x v2	bam_single	Clark P0; Cyp26c1 well-expressed
+bala_E13p5_WT	SRA/ENA	GSM4148508 / GSE139904	ENA BAM: SRR10398966/possorted_genome_bam.bam.1	E13.5	C57BL/6 (WT subset)	NO (Pax6 a-Cre/GFP sorted, peripheral)	10x v3	bam_single	Balasubramanian 2021 Sci Adv; bamtofastq then filter to SCP1618 Control (4,642 barcodes; 4,474 after QC) at merge
+wu_E13p5_atoh7het	SRA	GSM4488285 / GSE149040	SRR11582194	E13.5	C57BL/6/129 Atoh7-zsGreen/+ het (functional WT)	likely yes	10x v2	fasterq	Wu 2021 Nat Commun; FASTQ-submitted; fasterq R1=26 R2=98 I1=8 confirmed
+logiudice_E15p5_rep1	SRA	GSM3466902 / GSE122466	SRR8181428	E15.5	whole retina (Fabre lab)	yes	10x v2	fasterq	Lo Giudice 2019 Development; batch F2 (2675 cells); gap-filler E14->E16
+logiudice_E15p5_rep2	SRA	GSM3466903 / GSE122466	SRR8181429	E15.5	whole retina (Fabre lab)	yes	10x v2	fasterq	Lo Giudice 2019 Development; batch E2 (2673 cells)
+georges_E13p5_rep1	ENA BAM	SAMEA7090332 / E-MTAB-9395	16x lane BAMs NaR_E13.1	E13.5	C57BL/6 WT	yes	10x v2	bam_multi	Georges 2023 Sci Rep rep1; excluded from atlas: BAM header incompatible with bamtofastq
+georges_E13p5_rep2	ENA BAM	SAMEA7090333 / E-MTAB-9395	16x lane BAMs NaR_E13.2	E13.5	C57BL/6 WT	yes	10x v2	bam_multi	Georges 2023 Sci Rep rep2; excluded from atlas: BAM header incompatible with bamtofastq

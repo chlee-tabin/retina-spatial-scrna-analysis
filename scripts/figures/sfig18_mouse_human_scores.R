@@ -15,22 +15,22 @@
 source(file.path(here::here(), "scripts/preprocessing/00_utils.R"))
 
 # %%
-# Both objects are in-session Seurat objects this repo cannot fully rebuild from
-# public data (see README, "Reproducibility scope"):
+# Requires in-session Seurat objects (see README, "Reproducibility scope"):
 # - `human`: produced by source()'ing scripts/preprocessing/03_human_preprocessing.R
 #   (its input is a pre-publication intermediate, not distributed).
 # - `mouse`: must be the Cell Ranger 9.0.1 / GRCm39 re-aligned RPC Seurat object
-#   (rebuilt from the CR9 atlas, carrying DV.Score / NT.Score in its metadata).
+#   (rebuilt from scripts/realign_mouse/ or the deposited E13.5-E16 h5ad,
+#   carrying DV.Score / NT.Score in its metadata).
 #   scripts/preprocessing/04_mouse_preprocessing.R yields the SUPERSEDED pre-CR9
 #   4-library object — do not use it for this figure.
 if (!exists("human"))
     stop("Object 'human' not found: source scripts/preprocessing/03_human_preprocessing.R in this R session first (see README).")
 if (!exists("mouse"))
     stop("Object 'mouse' not found. It must be the CR9/GRCm39 re-aligned mouse RPC Seurat object ",
-         "(produced by the re-alignment pipeline outside this repo; 04_mouse_preprocessing.R yields the superseded pre-CR9 object). See README.")
+         "(produced from the scripts/realign_mouse pipeline; 04_mouse_preprocessing.R yields the superseded pre-CR9 object). See README.")
 # exists() alone would accept 04's superseded object (which is also named `mouse`);
 # 25,202 cells is that object's deterministic count — reject it outright.
-# ponytail: count check only; a metadata provenance tag would be stronger if one is ever added.
+# This guard checks cell count only.
 if (ncol(mouse) == 25202)
     stop("`mouse` has 25,202 cells — this is 04_mouse_preprocessing.R's superseded pre-CR9 object, ",
          "not the CR9/GRCm39 re-aligned RPC object (26,505 cells, E13.5-E16). See README.")
@@ -47,10 +47,10 @@ dir.create(file.path(FIGURES_BASE, "Figure_SF18"), recursive = TRUE, showWarning
 dir.create(file.path(FIGURES_BASE, "Figure_SF18", "variants"), recursive = TRUE, showWarnings = FALSE)
 
 # %% [markdown]
-# ## SF18C: Human DV axial expression
+# ## SF18A: Human DV axial expression
 
 # %% [markdown]
-# ### Figure 81
+# ### SF18A: Marker expression
 
 # %% tags=["cell-272"]
 p <- plot_axial_expression(
@@ -69,11 +69,11 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig81.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18C_raw.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18A.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18A_raw.pdf"), width = 14, height = 9)
 
 # %% [markdown]
-# ### Figure 81 (normalized)
+# ### SF18A: Marker expression (normalized)
 
 # %% tags=["cell-274"]
 p <- plot_axial_expression(
@@ -92,11 +92,11 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig81_normalized.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "SF18C_human_dv_markers.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18A_normalized.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "SF18A_human_dv_markers.pdf"), width = 14, height = 9)
 
 # %% [markdown]
-# ### Figure 82
+# ### SF18A': Validation expression
 
 # %% tags=["cell-276"]
 p <- plot_axial_expression(
@@ -115,8 +115,8 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig82.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18C_validation_raw.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18A_prime.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18A_prime_validation_raw.pdf"), width = 14, height = 9)
 
 # %% tags=["cell-277"]
 p <- plot_axial_expression(
@@ -138,10 +138,10 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18C_reference.png"), width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18A_prime_reference.png"), width = 14, height = 9)
 
 # %% [markdown]
-# ### Figure 82 (normalized)
+# ### SF18A': Validation expression (normalized)
 
 # %% tags=["cell-279"]
 p <- plot_axial_expression(
@@ -160,8 +160,8 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig82_normalized.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18C_normalized.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18A_prime_normalized.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18A_prime_normalized.pdf"), width = 14, height = 9)
 
 # %% tags=["cell-280"]
 p <- plot_axial_expression(
@@ -183,14 +183,14 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig82_normalized_reference.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18C_normalized_reference.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18A_prime_normalized_reference.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18A_prime_human_dv_validation.pdf"), width = 14, height = 9)
 
 # %% [markdown]
-# ## SF18D: Human NT axial expression
+# ## SF18B: Human NT axial expression
 
 # %% [markdown]
-# ### Figure 83
+# ### SF18B: Marker expression
 
 # %% tags=["cell-282"]
 p <- plot_axial_expression(
@@ -210,11 +210,11 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig83.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18D_raw.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18B.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18B_raw.pdf"), width = 14, height = 9)
 
 # %% [markdown]
-# ### Figure 83 (normalized)
+# ### SF18B: Marker expression (normalized)
 
 # %% tags=["cell-285"]
 p <- plot_axial_expression(
@@ -234,11 +234,11 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig83_normalized.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "SF18D_human_nt_markers.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18B_normalized.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "SF18B_human_nt_markers.pdf"), width = 14, height = 9)
 
 # %% [markdown]
-# ### Figure 84
+# ### SF18B': Validation expression
 
 # %% tags=["cell-287"]
 p <- plot_axial_expression(
@@ -257,8 +257,8 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig84.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18D_validation_raw.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18B_prime.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18B_prime_validation_raw.pdf"), width = 14, height = 9)
 
 # %% tags=["cell-288"]
 p <- plot_axial_expression(
@@ -280,10 +280,10 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18D_reference.png"), width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18B_prime_reference.png"), width = 14, height = 9)
 
 # %% [markdown]
-# ### Figure 84 (normalized)
+# ### SF18B': Validation expression (normalized)
 
 # %% tags=["cell-290"]
 p <- plot_axial_expression(
@@ -303,8 +303,8 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig84_normalized.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18D_normalized.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18B_prime_normalized.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18B_prime_normalized.pdf"), width = 14, height = 9)
 
 # %% tags=["cell-291"]
 p <- plot_axial_expression(
@@ -327,14 +327,14 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig84_normalized_reference.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18D_normalized_reference.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18B_prime_normalized_reference.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18B_prime_human_nt_validation.pdf"), width = 14, height = 9)
 
 # %% [markdown]
-# ## SF18A: Mouse DV axial expression
+# ## SF18C: Mouse DV axial expression
 
 # %% [markdown]
-# ### Figure 85
+# ### SF18C: Marker expression
 
 # %% tags=["cell-330"]
 p <- plot_axial_expression(
@@ -353,11 +353,11 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig85.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18A_raw.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18C_mouse_dv_markers.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18C_mouse_dv_raw.pdf"), width = 14, height = 9)
 
 # %% [markdown]
-# ### Figure 85 (normalized)
+# ### SF18C: Marker expression (normalized)
 
 # %% tags=["cell-332"]
 p <- plot_axial_expression(
@@ -376,11 +376,11 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig85_normalized.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "SF18A_mouse_dv_markers.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18C_mouse_dv_markers_normalized.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "SF18C_mouse_dv_markers.pdf"), width = 14, height = 9)
 
 # %% [markdown]
-# ### Figure 86
+# ### SF18C: Validation expression
 
 # %% tags=["cell-334"]
 p <- plot_axial_expression(
@@ -399,8 +399,8 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig86.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18A_validation_raw.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18C_mouse_dv_validation.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18C_mouse_dv_validation_raw.pdf"), width = 14, height = 9)
 
 # %% tags=["cell-335"]
 p <- plot_axial_expression(
@@ -422,11 +422,11 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig86_reference.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18A_reference.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18C_mouse_dv_validation_reference.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18C_mouse_dv_reference.pdf"), width = 14, height = 9)
 
 # %% [markdown]
-# ### Figure 86 (normalized)
+# ### SF18C: Validation expression (normalized)
 
 # %% tags=["cell-337"]
 p <- plot_axial_expression(
@@ -451,8 +451,8 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig86_normalized_reference.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18A_normalized_reference.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18C_mouse_dv_validation_normalized_reference.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18C_mouse_dv_normalized_reference.pdf"), width = 14, height = 9)
 
 # %% tags=["cell-338"]
 p <- plot_axial_expression(
@@ -474,14 +474,14 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig86_normalized.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18A_normalized.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18C_mouse_dv_validation_normalized.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18C_mouse_dv_normalized.pdf"), width = 14, height = 9)
 
 # %% [markdown]
-# ## SF18B: Mouse NT axial expression
+# ## SF18C: Mouse NT axial expression
 
 # %% [markdown]
-# ### Figure 87
+# ### SF18C: Marker expression
 
 # %% tags=["cell-340"]
 p <- plot_axial_expression(
@@ -500,11 +500,11 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig87.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18B_raw.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18C_mouse_nt_markers.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18C_mouse_nt_raw.pdf"), width = 14, height = 9)
 
 # %% [markdown]
-# ### Figure 87 (normalized)
+# ### SF18C: Marker expression (normalized)
 
 # %% tags=["cell-342"]
 p <- plot_axial_expression(
@@ -523,11 +523,11 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig87_normalized.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "SF18B_mouse_nt_markers.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18C_mouse_nt_markers_normalized.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "SF18C_mouse_nt_markers.pdf"), width = 14, height = 9)
 
 # %% [markdown]
-# ### Figure 88
+# ### SF18C: Validation expression
 
 # %% tags=["cell-344"]
 p <- plot_axial_expression(
@@ -546,8 +546,8 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig88.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18B_validation_raw.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18C_mouse_nt_validation.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18C_mouse_nt_validation_raw.pdf"), width = 14, height = 9)
 
 # %% tags=["cell-345"]
 p <- plot_axial_expression(
@@ -569,11 +569,11 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig88_reference.png", width = 14, height = 9)
-ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18B_reference.pdf"), width = 14, height = 9)
+# ggsave(p, filename = "figures2/SF18C_mouse_nt_validation_reference.png", width = 14, height = 9)
+ggsave(p, filename = file.path(FIGURES_BASE, "Figure_SF18", "variants", "SF18C_mouse_nt_reference.pdf"), width = 14, height = 9)
 
 # %% [markdown]
-# ### Figure 88 (normalized)
+# ### SF18C: Validation expression (normalized)
 
 # %% tags=["cell-347"]
 p <- plot_axial_expression(
@@ -595,4 +595,4 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig88_normalized.
+# ggsave(p, filename = "figures2/SF18C_mouse_nt_validation_normalized.

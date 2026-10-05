@@ -61,8 +61,8 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig51.png", width = 14, height = 9)
-# ggsave(p, filename = "figures2/Fig51.pdf", width = 14, height = 9)
+# ggsave(p, filename = "figures2/F5B.png", width = 14, height = 9)
+# ggsave(p, filename = "figures2/F5B.pdf", width = 14, height = 9)
 
 # %% tags=["cell-179"]
 # Example usage:
@@ -86,8 +86,8 @@ options(repr.plot.width = 14, repr.plot.height = 9)
 p
 ggsave(p, filename = file.path(FIGURES_BASE, "Figure5", "F5B_dv_markers.png"), width = 14, height = 9)
 ggsave(p, filename = file.path(FIGURES_BASE, "Figure5", "F5B_dv_markers.svg"), width = 14, height = 9)
-# ggsave(p, filename = "figures2/Fig51_normalized.png", width = 14, height = 9)
-# ggsave(p, filename = "figures2/Fig51_normalized.pdf", width = 14, height = 9)
+# ggsave(p, filename = "figures2/F5B_normalized.png", width = 14, height = 9)
+# ggsave(p, filename = "figures2/F5B_normalized.pdf", width = 14, height = 9)
 
 # %% [markdown]
 # ## F5D: DV validation with independent genes + reference overlay
@@ -110,7 +110,7 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig52.png", width = 14, height = 9)
+# ggsave(p, filename = "figures2/F5D.png", width = 14, height = 9)
 ggsave(p, filename = file.path(FIGURES_BASE, "Figure5", "variants", "F5D_raw.pdf"), width = 14, height = 9)
 
 # %% tags=["cell-183"]
@@ -133,11 +133,11 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig52_reference.png", width = 14, height = 9)
+# ggsave(p, filename = "figures2/F5D_reference.png", width = 14, height = 9)
 ggsave(p, filename = file.path(FIGURES_BASE, "Figure5", "variants", "F5D_reference.pdf"), width = 14, height = 9)
 
 # %% [markdown]
-# ### Figure 52 (normalized)
+# ### F5D (normalized)
 
 # %% tags=["cell-185"]
 # Example usage:
@@ -157,7 +157,7 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig52_normalized.png", width = 14, height = 9)
+# ggsave(p, filename = "figures2/F5D_normalized.png", width = 14, height = 9)
 ggsave(p, filename = file.path(FIGURES_BASE, "Figure5", "variants", "F5D_normalized.pdf"), width = 14, height = 9)
 
 # %% tags=["cell-186"]
@@ -185,8 +185,8 @@ p_circle_repel <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p_circle_repel
-# ggsave(p_circle_repel, filename = "figures2/Fig52_normalized_reference.png", width = 14, height = 9)
-# ggsave(p_circle_repel, filename = "figures2/Fig52_normalized_reference.pdf", width = 14, height = 9)
+# ggsave(p_circle_repel, filename = "figures2/F5D_normalized_reference.png", width = 14, height = 9)
+# ggsave(p_circle_repel, filename = "figures2/F5D_normalized_reference.pdf", width = 14, height = 9)
 ggsave(p_circle_repel, filename = file.path(FIGURES_BASE, "Figure5", "F5D_dv_validation.png"), width = 14, height = 9)
 ggsave(p_circle_repel, filename = file.path(FIGURES_BASE, "Figure5", "F5D_dv_validation.svg"), width = 14, height = 9)
 
@@ -214,7 +214,7 @@ p_circle_repel <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p_circle_repel
-# ggsave(p_circle_repel, filename = "figures2/Fig52_normalized_reference2.png", width = 14, height = 9)
+# ggsave(p_circle_repel, filename = "figures2/F5D_normalized_reference2.png", width = 14, height = 9)
 ggsave(p_circle_repel, filename = file.path(FIGURES_BASE, "Figure5", "variants", "F5D_normalized_reference2.pdf"), width = 14, height = 9)
 
 # %% [markdown]
@@ -238,7 +238,7 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig53.png", width = 14, height = 9)
+# ggsave(p, filename = "figures2/F5C.png", width = 14, height = 9)
 ggsave(p, filename = file.path(FIGURES_BASE, "Figure5", "variants", "F5C_raw.pdf"), width = 14, height = 9)
 
 # %% tags=["cell-213"]
@@ -261,8 +261,8 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig53_normalized.png", width = 14, height = 9)
-# ggsave(p, filename = "figures2/Fig53_normalized.pdf", width = 14, height = 9)
+# ggsave(p, filename = "figures2/F5C_normalized.png", width = 14, height = 9)
+# ggsave(p, filename = "figures2/F5C_normalized.pdf", width = 14, height = 9)
 ggsave(p, filename = file.path(FIGURES_BASE, "Figure5", "F5C_nt_markers.svg"), width = 14, height = 9)
 ggsave(p, filename = file.path(FIGURES_BASE, "Figure5", "F5C_nt_markers.png"), width = 14, height = 9)
 
@@ -288,7 +288,7 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig54.png", width = 14, height = 9)
+# ggsave(p, filename = "figures2/F5E.png", width = 14, height = 9)
 ggsave(p, filename = file.path(FIGURES_BASE, "Figure5", "variants", "F5E_raw.pdf"), width = 14, height = 9)
 
 # %% tags=["cell-216"]
@@ -314,7 +314,7 @@ p
 ggsave(p, filename = file.path(FIGURES_BASE, "Figure5", "variants", "F5E_reference.png"), width = 14, height = 9)
 
 # %% [markdown]
-# ### Figure 54 (normalized)
+# ### F5E (normalized)
 
 # %% tags=["cell-218"]
 # Example usage:
@@ -335,7 +335,7 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig54_normalized.png", width = 14, height = 9)
+# ggsave(p, filename = "figures2/F5E_normalized.png", width = 14, height = 9)
 ggsave(p, filename = file.path(FIGURES_BASE, "Figure5", "variants", "F5E_normalized.pdf"), width = 14, height = 9)
 
 # %% tags=["cell-219"]
@@ -360,13 +360,13 @@ p <- plot_axial_expression(
 )
 options(repr.plot.width = 14, repr.plot.height = 9)
 p
-# ggsave(p, filename = "figures2/Fig54_normalized_reference.png", width = 14, height = 9)
-# ggsave(p, filename = "figures2/Fig54_normalized_reference.pdf", width = 14, height = 9)
+# ggsave(p, filename = "figures2/F5E_normalized_reference.png", width = 14, height = 9)
+# ggsave(p, filename = "figures2/F5E_normalized_reference.pdf", width = 14, height = 9)
 ggsave(p, filename = file.path(FIGURES_BASE, "Figure5", "F5E_nt_validation.png"), width = 14, height = 9)
 ggsave(p, filename = file.path(FIGURES_BASE, "Figure5", "F5E_nt_validation.svg"), width = 14, height = 9)
 
 # %% [markdown]
-# ### Figure 54 (CYP1B1)
+# ### F5E (CYP1B1)
 
 # %% tags=["cell-221"]
 show.genes <- c( "CYP1B1", "FGF8" )
@@ -512,13 +512,13 @@ ggsave(
     filename=file.path(FIGURES_BASE, "Figure5", "variants", "F5E_CYP1B1.png"),
     width = 14, height = 7
 )
-Fig54_CYP1B1_legend <- glue::glue(
+F5E_CYP1B1_legend <- glue::glue(
 "
-# Figure54 (CYB1B1) legend: Supplemental figure related to Figure 3
+# Figure 5E variant (CYP1B1): HAA-region comparison
 Expression of TBX2 related to FGF8 expression in HAA region. 
 The aggregated log-normalized expression curve along the DV-axis is separated by the naso-temporal region aligning to HAA.
 Note that TBX2 expression tapers at the point of FGF8 expression increase (dotted red line)
 "
 )
 # Save to markdown file
-writeLines(Fig54_CYP1B1_legend, file.path(FIGURES_BASE, "Figure5", "variants", "F5E_CYP1B1_legend.md"))
+writeLines(F5E_CYP1B1_legend, file.path(FIGURES_BASE, "Figure5", "variants", "F5E_CYP1B1_legend.md"))

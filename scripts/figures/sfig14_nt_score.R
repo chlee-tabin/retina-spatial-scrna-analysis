@@ -199,7 +199,7 @@ ggsave(p12, filename=file.path(FIGURES_BASE, "Figure_SF14", "SF14C_nt_selected_g
 # ## SF14D: Binned NT expression with embryo points
 
 # %% [markdown]
-# ### Figure S4D3
+# ### SF14D: Embryo-pseudobulked NT expression
 
 # %% tags=["cell-223"]
 # Set plot dimensions
