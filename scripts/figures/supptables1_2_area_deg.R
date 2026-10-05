@@ -47,7 +47,7 @@ MIN_CELLS <- 50
 
 # region -> marker used for the S24 selection map (reported only), NT index
 # range, DV index range, grid size n. The human high-acuity gate
-# (temporal-of-center) is labelled "HAA" in Supplementary Table 2.
+# (temporal-of-center) is labelled "Fovea" in Supplementary Table 2, as delivered.
 specs <- list(
     chick = list(
         HAA       = list(m = "CYP26C1", ni = c(6, 7), di = c(4, 5), n = 10),
@@ -58,7 +58,7 @@ specs <- list(
         DVcentral = list(m = "BMP2",    ni = c(0, 6), di = c(3, 3), n = 7),
         NTcentral = list(m = "CYP1B1",  ni = c(5, 6), di = c(0, 8), n = 9)),
     human = list(
-        HAA       = list(m = "CYP26C1", ni = c(3, 4), di = c(4, 5), n = 10),
+        Fovea     = list(m = "CYP26C1", ni = c(3, 4), di = c(4, 5), n = 10),
         Temporal  = list(m = "FOXD1",   ni = c(0, 2), di = c(0, 6), n = 7),
         Nasal     = list(m = "FOXG1",   ni = c(4, 6), di = c(0, 6), n = 7),
         Dorsal    = list(m = "ALDH1A1", ni = c(0, 6), di = c(4, 6), n = 7),
@@ -106,7 +106,7 @@ area_tables <- function(obj, species, donor_col, library_col, table_no) {
     out <- list()
     for (rg in names(specs[[species]])) {
         sp <- specs[[species]][[rg]]; sel <- gate(dv, nt, sp)
-        if (rg == "HAA") stopifnot(sum(sel) == expected_haa[[species]])
+        if (rg %in% c("HAA", "Fovea")) stopifnot(sum(sel) == expected_haa[[species]])
         de <- region_deg(ct, md, gene_mean, sel, donor_col, library_col)
         if (is.null(de)) { cat(sprintf("[%s/%s] skipped: a level emptied by min_cells\n", species, rg)); next }
         sig <- de %>%
