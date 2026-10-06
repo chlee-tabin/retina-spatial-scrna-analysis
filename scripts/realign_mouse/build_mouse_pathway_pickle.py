@@ -2,7 +2,10 @@
 """Build/cache the published CR9 mouse analyzer for Figures S20A-S22A.
 
 Defaults read data/20260528_mouse_RPC_cr9_e13e16.h5ad (GEO GSE322831).
-The parameters match the mouse row of Figure 7. The command also writes a
+The parameters (5 cells per pixel / clip 0.93 / mask 5) are the ones the published
+SF20A-SF22A panels were rendered with (June 2026). They differ from Figure 7's
+mouse row, which was harmonized to 3 / 0.93 / 3 afterwards, so this cache is
+kept separate from Figure 7's mouse_analyzer_correct.pkl. The command also writes a
 companion per-gene image-maximum TSV, separate from Supplementary Table 3.
 
 Usage: python scripts/realign_mouse/build_mouse_pathway_pickle.py [h5ad] [tag]
@@ -18,7 +21,7 @@ if str(REPO) not in sys.path:
 from spatial_expression_analysis import SpatialAnalysisParams, load_or_build_analyzer
 
 H5AD = REPO / "data/20260528_mouse_RPC_cr9_e13e16.h5ad"
-CACHE = REPO / "data/mouse_analyzer_correct.pkl"
+CACHE = REPO / "data/mouse_pathway_analyzer_mc5.pkl"  # not Fig 7's cache: different params
 
 def build_analyzer(h5ad=H5AD, cache_path=CACHE):
     params = SpatialAnalysisParams(
