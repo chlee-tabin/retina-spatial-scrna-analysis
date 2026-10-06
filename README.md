@@ -129,7 +129,7 @@ The deposited [GEO GSE322831](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc
    | `GSE322831_20250604_02_fabp7.rds` | `data/20250604_02_fabp7.rds` | fig5, sfig13, sfig14, fig8d (data), sfig24, supptables1_2 |
    | `GSE322831_20250604_01_retina.rds` | `data/20250604_01_retina.rds` | sfig12 |
 
-   **Human R-export.** The human area-DEG (Supplementary Table 2, Fig. S24B) and the Fig. 8D human module maps were computed on the R-export-stage human RPC object (23,031 cells), before the Python-side assembly filtering that produced the GEO h5ad (21,793 cells). The HAA/fovea gate is defined on each object's DV/NT range, so the GEO object does not reproduce these three exactly. The R-export (MEX: raw counts, barcodes, features, metadata) is archived at [Zenodo DOI to be added]; unpack it to `data/20250604human.RPC/`. It is read by `read_human_rexport()` in `scripts/preprocessing/00_utils.R` and used by fig8d (data), sfig24 (human) and supptables1_2 (Table 2).
+   **Human R-export.** The human area-DEG (Supplementary Table 2, Fig. S24B) and the Fig. 8D human module maps were computed on the R-export-stage human RPC object (23,031 cells), before the blood-contamination filter that produced the GEO h5ad (21,793 cells; cells with ≥1% of reads from hemoglobin genes removed, almost all from GSE234963 whole-eye libraries). On the GEO object the effect sizes are the same (log2FC r = 0.97; 0.999 within the fovea gate), but the fovea gate loses its 67 blood-contaminated cells and two whole-eye libraries fall below the 50-cell pseudobulk minimum, so fewer fovea genes reach significance and Table 2 does not reproduce exactly. The R-export (MEX: raw counts, barcodes, features, metadata) is archived at [Zenodo DOI to be added]; unpack it to `data/20250604human.RPC/`. It is read by `read_human_rexport()` in `scripts/preprocessing/00_utils.R` and used by fig8d (data), sfig24 (human) and supptables1_2 (Table 2).
 
    The remaining `GSE322831_*` supplementary files are not needed for the figures: `..._mouse_RPC_cr9.h5ad` is the full ten-library E13.5–P0 mouse object (43,991 RPCs) behind the interactive viewer (the figures use the seven-library E13.5–E16 subset, 26,505 cells), and the GTF/genome files support re-alignment from raw reads. GEO's bundled `readme.txt` predates the mouse re-alignment; this table is current.
 
@@ -216,7 +216,7 @@ RNA-FISH imaging and quantification (MATLAB pipeline): F1-F4, SF1-SF11, and the 
 
 The chain was re-executed end-to-end from the archived inputs (2026-03):
 
-- **Human**: re-run 23,031 cells = original 23,031 at the R-export stage — exact. (The deposited `20250604_human_RPC.h5ad` contains 21,793 cells after additional filtering during Python-side assembly.)
+- **Human**: re-run 23,031 cells = original 23,031 at the R-export stage — exact. (The deposited `20250604_human_RPC.h5ad` contains 21,793 cells after the blood-contamination filter, `percent.rbc < 0.01`, applied during Python-side assembly.)
 - **Mouse**: re-run 25,202 = original 25,202 — exact, for the superseded pre-CR9 mouse arm that `04` documents. The deposited CR9 `..._e13e16` object (26,505 cells) is validated separately by the re-alignment pipeline.
 - **Chick**: re-run 83,915 vs original 85,135 cells at the integrated-retina stage (~1.4%), cascading to 29,987 vs 29,025 in the RPC subset — the drift traces to unseeded `scDblFinder` doublet calls propagating through Harmony/Leiden.
 
