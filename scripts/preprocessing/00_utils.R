@@ -783,7 +783,7 @@ read_h5ad_as_seurat <- function(path) {
 # is archived with this code (see README, "Human R-export"); this reads it back.
 read_mex_export_as_seurat <- function(dir, prefix) {
     f <- function(x) file.path(dir, paste0(prefix, x))
-    if (!file.exists(f("raw_counts.mtx.gz"))) stop("MEX export not found: ", dir, " (see README)")
+    if (!file.exists(f("raw_counts.mtx.gz"))) stop("MEX export not found: ", dir, " (download from Zenodo, https://doi.org/10.5281/zenodo.23275417; see README)")
     counts <- ReadMtx(mtx = f("raw_counts.mtx.gz"), cells = f("barcodes.tsv"),
                       features = f("features.tsv"), feature.column = 1, cell.column = 1)
     meta <- read.delim(f("metadata.tsv"), check.names = FALSE, stringsAsFactors = FALSE)
