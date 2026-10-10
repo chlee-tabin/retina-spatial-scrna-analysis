@@ -1,5 +1,7 @@
 # Retina Spatial scRNA-seq Analysis
 
+[![DOI (code)](https://zenodo.org/badge/DOI/10.5281/zenodo.23282647.svg)](https://doi.org/10.5281/zenodo.23282647) [![DOI (human R-export data)](https://zenodo.org/badge/DOI/10.5281/zenodo.23275417.svg)](https://doi.org/10.5281/zenodo.23275417)
+
 Spatial gene expression analysis for developing retina across chick, human, and mouse.
 
 > "Integration of in situ hybridization and scRNA-seq data provides a 2D topographical map of the developing retina across species"
@@ -9,6 +11,8 @@ Spatial gene expression analysis for developing retina across chick, human, and 
 If you use this code, please cite:
 
 > Joisher HNV, Lee C, Prabhakara C, van der Weide I, Si Y, Lonfat N, Cepko C. Integration of in situ hybridization and scRNA-seq data provides a 2D topographical map of the developing retina across species. *bioRxiv* (2026). doi: [10.64898/2026.01.04.697548](https://doi.org/10.64898/2026.01.04.697548)
+
+The code is archived at Zenodo: [10.5281/zenodo.23282647](https://doi.org/10.5281/zenodo.23282647) (all versions; v1.0.0 = [10.5281/zenodo.23282648](https://doi.org/10.5281/zenodo.23282648)).
 
 ## Data Availability
 
