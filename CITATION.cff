@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the accompanying manuscript and this software archive."
+title: "retina-spatial-scrna-analysis: analysis code for the 2D topographical map of the developing retina across species"
+type: software
+version: "1.0.0"
+date-released: "2026-10-10"
+license: MIT
+repository-code: "https://github.com/chlee-tabin/retina-spatial-scrna-analysis"
+url: "https://huggingface.co/spaces/chlee-tabin/retina-scrnaseq-viewer"
+authors: &authors
+  - family-names: Joisher
+    given-names: Heer N. V.
+  - family-names: Lee
+    given-names: ChangHee
+  - family-names: Prabhakara
+    given-names: Chaitra
+  - family-names: van der Weide
+    given-names: Isabella
+  - family-names: Si
+    given-names: Yichen
+  - family-names: Lonfat
+    given-names: Nicholas
+  - family-names: Cepko
+    given-names: Constance
+references:
+  - type: data
+    title: "Human retinal progenitor scRNA-seq expression matrix (23,031 cells) for the 2D topographic map of the developing retina"
+    doi: "10.5281/zenodo.23275417"
+    authors: *authors
+preferred-citation:
+  type: article
+  title: "Integration of in situ hybridization and scRNA-seq data provides a 2D topographical map of the developing retina across species"
+  doi: "10.64898/2026.01.04.697548"
+  url: "https://doi.org/10.64898/2026.01.04.697548"
+  year: 2026
+  authors: *authors
