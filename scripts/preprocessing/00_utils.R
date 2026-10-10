@@ -739,3 +739,60 @@ plot_axial_expression <- function(
     return(p_main)
   }
 }
+
+# %% [markdown]
+# ## read_h5ad_as_seurat(): deposited GEO .h5ad -> Seurat object on raw counts
+
+# %%
+# The deposited RPC .h5ad files (GEO GSE322831) were assembled Python-side from
+# the Seurat MEX exports: `X` holds the log-normalized matrix, `.raw.X` the raw
+# UMI counts, and `obs` the cell metadata (DV.Score, NT.Score, library, sample,
+# ...). This rebuilds a Seurat object on the RAW counts (re-normalize with
+# NormalizeData() as usual) so R analyses can start from the deposited human
+# object, which is distributed only as .h5ad. Reading goes through the Python
+# `anndata` package (already a requirement of this repository) via reticulate.
+read_h5ad_as_seurat <- function(path) {
+    if (!file.exists(path)) stop("h5ad not found: ", path, " (download it from GEO GSE322831; see README)")
+    if (!requireNamespace("reticulate", quietly = TRUE))
+        stop("read_h5ad_as_seurat() needs the R package 'reticulate' and the Python package 'anndata'.")
+    ad <- reticulate::import("anndata", convert = FALSE)
+    sp <- reticulate::import("scipy.sparse", convert = FALSE)
+    a  <- ad$read_h5ad(path)
+    use_raw <- isTRUE(reticulate::py_eval("lambda a: a.raw is not None")(a))
+    src   <- if (use_raw) a$raw else a
+    m     <- reticulate::py_to_r(sp$csc_matrix(src$X))             # cells x genes, dgCMatrix
+    genes <- unlist(reticulate::py_to_r(src$var_names$tolist()))
+    cells <- unlist(reticulate::py_to_r(a$obs_names$tolist()))
+    if (!use_raw && any(m@x != round(m@x)))
+        stop("h5ad has no .raw and X is not integer counts: ", path)
+    dimnames(m) <- list(cells, genes)
+    obs <- as.data.frame(reticulate::py_to_r(a$obs))
+    rownames(obs) <- cells
+    message(sprintf("read_h5ad_as_seurat: %d cells x %d genes from %s (%s)",
+                    nrow(m), ncol(m), basename(path), if (use_raw) ".raw counts" else "X counts"))
+    CreateSeuratObject(counts = Matrix::t(m), meta.data = obs)
+}
+
+# %% [markdown]
+# ## read_mex_export_as_seurat(): Seurat MEX export -> Seurat object on raw counts
+
+# %%
+# The human area-DEG (Supplementary Table 2, Fig. S24B) and Fig. 8D human module maps
+# were computed on the R-export-stage human RPC object (23,031 cells), before the
+# Python-side assembly filtering that produced the GEO h5ad (21,793 cells). That export
+# is archived with this code (see README, "Human R-export"); this reads it back.
+read_mex_export_as_seurat <- function(dir, prefix) {
+    f <- function(x) file.path(dir, paste0(prefix, x))
+    if (!file.exists(f("raw_counts.mtx.gz"))) stop("MEX export not found: ", dir, " (download from Zenodo, https://doi.org/10.5281/zenodo.23275417; see README)")
+    counts <- ReadMtx(mtx = f("raw_counts.mtx.gz"), cells = f("barcodes.tsv"),
+                      features = f("features.tsv"), feature.column = 1, cell.column = 1)
+    meta <- read.delim(f("metadata.tsv"), check.names = FALSE, stringsAsFactors = FALSE)
+    stopifnot(all(colnames(counts) %in% rownames(meta)))
+    message(sprintf("read_mex_export_as_seurat: %d cells x %d genes from %s", ncol(counts), nrow(counts), basename(dir)))
+    CreateSeuratObject(counts = counts, meta.data = meta[colnames(counts), , drop = FALSE])
+}
+
+# The archived human R-export used by the three analyses above.
+read_human_rexport <- function() {
+    read_mex_export_as_seurat(file.path(here::here(), "data", "20250604human.RPC"), "20250604human.RPC_")
+}

@@ -9,7 +9,7 @@
 # ---
 
 # %% [markdown]
-# # Figure S16: Identification of Spatial Expression Clusters in Chicken Retina
+# # Figure S16A: Identification of Spatial Expression Clusters in Chicken Retina
 
 # %% [markdown]
 # ## Select top 20 spatial anchors
@@ -115,7 +115,7 @@ print("\n=== CHICK CLUSTER SUMMARY ===")
 print(chick_summary)
 
 # %% [markdown]
-# ## SF16: 20-anchor spatial pattern tiled figure
+# ## SF16A: 20-anchor spatial pattern tiled figure
 
 # %% tags=["cell-64"]
 import os
@@ -221,7 +221,7 @@ for i, gene in enumerate(key_genes):
 plt.tight_layout()
 plt.subplots_adjust(top=0.90)  # Make room for suptitle with legend
 os.makedirs(os.path.join(FIGURES_BASE, "Figure_SF16"), exist_ok=True)
-plt.savefig(os.path.join(FIGURES_BASE, "Figure_SF16", "SF16_chick_spatial_clusters.png"), dpi=300, bbox_inches='tight')
+plt.savefig(os.path.join(FIGURES_BASE, "Figure_SF16", "SF16A_chick_spatial_clusters.png"), dpi=300, bbox_inches='tight')
 plt.show()
 # Print detailed summary
 print("\n" + "="*60)
@@ -248,10 +248,10 @@ if anchor_to_cluster_size:
   print(f"  Range: {min(sizes)} - {max(sizes):,} genes")
 
 # %% [markdown]
-# ## Table S1: Anchor gene pairs and cluster members
+# ## SF16A companion table: anchor gene pairs and cluster members (not a numbered supplementary table)
 
 # %% [markdown]
-# ### Supplemental Table 1
+# ### SF16A cluster-member table
 
 # %% tags=["cell-66"]
 import pandas as pd
@@ -287,6 +287,6 @@ detailed_table = pd.DataFrame(detailed_data)
 detailed_table = detailed_table.sort_values(['Anchor', 'Correlation_Rank'])
 # Save to TSV
 os.makedirs(os.path.join(FIGURES_BASE, "Tables"), exist_ok=True)
-detailed_table.to_csv(os.path.join(FIGURES_BASE, "Tables", "TableS1_chick_cluster_members.tsv"), sep='\t', index=False)
+detailed_table.to_csv(os.path.join(FIGURES_BASE, "Tables", "SF16A_chick_cluster_members.tsv"), sep='\t', index=False)
 print(f"Saved {len(detailed_table)} cluster member entries")
 print(f"This should match total of all cluster sizes: {chick_summary[chick_summary['anchor_name'] != 'NULL']['cluster_size'].sum()}")

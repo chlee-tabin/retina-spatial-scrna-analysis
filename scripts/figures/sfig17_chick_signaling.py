@@ -9,7 +9,7 @@
 # ---
 
 # %% [markdown]
-# # Figure S17: Fgf, Bmp, and RA Signaling Pathway Maps in Chicken Retina
+# # Figures S16B-D and S17D: Spatial Correlations in Chicken Retina
 
 # %% [markdown]
 # ## Utility: save_correlation_panels()
@@ -64,6 +64,7 @@ def save_correlation_panels(gene, analyzer, panel_top_n=12, compact_top_n=5,
       print(f"Gene {gene} not found in dataset")
       return
   print(f"\n--- Saving Correlation Panels for {gene} ---")
+  panel_id = {"FGF8": "SF16B", "CYP26C1": "SF16C", "BMP2": "SF16D", "CYP1B1": "SF17D"}[gene]
   # Get correlations
   correlations = analyzer.get_gene_correlations(gene, top_n=max(panel_top_n, compact_top_n))
   # Gene to index mapping
@@ -127,7 +128,7 @@ def save_correlation_panels(gene, analyzer, panel_top_n=12, compact_top_n=5,
       plt.tight_layout(pad=0.5, h_pad=0.5, w_pad=0.5)
       plt.subplots_adjust(top=0.93)  # Adjust for suptitle
       # Save the panel figure
-      panel_path = os.path.join(output_dir, f"{gene}_correlation_panel_top{panel_top_n}.png")
+      panel_path = os.path.join(output_dir, f"{panel_id}_{gene}_correlation_panel_top{panel_top_n}.png")
       plt.savefig(panel_path, dpi=300, bbox_inches='tight')
       plt.close()
       print(f"  Saved panel view (top {panel_top_n}) to {panel_path}")
@@ -184,18 +185,18 @@ def save_correlation_panels(gene, analyzer, panel_top_n=12, compact_top_n=5,
       plt.tight_layout(pad=0.5, w_pad=0.3)
       plt.subplots_adjust(top=0.85)
       # Save the compact figure
-      compact_path = os.path.join(output_dir, f"{gene}_correlation_compact_top{compact_top_n}.png")
+      compact_path = os.path.join(output_dir, f"{panel_id}_{gene}_correlation_compact_top{compact_top_n}.png")
       plt.savefig(compact_path, dpi=300, bbox_inches='tight')
       plt.close()
       print(f"  Saved compact view (top {compact_top_n}) to {compact_path}")
 
 # %% [markdown]
-# ## SF17A-D: Correlation panels for signaling pathway genes
+# ## SF16B: FGF8 spatial correlations
 
 # %% tags=["cell-35"]
 # Create output directory if it doesn't exist
 FIGURES_BASE = os.path.join(str(REPO), "figures")  # REPO is notebook-safe; a bare __file__ here is not
-output_dir = os.path.join(FIGURES_BASE, "Figure_SF17")
+output_dir = os.path.join(FIGURES_BASE, "Figure_SF16")
 os.makedirs(output_dir, exist_ok=True)
 # Example usage with different parameters
 for gene in ["FGF8", ]:
@@ -213,8 +214,9 @@ for gene in ["FGF8", ]:
 print(f"\nAll correlation panels saved to {output_dir}/")
 
 # %% tags=["cell-36"]
+# SF16C: CYP26C1 spatial correlations
 # Create output directory if it doesn't exist
-output_dir = os.path.join(FIGURES_BASE, "Figure_SF17")
+output_dir = os.path.join(FIGURES_BASE, "Figure_SF16")
 os.makedirs(output_dir, exist_ok=True)
 # Example usage with different parameters
 for gene in ["CYP26C1", ]:
@@ -232,8 +234,9 @@ for gene in ["CYP26C1", ]:
 print(f"\nAll correlation panels saved to {output_dir}/")
 
 # %% tags=["cell-37"]
+# SF16D: BMP2 spatial correlations
 # Create output directory if it doesn't exist
-output_dir = os.path.join(FIGURES_BASE, "Figure_SF17")
+output_dir = os.path.join(FIGURES_BASE, "Figure_SF16")
 os.makedirs(output_dir, exist_ok=True)
 # Example usage with different parameters
 for gene in ["BMP2", ]:
@@ -251,6 +254,7 @@ for gene in ["BMP2", ]:
 print(f"\nAll correlation panels saved to {output_dir}/")
 
 # %% tags=["cell-38"]
+# SF17D: CYP1B1 spatial correlations
 # Create output directory if it doesn't exist
 output_dir = os.path.join(FIGURES_BASE, "Figure_SF17")
 os.makedirs(output_dir, exist_ok=True)
@@ -270,9 +274,11 @@ for gene in ["CYP1B1", ]:
 print(f"\nAll correlation panels saved to {output_dir}/")
 
 # %% tags=["cell-50"]
+# SF16C-D: Alternative correlation layouts
 import matplotlib.pyplot as plt
 for gene in ["BMP2", "CYP26C1"]:
   if gene in chick_analyzer.gene_names:
+      panel_id = {"BMP2": "SF16D", "CYP26C1": "SF16C"}[gene]
       print(f"\n--- Correlation Panel for {gene} ---")
       # Multi-panel grid view (main gene + top correlations)
       # Create figure instead of using show method
@@ -343,7 +349,7 @@ for gene in ["BMP2", "CYP26C1"]:
       plt.tight_layout()
       plt.subplots_adjust(top=0.93)
       # Save the figure
-      plt.savefig(os.path.join(FIGURES_BASE, "Figure_SF17", f"SF17_{gene}_correlations.png"),
+      plt.savefig(os.path.join(FIGURES_BASE, "Figure_SF16", f"{panel_id}_{gene}_correlations.png"),
                   dpi=300, bbox_inches='tight')
       plt.close()
       print(f"Saved correlation panel for {gene}")

@@ -135,7 +135,7 @@ ggsave(p6, filename=file.path(FIGURES_BASE, "Figure_SF13", "SF13C_dv_expression.
 # ## SF13D: Binned DV expression with embryo points
 
 # %% [markdown]
-# ### Figure S4C2
+# ### SF13D: Embryo-pseudobulked DV expression
 
 # %% tags=["cell-196"]
 genes.dorsal <- c(

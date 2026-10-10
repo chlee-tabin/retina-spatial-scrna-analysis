@@ -9,10 +9,10 @@
 # ---
 
 # %% [markdown]
-# # Figure 8B-C: Human HAA Gene Correlations
+# # Figure S23: Top spatially correlated genes with CYP26A1 and CYP26C1 in the human retina
 
 # %% [markdown]
-# ## F8B: Cyp26a1 top-correlated genes
+# ## SF23A: CYP26A1 top-correlated genes
 
 # %% tags=["cell-183"]
 # Self-contained cell for generating CYP26C1 correlation figure for human
@@ -80,7 +80,7 @@ for i, (gene, corr) in enumerate(correlations):
   print(f"  {i+1}. {gene}: {corr:.3f}")
 # Create output directory
 FIGURES_BASE = os.path.join(str(REPO), "figures")  # REPO is notebook-safe; a bare __file__ here is not
-output_dir = os.path.join(FIGURES_BASE, "Figure8")
+output_dir = os.path.join(FIGURES_BASE, "Figure_SF23")
 os.makedirs(output_dir, exist_ok=True)
 print("\n" + "=" * 60)
 print("Creating correlation figure...")
@@ -146,12 +146,12 @@ param_text = (f"Parameters: percentile={human_analyzer.params.percentile_clip:.2
             f"bin_size={human_analyzer.params.bin_size}")
 fig.text(0.5, 0.01, param_text, ha='center', fontsize=8, style='italic', color='gray')
 # Save the figure
-output_path = f"{output_dir}/F8B_CYP26A1.png"
+output_path = f"{output_dir}/SF23A_CYP26A1.png"
 fig.savefig(output_path, dpi=300, bbox_inches='tight', facecolor='white')
 print(f"\nFigure saved to: {output_path}")
 plt.show()
 # Also save correlation data to text file
-corr_output_path = f"{output_dir}/F8B_CYP26A1.txt"
+corr_output_path = f"{output_dir}/SF23A_CYP26A1.txt"
 with open(corr_output_path, 'w') as f:
   f.write(f"Top correlations for human {target_gene}:\n")
   f.write("=" * 50 + "\n")
@@ -172,7 +172,7 @@ print("Figure generation complete!")
 print("=" * 60)
 
 # %% [markdown]
-# ## F8C: Cyp26c1 top-correlated genes
+# ## SF23B: CYP26C1 top-correlated genes
 
 # %% tags=["cell-185"]
 # Self-contained cell for generating CYP26C1 correlation figure for human
@@ -239,7 +239,7 @@ print(f"\nTop correlations for {target_gene}:")
 for i, (gene, corr) in enumerate(correlations):
   print(f"  {i+1}. {gene}: {corr:.3f}")
 # Create output directory
-output_dir = os.path.join(FIGURES_BASE, "Figure8")
+output_dir = os.path.join(FIGURES_BASE, "Figure_SF23")
 os.makedirs(output_dir, exist_ok=True)
 print("\n" + "=" * 60)
 print("Creating correlation figure...")
@@ -305,12 +305,12 @@ param_text = (f"Parameters: percentile={human_analyzer.params.percentile_clip:.2
             f"bin_size={human_analyzer.params.bin_size}")
 fig.text(0.5, 0.01, param_text, ha='center', fontsize=8, style='italic', color='gray')
 # Save the figure
-output_path = f"{output_dir}/F8C_CYP26C1.png"
+output_path = f"{output_dir}/SF23B_CYP26C1.png"
 fig.savefig(output_path, dpi=300, bbox_inches='tight', facecolor='white')
 print(f"\nFigure saved to: {output_path}")
 plt.show()
 # Also save correlation data to text file
-corr_output_path = f"{output_dir}/F8C_CYP26C1.txt"
+corr_output_path = f"{output_dir}/SF23B_CYP26C1.txt"
 with open(corr_output_path, 'w') as f:
   f.write(f"Top correlations for human {target_gene}:\n")
   f.write("=" * 50 + "\n")

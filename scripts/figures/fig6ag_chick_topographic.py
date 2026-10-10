@@ -60,7 +60,7 @@ chick_analyzer = SpatialExpressionAnalyzer(chick_params)
 chick_results = chick_analyzer.run_full_analysis(f"{REPO}/data/20250604_chick_RPC.h5ad")
 
 # %% [markdown]
-# ## F6A-G: 2D topographic maps by gene group
+# ## F6A-G and F8A: 2D topographic maps by gene group
 
 # %% tags=["cell-42"]
 import matplotlib.pyplot as plt
@@ -72,7 +72,7 @@ output_dir = os.path.join(FIGURES_BASE, "Figure6", "F6A-G_spatial_maps")
 os.makedirs(output_dir, exist_ok=True)
 key_genes = [
     "TBX2", "TBX3", "TBX5", "EFNB1", "EFNB2", "EPHB2", "VAX1", "CHRDL1",
-    "ALDH1A1", "ALDH1A3", "CYP26A1", "CYP26C1", "FGF8", "FOXD1", "FOXG1", "SOHO-1", "CYP1B1", "BMP2"
+    "ALDH1A1", "ALDH1A3", "CYP26A1", "CYP26C1", "FGF8", "FOXD1", "FOXG1", "SOHO-1", "CYP1B1", "BMP2", "MYOF", "NPY"
 ]
 for gene in key_genes:
   if gene in chick_analyzer.gene_names:
@@ -130,6 +130,7 @@ for gene in key_genes:
 print(f"\nAll plots saved to {output_dir}/")
 
 # %% tags=["cell-43"]
+# SF17C: BMP signaling
 import matplotlib.pyplot as plt
 import os
 import numpy as np
@@ -208,14 +209,14 @@ for gene in key_genes:
       # Adjust layout
       plt.tight_layout()
       # Save the figure
-      output_path = os.path.join(output_dir, f"{gene}_spatial_expression.png")
+      output_path = os.path.join(output_dir, f"SF17C_{gene}_spatial_expression.png")
       plt.savefig(output_path, dpi=300, bbox_inches='tight')
       plt.close()
       print(f"  Saved to {output_path}")
       # Get and save top correlations as text
       correlations = chick_analyzer.get_gene_correlations(gene, top_n=10)
       # Save correlations to text file
-      corr_output_path = os.path.join(output_dir, f"{gene}_correlations.txt")
+      corr_output_path = os.path.join(output_dir, f"SF17C_{gene}_correlations.txt")
       with open(corr_output_path, 'w') as f:
           f.write(f"Top correlations for {gene}:\n")
           for corr_gene, corr_val in correlations:
@@ -224,6 +225,7 @@ for gene in key_genes:
 print(f"\nAll plots saved to {output_dir}/")
 
 # %% tags=["cell-44"]
+# SF17B: FGF8 downstream genes
 import matplotlib.pyplot as plt
 import os
 import numpy as np
@@ -284,14 +286,14 @@ for gene in key_genes:
       # Adjust layout
       plt.tight_layout()
       # Save the figure
-      output_path = os.path.join(output_dir, f"{gene}_spatial_expression.png")
+      output_path = os.path.join(output_dir, f"SF17B_{gene}_spatial_expression.png")
       plt.savefig(output_path, dpi=300, bbox_inches='tight')
       plt.close()
       print(f"  Saved to {output_path}")
       # Get and save top correlations as text
       correlations = chick_analyzer.get_gene_correlations(gene, top_n=10)
       # Save correlations to text file
-      corr_output_path = os.path.join(output_dir, f"{gene}_correlations.txt")
+      corr_output_path = os.path.join(output_dir, f"SF17B_{gene}_correlations.txt")
       with open(corr_output_path, 'w') as f:
           f.write(f"Top correlations for {gene}:\n")
           for corr_gene, corr_val in correlations:
@@ -300,6 +302,7 @@ for gene in key_genes:
 print(f"\nAll plots saved to {output_dir}/")
 
 # %% tags=["cell-45"]
+# SF17A: FGF ligands and receptors
 import matplotlib.pyplot as plt
 import os
 import numpy as np
@@ -378,14 +381,14 @@ for gene in key_genes:
       # Adjust layout
       plt.tight_layout()
       # Save the figure
-      output_path = os.path.join(output_dir, f"{gene}_spatial_expression.png")
+      output_path = os.path.join(output_dir, f"SF17A_{gene}_spatial_expression.png")
       plt.savefig(output_path, dpi=300, bbox_inches='tight')
       plt.close()
       print(f"  Saved to {output_path}")
       # Get and save top correlations as text
       correlations = chick_analyzer.get_gene_correlations(gene, top_n=10)
       # Save correlations to text file
-      corr_output_path = os.path.join(output_dir, f"{gene}_correlations.txt")
+      corr_output_path = os.path.join(output_dir, f"SF17A_{gene}_correlations.txt")
       with open(corr_output_path, 'w') as f:
           f.write(f"Top correlations for {gene}:\n")
           for corr_gene, corr_val in correlations:
